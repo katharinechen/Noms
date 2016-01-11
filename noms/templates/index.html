@@ -2,24 +2,18 @@
 <html>
 <head>
   <title>NOM NOM NOM</title>
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css"></link>
 </head>
-<body ng-app="noms">
+<body ng-app="">
+
+  <!-- navbar -->
+  <div ng-include="'/static/js/partials/navbar.html'"></div>
+
+  <!--   home page  -->
   <div ng-include="'/static/js/partials/home.html'"></div>
-
-<!--
-<%= render('layouts/navbar') %>
-
-<% unless (yield(:heading) == "true") %>
-  <%= render('layouts/jumbo') %
-<% end %>
-
-<%= yield %>
-
-<%= flash[:alert] %>
-<%= flash[:notice] %> --> 
 
 </body>
 </html>
