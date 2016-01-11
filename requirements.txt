@@ -1,3 +1,4 @@
 twisted
 jinja2
 mongoengine
+klein 
