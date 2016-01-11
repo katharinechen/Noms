@@ -1,0 +1,7 @@
+lib
+include
+bin/activate*
+bin/easy_install*
+bin/pip*
+bin/python* 
+.Python
