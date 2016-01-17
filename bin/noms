@@ -1,3 +1,3 @@
 #!/bin/bash
 
-twistd -n web --class noms.server.resource
+twistd -n web --class noms.server.main
