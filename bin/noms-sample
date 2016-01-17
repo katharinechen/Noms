@@ -1,0 +1,3 @@
+#!/bin/bash
+
+mongoimport --drop -d noms sample/recipe.json
