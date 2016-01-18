@@ -30,3 +30,5 @@ class Recipe(Document):
     meta = { 
       'indexes': ['name'] 
     }
+
+    

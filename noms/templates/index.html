@@ -5,15 +5,20 @@
   <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/controllers/recipelist.js"></script>
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css"></link>
 </head>
-<body ng-app="">
+<body ng-app="noms">
 
   <!-- navbar -->
   <div ng-include="'/static/js/partials/navbar.html'"></div>
 
   <!--   home page  -->
   <div ng-include="'/static/js/partials/home.html'"></div>
+
+  <!--   recipe list -->
+  <div ng-include="'/static/js/partials/recipe-list.html'"></div>
 
 </body>
 </html>
