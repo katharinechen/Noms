@@ -2,6 +2,7 @@
 Twisted Web Routing 
 """
 import mongoengine
+from jinja2 import Environment, PackageLoader 
 
 from twisted.web import static
 
@@ -11,6 +12,15 @@ from noms.recipe import Recipe
 
 DATABASE_NAME = "noms"
 
+env = Environment(
+        block_start_string='<%',
+        block_end_string='%>',
+        comment_start_string='<#',
+        comment_end_string='#>',
+        variable_start_string='<<',
+        variable_end_string='>>', 
+        loader=PackageLoader('noms', 'templates')
+    )
 
 class Server(object): 
     """
@@ -24,13 +34,15 @@ class Server(object):
 
     @app.route("/")
     def index(self, request): 
-        # https://github.com/twisted/klein/issues/41 
-        f = static.File("./noms/templates/index.html")
-        f.isLeaf = True 
-        return f
+        template = env.get_template("index.html")
+        return template.render()
+
+    @app.route("/recipes")
+    def recipes(self, request):
+        template = env.get_template("application.html")
+        return template.render() 
 
     _api = None 
-
     @app.route("/api/", branch=True)
     def api(self, request):
         """
