@@ -14,7 +14,7 @@ DATABASE_NAME = "noms"
 
 class Server(object): 
     """
-    The web server
+    The web server for html and miscell. 
     """
     app = Klein() 
 
@@ -29,8 +29,28 @@ class Server(object):
         f.isLeaf = True 
         return f
 
-    @app.route("/api/recipe/list")
-    def recipelist(self, request): 
+    _api = None 
+
+    @app.route("/api/", branch=True)
+    def api(self, request):
+        """
+        Memoizating APIServer().app.resource() 
+        """ 
+        request.setHeader('content-type', 'application/json')
+        request.setHeader('expires', "-1") 
+        if self._api is None: 
+            self._api = APIServer().app.resource() 
+        return self._api
+
+
+class APIServer(object): 
+    """
+    The web server for JSON API 
+    """
+    app = Klein() 
+
+    @app.route("/recipe/list")
+    def recipelist(self, request):
         recipeList = Recipe.objects().only('name')
         return recipeList.to_json()
 
