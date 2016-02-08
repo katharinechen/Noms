@@ -1,0 +1,19 @@
+<!--     name = fields.StringField(require=True)
+    author = fields.StringField(require=True) # author of the recipe  
+    ingredients = fields.ListField(fields.StringField, require=True)
+    instructions = fields.ListField(fields.StringField, require=True)
+    recipeYield = fields.StringField()
+    tags = fields.StringField()
+    modified = fields.DateTimeField(default=datetime.datetime.now)
+ -->
+
+ <div ng-controller="NewRecipeCtrl">
+  <form novalidate class="simple-form">
+    Name: <input type="text" ng-model="recipe.name" /><br />
+    Author: <input type="text" ng-model="recipe.author" /><br />
+    Ingredients: <textarea ng-model="recipe.ingredients"></textarea><br /> 
+    Instructions: <textarea ng-model="recipe.instructions"></textarea><br /> 
+    <input type="submit" ng-click="update(recipe)" value="Save" />
+  </form>
+  <div ng-show="ok">{{ message }}</div> 
+</div>

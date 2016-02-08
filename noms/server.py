@@ -1,7 +1,10 @@
 """
 Twisted Web Routing 
 """
-import mongoengine
+import json
+
+import mongoengine 
+
 from jinja2 import Environment, PackageLoader 
 
 from twisted.web import static
@@ -38,9 +41,14 @@ class Server(object):
         return template.render()
 
     @app.route("/recipes")
-    def recipes(self, request):
+    def showRecipes(self, request):
         template = env.get_template("application.html")
-        return template.render() 
+        return template.render(partial="recipe-list.html") 
+
+    @app.route("/recipes/new")
+    def createRecipe(self, request): 
+        template = env.get_template("application.html")
+        return template.render(partial="new-recipe.html")
 
     _api = None 
     @app.route("/api/", branch=True)
@@ -65,6 +73,20 @@ class APIServer(object):
     def recipelist(self, request):
         recipeList = Recipe.objects().only('name')
         return recipeList.to_json()
+
+    @app.route("/recipe/create")
+    def createRecipeSave(self, request):
+        data = json.load(request.content)
+        data = { k.encode('utf-8'): v for (k,v) in data.items()}
+        recipe = Recipe()
+        recipe.name = data['name']
+        recipe.author = data['author']
+        for i in data['ingredients']:
+            recipe.ingredients.append(i)
+        for i in data['instructions']:
+            recipe.instructions.append(i) 
+
+        recipe.save() 
 
 def main():
     """

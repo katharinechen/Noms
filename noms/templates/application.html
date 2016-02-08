@@ -5,14 +5,15 @@
   <% include "universal-header.html" %> 
   <script src="/static/js/app.js"></script>
   <script src="/static/js/controllers/recipelist.js"></script>
+  <script src="/static/js/controllers/newrecipe.js"></script>
 </head>
 <body ng-app="noms">
 
   <!-- navbar -->
   <div ng-include="'/static/js/partials/navbar.html'"></div>
 
-  <!--   recipe list -->
-  <div ng-include="'/static/js/partials/recipe-list.html'"></div>
+  <!--   include partial -->
+  <div ng-include="'/static/js/partials/<< partial >>'"></div>
 
 </body>
 </html>

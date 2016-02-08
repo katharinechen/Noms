@@ -21,8 +21,8 @@ class Recipe(Document):
 
     name = fields.StringField(require=True)
     author = fields.StringField(require=True) # author of the recipe  
-    ingredients = fields.ListField(fields.StringField, require=True)
-    instructions = fields.ListField(fields.StringField, require=True)
+    ingredients = fields.ListField(fields.StringField(), require=True)
+    instructions = fields.ListField(fields.StringField(), require=True)
     recipeYield = fields.StringField()
     tags = fields.StringField()
     modified = fields.DateTimeField(default=datetime.datetime.now)
