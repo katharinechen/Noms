@@ -50,6 +50,11 @@ class Server(object):
         template = env.get_template("application.html")
         return template.render(partial="new-recipe.html")
 
+    @app.route("/ingredients/new")
+    def createIngredient(self, request): 
+        template = env.get_template("application.html")
+        return template.render(partial="new-ingredient.html")
+
     _api = None 
     @app.route("/api/", branch=True)
     def api(self, request):
@@ -71,11 +76,17 @@ class APIServer(object):
 
     @app.route("/recipe/list")
     def recipelist(self, request):
+        """
+        List all recipes 
+        """
         recipeList = Recipe.objects().only('name')
         return recipeList.to_json()
 
     @app.route("/recipe/create")
     def createRecipeSave(self, request):
+        """
+        Save recipes 
+        """
         data = json.load(request.content)
         data = { k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
@@ -86,7 +97,7 @@ class APIServer(object):
         for i in data['instructions']:
             recipe.instructions.append(i) 
 
-        recipe.save() 
+        recipe.save()
 
 def main():
     """
