@@ -11,10 +11,11 @@ from twisted.web import static
 
 from klein import Klein
 
+from noms import urlify, DATABASE_NAME
 from noms.recipe import Recipe 
 
-DATABASE_NAME = "noms"
 
+#Jinja template context
 env = Environment(
         block_start_string='<%',
         block_end_string='%>',
@@ -92,6 +93,7 @@ class APIServer(object):
         recipe = Recipe()
         recipe.name = data['name']
         recipe.author = data['author']
+        recipe.urlKey = urlify(recipe.user, recipe.name)
         for i in data['ingredients']:
             recipe.ingredients.append(i)
         for i in data['instructions']:
