@@ -51,6 +51,15 @@ class Server(object):
         template = env.get_template("application.html")
         return template.render(partial="new-recipe.html")
 
+    @app.route("/recipes/<string:urlKey>")
+    def showRecipe(self, request, urlKey): 
+        """
+        Show individual recipe pages 
+        """
+        # urlKey = unique id made up of email and recipe name 
+        template = env.get_template("application.html")
+        return template.render(partial="recipe.html")
+
     @app.route("/ingredients/new")
     def createIngredient(self, request): 
         template = env.get_template("application.html")
