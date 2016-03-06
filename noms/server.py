@@ -89,7 +89,8 @@ class APIServer(object):
         """
         List all recipes 
         """
-        recipeList = Recipe.objects().only('name')
+        # we are only sending recipe.name to the client because of security risk 
+        recipeList = Recipe.objects().only('name', 'urlKey')
         return recipeList.to_json()
 
     @app.route("/recipe/create")

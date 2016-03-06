@@ -23,7 +23,7 @@ class Recipe(Document):
     name = fields.StringField(require=True)
     author = fields.StringField(require=True) # author of the recipe 
     user = fields.StringField(require=True, default=u"katharinechen.ny@gmail.com")
-    urlKey = fields.StringField(require=True, primary_key=True)
+    urlKey = fields.StringField(require=True, unique=True)
     ingredients = fields.ListField(fields.StringField(), require=True)
     instructions = fields.ListField(fields.StringField(), require=True)
     recipeYield = fields.StringField()
