@@ -1,9 +1,13 @@
 """
 Noms Python library - web application
 """
-import re, inspect, types
+import re
+import inspect
+import types
+
 
 DATABASE_NAME = "noms"
+
 
 def urlify(*args):
     """
@@ -47,3 +51,15 @@ def eachMethod(decorator, methodFilter=lambda fName: True):
                 
         return cls
     return innerDeco
+
+
+class enum(dict):
+    """
+    Create a simple attribute list from keys
+    """
+    def __getattr__(self, attr):
+        v = self[attr]
+        if v is None:
+            return attr
+        return v
+
