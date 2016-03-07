@@ -1,4 +1,4 @@
-0.1 create (fee) auth0 account
+0.1 create (free) auth0 account
 0.2 expose noms through ngrok
 0.3 add SecretPair API
 0.3.1 use API to add an auth0 secret
