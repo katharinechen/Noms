@@ -23,7 +23,7 @@ class Recipe(Document):
     name = fields.StringField(require=True)
     author = fields.StringField(require=True) # author of the recipe 
     user = fields.StringField(require=True, default=u"katharinechen.ny@gmail.com")
-    urlKey = fields.StringField()
+    urlKey = fields.StringField(require=True, unique=True)
     ingredients = fields.ListField(fields.StringField(), require=True)
     instructions = fields.ListField(fields.StringField(), require=True)
     recipeYield = fields.StringField()
@@ -35,4 +35,19 @@ class Recipe(Document):
       'strict': False
     }
 
-    
+    def toJSType(self): 
+        """
+        Filter out bad fields and return a dict 
+        """
+        return {"name": self.name, 
+                "author": self.author, 
+                "user": self.user, 
+                "urlKey": self.urlKey, 
+                "ingredients": self.ingredients, 
+                "instructions": self.instructions, 
+                "recipeYield": self.recipeYield, 
+                "tags": self.tags, 
+                #"modified": self.modified (date is currently not going to work)
+            }
+
+

@@ -6,7 +6,9 @@
   <div ng-hide="recipes.length === 0">
     <p>Here is a list of all of the recipes: </p> 
     <ul ng-repeat="recipe in recipes">
-      <li>{{ recipe.name }}</li>
+      <li>
+        <a ng-href="/recipes/{{ recipe.urlKey }}">{{ recipe.name}} </a>
+      </li>
     </ul>  
   </div> 
 </div>

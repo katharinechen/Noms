@@ -1,9 +1,10 @@
 """
 Twisted Web Routing 
 """
+from functools import wraps
 import json
 
-import mongoengine 
+import mongoengine
 
 from jinja2 import Environment, PackageLoader 
 
@@ -11,9 +12,14 @@ from twisted.web import static
 
 from klein import Klein
 
-from noms import urlify, DATABASE_NAME
+from noms import urlify, DATABASE_NAME, eachMethod
 from noms.recipe import Recipe 
 
+
+class EmptyQuery(Exception): 
+    """
+    Returned empty query
+    """
 
 #Jinja template context
 env = Environment(
@@ -25,6 +31,33 @@ env = Environment(
         variable_end_string='>>', 
         loader=PackageLoader('noms', 'templates')
     )
+
+def renderToAPI(function):
+    """
+    Converts raw objects into json string
+    """  
+    @wraps(function)
+    # decorator takes g(x) and returns f(g(x))
+    def innerFunction(*a, **kw): 
+
+        ret = function(*a, **kw) 
+        if not ret:
+            raise EmptyQuery("Returned empty query")
+
+        #array or one object 
+        if isinstance(ret, mongoengine.Document): 
+            ret = ret.toJSType() 
+            return json.dumps(ret)
+        elif isinstance(ret, (tuple, list, mongoengine.QuerySet)):
+            obj = []
+            for n in ret: 
+                obj.append(n.toJSType()) 
+            return json.dumps(obj)
+        else: 
+            assert False, "Unknown API return: %r" % ret  
+
+    return innerFunction
+
 
 class Server(object): 
     """
@@ -51,6 +84,15 @@ class Server(object):
         template = env.get_template("application.html")
         return template.render(partial="new-recipe.html")
 
+    @app.route("/recipes/<string:urlKey>")
+    def showRecipe(self, request, urlKey): 
+        """
+        Show individual recipe pages 
+        """
+        # urlKey = unique id made up of email and recipe name 
+        template = env.get_template("application.html")
+        return template.render(partial="recipe.html")
+
     @app.route("/ingredients/new")
     def createIngredient(self, request): 
         template = env.get_template("application.html")
@@ -76,12 +118,15 @@ class APIServer(object):
     app = Klein() 
 
     @app.route("/recipe/list")
-    def recipelist(self, request):
+    @renderToAPI
+    def data_recipeList(self, request):
         """
         List all recipes 
         """
-        recipeList = Recipe.objects().only('name')
-        return recipeList.to_json()
+        # we are only sending limited information to the client because of security risk 
+        #recipeList = Recipe.objects().only('name', 'urlKey')
+        recipeList = Recipe.objects()
+        return recipeList
 
     @app.route("/recipe/create")
     def createRecipeSave(self, request):
@@ -100,6 +145,15 @@ class APIServer(object):
             recipe.instructions.append(i) 
 
         recipe.save()
+
+    @app.route("/recipe/<string:urlKey>")
+    @renderToAPI
+    def data_getRecipe(self, request, urlKey): 
+        """
+        Return a specific recipe from its urlKey 
+        """
+        recipe = Recipe.objects(urlKey=urlKey).first()
+        return recipe 
 
 def main():
     """

@@ -1,0 +1,50 @@
+<!--  individual recipe  -->
+<div class="container" ng-controller="Recipe">
+  <div class="panel panel-default">
+
+    <!-- Header --> 
+    <div class="panel-heading"> 
+      <h1>{{ recipe.name }}</h1> 
+    </div> 
+
+    <!-- Table -->
+    <table class="table">
+      <thread> 
+        <tbody>
+          <tr>
+            <td><strong>Author</strong></td>
+            <td>{{ recipe.author }}</td> 
+          </tr>
+          <tr>
+            <td><strong>User<strong></td>
+            <td>{{ recipe.user }}</td> 
+          </tr>
+          <tr>
+            <td><strong>Ingredients</strong></td>
+            <td>{{ recipe.ingredients }}</td> 
+          </tr>
+          <tr>
+            <td><strong>Recipe Yield<strong></td>
+            <td>{{ recipe.recipeYield }}</td> 
+          </tr>
+          <tr>
+            <td><strong>Instructions</strong></td>
+            <td>{{ recipe.instructions }}</td> 
+          </tr>
+          <tr>
+            <td><strong>Tags<strong></td>
+            <td>{{ recipe.tags }}</td> 
+          </tr>
+          <tr>
+            <td><strong>Last Modified</strong></td>
+            <td>{{ recipe.modified }}</td> 
+          </tr> 
+        </tbody> 
+      </thread> 
+    </table>
+
+  </div>
+</div>
+<!-- individual recipe end --> 
+
+
