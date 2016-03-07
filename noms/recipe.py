@@ -35,4 +35,19 @@ class Recipe(Document):
       'strict': False
     }
 
-    
+    def toJSType(self): 
+        """
+        Filter out bad fields and return a dict 
+        """
+        return {"name": self.name, 
+                "author": self.author, 
+                "user": self.user, 
+                "urlKey": self.urlKey, 
+                "ingredients": self.ingredients, 
+                "instructions": self.instructions, 
+                "recipeYield": self.recipeYield, 
+                "tags": self.tags, 
+                #"modified": self.modified (date is currently not going to work)
+            }
+
+
