@@ -45,7 +45,7 @@ def renderToAPI(function):
             raise EmptyQuery("Returned empty query")
 
         #array or one object 
-        if isinstance(ret, basestring): 
+        if isinstance(ret, mongoengine.Document): 
             ret = ret.toJSType() 
             return json.dumps(ret)
         elif isinstance(ret, (tuple, list, mongoengine.QuerySet)):
@@ -148,7 +148,7 @@ class APIServer(object):
 
     @app.route("/recipe/<string:urlKey>")
     @renderToAPI
-    def data_getRecipe(self, urlKey): 
+    def data_getRecipe(self, request, urlKey): 
         """
         Return a specific recipe from its urlKey 
         """

@@ -6,3 +6,4 @@ app.controller('RecipeListCtrl', ['$scope', '$http', function($scope, $http) {
         $scope.recipes = recipelist.data; 
     }); 
 }]); 
+

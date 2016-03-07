@@ -21,6 +21,7 @@ def urlify(*args):
 
     return re.sub(r'[^-a-z0-9]', '-', url.lower()) 
 
+
 def eachMethod(decorator, methodFilter=lambda fName: True):
     """
     Class decorator that wraps every single method in its own method decorator
@@ -32,7 +33,8 @@ def eachMethod(decorator, methodFilter=lambda fName: True):
     methodFilter can also be simply a string prefix. If it is a string, it is
     assumed to be the prefix we're looking for.
     """
-
+    raise NotImplementedError("We can't figure out how to use this! :(")
+    
     if isinstance(methodFilter, basestring):
         # Is it a string? If it is, change it into a function that takes a string.
         prefix = methodFilter
