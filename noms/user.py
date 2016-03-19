@@ -2,15 +2,16 @@
 Authentication and users
 """
 
-from mongoengine import Document, fields
+from mongoengine import fields
 
 from noms import enum
+from noms.rendering import RenderableDocument
 
 
 Roles = enum.fromkeys(['user', 'superuser'])
 
 
-class User(Document):
+class User(RenderableDocument):
     email = fields.StringField(require=True, unique=True)
     passwordHash = fields.StringField()
     roles = fields.ListField(fields.StringField(choices=Roles.keys()))
@@ -36,10 +37,12 @@ class User(Document):
         self.save()
         return self
 
-    def toJSType(self):
+    def safe(self):
         return dict(
                 email=self.email,
                 givenName=self.givenName,
                 familyName=self.familyName,
                 roles=self.roles
                 )
+
+ANONYMOUS = User(email='', roles=[])
