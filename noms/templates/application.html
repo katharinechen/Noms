@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>NOM NOM NOM </title>
-  <% include "universal-header.html" %> 
+  <% include "universal-header.html" %>
   <script src="/static/js/app.js"></script>
   <script src="/static/js/controllers/recipelist.js"></script>
   <script src="/static/js/controllers/recipe.js"></script>
@@ -10,6 +10,13 @@
   <script src="/static/js/controllers/navbar.js"></script>
 </head>
 <body ng-app="noms">
+<div ng-controller="Noms">
+
+  <!-- data preloaded by the server, becomes part of the Noms scope in angular -->
+  <script>
+<% set nomsPreload = preload or none %>
+window.nomsPreload = '<< nomsPreload | json >>';
+  </script>
 
   <!-- navbar -->
   <div ng-include="'/static/js/partials/navbar.html'"></div>
@@ -17,5 +24,6 @@
   <!--   include partial -->
   <div ng-include="'/static/js/partials/<< partial >>'"></div>
 
+</div>
 </body>
 </html>

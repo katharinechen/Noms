@@ -62,4 +62,3 @@ class enum(dict):
         if v is None:
             return attr
         return v
-
