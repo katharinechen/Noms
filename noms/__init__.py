@@ -62,3 +62,45 @@ class enum(dict):
         if v is None:
             return attr
         return v
+
+
+class LazyConfig(object):
+    """
+    A placeholder for config that exists before the database is connected.
+
+    This allows us to make CONFIG a simple global instance
+    """
+    @property
+    def realConfig(self):
+        if '_realConfig' in self.__dict__:
+            return self._realConfig
+
+        cfg = self.require()
+        
+        assert cfg is not None, "Couldn't load a config from the database"
+
+        self.__dict__['_realConfig'] = cfg
+
+    def __getattr__(self, attr):
+        return getattr(self.realConfig, attr)
+
+    def __hasattr__(self, attr):
+        return hasattr(self.realConfig, attr)
+
+    def __setattr__(self, attr, value):
+        if self.realConfig:
+            self.realConfig.__setattr__(attr, value)
+        else:
+            object.__setattr__(self, attr, value)
+
+    @staticmethod
+    def require():
+        """
+        => Config object, if any config has been saved in this db
+        """
+        from noms.config import Config
+        return Config.objects().first()
+
+
+CONFIG = LazyConfig()
+

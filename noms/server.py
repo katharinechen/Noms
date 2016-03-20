@@ -4,15 +4,13 @@ Twisted Web Routing
 import json
 from functools import wraps
 
-import mongoengine
-
 from twisted.web import static
 from twisted.web.client import getPage
 from twisted.internet import defer
 
 from klein import Klein
 
-from noms import urlify, DATABASE_NAME, user, secret
+from noms import urlify, user, secret, CONFIG
 from noms.recipe import Recipe 
 from noms.rendering import HumanReadable, RenderableQuerySet
 
@@ -20,8 +18,6 @@ from noms.rendering import HumanReadable, RenderableQuerySet
 TOKEN_URL = "https://{domain}/oauth/token".format(domain='nomsbook.auth0.com')
 USER_URL = "https://{domain}/userinfo?access_token=".format(domain='nomsbook.auth0.com')
 OAUTH_GRANT_TYPE = 'authorization_code'
-
-XX_HOST = 'asdfasdf.ngrok.io'
 
 
 class Server(object): 
@@ -147,7 +143,7 @@ class APIServer(object):
         tokenPayload = {
           'client_id':     auth0ID,
           'client_secret': auth0Secret,
-          'redirect_uri':  'https://' + XX_HOST + '/api/sso',
+          'redirect_uri':  CONFIG.apparentURL + '/api/sso',
           'code':          code,
           'grant_type':    'authorization_code'
         }
@@ -174,12 +170,4 @@ class APIServer(object):
         u = getattr(request.getSession(), 'user', user.ANONYMOUS)
         return u
 
-
-def main():
-    """
-    Return a resource to start our application
-    """
-    resource = Server().app.resource
-    mongoengine.connect(db=DATABASE_NAME) 
-    return resource()
 
