@@ -15,6 +15,8 @@ from zope.interface import implements
 
 from twisted.web import resource
 
+from noms import CONFIG
+
 
 #Jinja template context
 env = Environment(
@@ -70,6 +72,7 @@ class HumanReadable(object):
             self.template = env.get_template(templateOrFilename)
         else:
             assert 0, "Got %r; needed a template or a template file" % templateOrFilename
+        kwargs.setdefault('preload', {}).update({'apparentURL': CONFIG.apparentURL})
         self.renderContext = kwargs
 
     def render(self, request):

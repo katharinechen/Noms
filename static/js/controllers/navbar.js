@@ -12,7 +12,7 @@ app.controller('NavbarCtrl', ['$scope', '$http', function($scope, $http) {
                 'zhcnJuMWPCY2XMRH2afRNST7tpGUE9Hp', // FIXME move to config code
                 'nomsbook.auth0.com');
         lock.show({
-            callbackURL: 'https://ee180441.ngrok.io/api/sso',
+            callbackURL: $scope.preload.apparentURL + '/api/sso',
             responseType: 'code',
             authParams: { scope: 'openid profile' }
         });
