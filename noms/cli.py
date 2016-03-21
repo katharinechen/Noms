@@ -24,7 +24,8 @@ class NomsOptions(tap.Options):
             config.Config().save()
 
         # now we know CONFIG exists
-        CONFIG.cliOptions = dict(self)
+        CONFIG.cliOptions = dict(self.items())
+        CONFIG.save()
 
         self.opt_class(MAIN_FUNC)
 

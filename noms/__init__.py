@@ -73,13 +73,16 @@ class LazyConfig(object):
     @property
     def realConfig(self):
         if '_realConfig' in self.__dict__:
-            return self._realConfig
+            """
+            We have already memoized previously
+            """
 
-        cfg = self.require()
-        
-        assert cfg is not None, "Couldn't load a config from the database"
+        else:
+            cfg = self.require()
+            assert cfg is not None, "Couldn't load a config from the database"
+            self.__dict__['_realConfig'] = cfg
 
-        self.__dict__['_realConfig'] = cfg
+        return self.__dict__['_realConfig']
 
     def __getattr__(self, attr):
         return getattr(self.realConfig, attr)

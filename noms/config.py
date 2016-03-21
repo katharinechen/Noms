@@ -11,7 +11,7 @@ class Config(RenderableDocument):
     """
     Config stored in the server
     """
-    # URL used in in-pointing contexts, e.g. emailed links, 3rd-party
+    # URL used with in-pointing contexts, e.g. emailed links, 3rd-party
     # integrations, and anywhere we need to uniquely identify this instance
     apparentURL = fields.StringField(default='https://app.nomsbook.com',
             required=True)
