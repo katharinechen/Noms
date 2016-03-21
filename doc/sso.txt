@@ -11,3 +11,10 @@
 5. add User class, complete with fromSSO and toJSType
 6. add /api/user handler
 7. add ng-show conditions to navbar
+
+8. create rendering.py to organize templating utilities
+9. add a high-level controller to pass .preload from jinja context to angular
+10. build object publication concepts into rendering.py so we can return pages
+    and queries and documents directly from web handlers
+11. Add server configuration architecture so we can specify our callback URL
+
