@@ -1,6 +1,7 @@
 """
 Server configuration
 """
+import re
 
 from mongoengine import fields
 

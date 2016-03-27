@@ -15,7 +15,7 @@ from zope.interface import implements
 
 from twisted.web import resource
 
-from noms import CONFIG
+from noms import CONFIG, secret
 
 
 #Jinja template context
@@ -73,6 +73,7 @@ class HumanReadable(object):
         else:
             assert 0, "Got %r; needed a template or a template file" % templateOrFilename
         kwargs.setdefault('preload', {}).update({'apparentURL': CONFIG.apparentURL})
+        kwargs['preload']['auth0Public'] = secret.get('auth0')[0]
         self.renderContext = kwargs
 
     def render(self, request):

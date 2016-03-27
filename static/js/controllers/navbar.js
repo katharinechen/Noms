@@ -9,9 +9,12 @@ app.controller('NavbarCtrl', ['$scope', '$http', function($scope, $http) {
   
     $scope.showLogin = function _a_showLogin() {
         var lock = new Auth0Lock(
-                'zhcnJuMWPCY2XMRH2afRNST7tpGUE9Hp', // FIXME move to config code
+                $scope.preload.auth0Public,
                 'nomsbook.auth0.com');
         lock.show({
+            // This is the smallest possible transparent GIF image; in effect
+            // hiding the icon
+            icon: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
             callbackURL: $scope.preload.apparentURL + '/api/sso',
             responseType: 'code',
             authParams: { scope: 'openid profile' }
