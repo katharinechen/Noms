@@ -1,62 +1,23 @@
 """
 Twisted Web Routing 
 """
-from functools import wraps
 import json
-
-import mongoengine
-
-from jinja2 import Environment, PackageLoader 
+from functools import wraps
 
 from twisted.web import static
+from twisted.web.client import getPage
+from twisted.internet import defer
 
 from klein import Klein
 
-from noms import urlify, DATABASE_NAME, eachMethod
+from noms import urlify, user, secret, CONFIG
 from noms.recipe import Recipe 
+from noms.rendering import HumanReadable, RenderableQuerySet
 
 
-class EmptyQuery(Exception): 
-    """
-    Returned empty query
-    """
-
-#Jinja template context
-env = Environment(
-        block_start_string='<%',
-        block_end_string='%>',
-        comment_start_string='<#',
-        comment_end_string='#>',
-        variable_start_string='<<',
-        variable_end_string='>>', 
-        loader=PackageLoader('noms', 'templates')
-    )
-
-def renderToAPI(function):
-    """
-    Converts raw objects into json string
-    """  
-    @wraps(function)
-    # decorator takes g(x) and returns f(g(x))
-    def innerFunction(*a, **kw): 
-
-        ret = function(*a, **kw) 
-        if not ret:
-            raise EmptyQuery("Returned empty query")
-
-        #array or one object 
-        if isinstance(ret, mongoengine.Document): 
-            ret = ret.toJSType() 
-            return json.dumps(ret)
-        elif isinstance(ret, (tuple, list, mongoengine.QuerySet)):
-            obj = []
-            for n in ret: 
-                obj.append(n.toJSType()) 
-            return json.dumps(obj)
-        else: 
-            assert False, "Unknown API return: %r" % ret  
-
-    return innerFunction
+TOKEN_URL = "https://{domain}/oauth/token".format(domain='nomsbook.auth0.com')
+USER_URL = "https://{domain}/userinfo?access_token=".format(domain='nomsbook.auth0.com')
+OAUTH_GRANT_TYPE = 'authorization_code'
 
 
 class Server(object): 
@@ -71,38 +32,44 @@ class Server(object):
 
     @app.route("/")
     def index(self, request): 
-        template = env.get_template("index.html")
-        return template.render()
+        return HumanReadable('index.html')
 
     @app.route("/recipes")
     def showRecipes(self, request):
-        template = env.get_template("application.html")
-        return template.render(partial="recipe-list.html") 
+        return HumanReadable('application.html',
+                partial='recipe-list.html')
 
     @app.route("/recipes/new")
     def createRecipe(self, request): 
-        template = env.get_template("application.html")
-        return template.render(partial="new-recipe.html")
+        return HumanReadable('application.html',
+                partial='new-list.html')
 
     @app.route("/recipes/<string:urlKey>")
     def showRecipe(self, request, urlKey): 
         """
         Show individual recipe pages 
         """
-        # urlKey = unique id made up of email and recipe name 
-        template = env.get_template("application.html")
-        return template.render(partial="recipe.html")
+        # urlKey = unique id made up of author's email + recipe name 
+        return HumanReadable('application.html',
+                partial='recipe.html',
+                preload={'urlKey': urlKey}
+                )
 
     @app.route("/ingredients/new")
     def createIngredient(self, request): 
-        template = env.get_template("application.html")
-        return template.render(partial="new-ingredient.html")
+        return HumanReadable("application.html",
+                partial="new-ingredient.html")
 
     _api = None 
     @app.route("/api/", branch=True)
     def api(self, request):
         """
-        Memoizating APIServer().app.resource() 
+        Endpoints under here are served as application/json with no caching allowed.
+
+        TODO: In the future, these will be REST APIs, so they can be requested
+        using API keys instead of cookies.
+
+        We memoize APIServer().app.resource() so we only have to create one.
         """ 
         request.setHeader('content-type', 'application/json')
         request.setHeader('expires', "-1") 
@@ -111,22 +78,33 @@ class Server(object):
         return self._api
 
 
+def querySet(fn):
+    """
+    Unwraps queryset results 
+    """
+    @wraps(fn)
+    def deco(request, *a, **kw):
+        r = fn(request, *a, **kw)
+        return RenderableQuerySet(r).render(request)
+    return deco
+
+
 class APIServer(object): 
     """
     The web server for JSON API 
+
+    Organizes /api URLs
     """
     app = Klein() 
 
     @app.route("/recipe/list")
-    @renderToAPI
-    def data_recipeList(self, request):
+    @querySet
+    def recipeList(self, request):
         """
         List all recipes 
         """
         # we are only sending limited information to the client because of security risk 
-        #recipeList = Recipe.objects().only('name', 'urlKey')
-        recipeList = Recipe.objects()
-        return recipeList
+        return Recipe.objects()
 
     @app.route("/recipe/create")
     def createRecipeSave(self, request):
@@ -147,18 +125,49 @@ class APIServer(object):
         recipe.save()
 
     @app.route("/recipe/<string:urlKey>")
-    @renderToAPI
-    def data_getRecipe(self, request, urlKey): 
+    def getRecipe(self, request, urlKey): 
         """
         Return a specific recipe from its urlKey 
         """
-        recipe = Recipe.objects(urlKey=urlKey).first()
-        return recipe 
+        return Recipe.objects(urlKey=urlKey).first()
 
-def main():
-    """
-    Return a resource to start our application
-    """
-    resource = Server().app.resource
-    mongoengine.connect(db=DATABASE_NAME) 
-    return resource() 
+    @app.route("/sso")
+    @defer.inlineCallbacks
+    def sso(self, request):
+        """
+        From the browser's access attempt via auth0, acquire the user from auth0
+        """
+        auth0ID, auth0Secret = secret.get('auth0')
+        code = request.args.get('code')[0]
+
+        tokenPayload = {
+          'client_id':     auth0ID,
+          'client_secret': auth0Secret,
+          'redirect_uri':  CONFIG.apparentURL + '/api/sso',
+          'code':          code,
+          'grant_type':    'authorization_code'
+        }
+        tokenInfo = yield getPage(TOKEN_URL, method="POST",
+                postdata=json.dumps(tokenPayload),
+                headers={'Content-Type': 'application/json'})
+        tokenInfo = json.loads(tokenInfo)
+
+        userURL = '{base}{access_token}'.format(base=USER_URL, **tokenInfo)
+        userInfo = json.loads((yield getPage(userURL)))
+        u = user.User.objects(email=userInfo['email']).first()
+        if u is None:
+            u = user.User.fromSSO(userInfo)
+
+        request.getSession().user = u
+
+        defer.returnValue(request.redirect('/'))
+
+    @app.route("/user")
+    def user(self, request):
+        """
+        The current user as data
+        """
+        u = getattr(request.getSession(), 'user', user.ANONYMOUS)
+        return u
+
+

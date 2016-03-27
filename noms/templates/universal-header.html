@@ -3,4 +3,16 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css"></link>
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"></link>
+<link rel="stylesheet" type="text/css" href= "//cdn.jsdelivr.net/bootstrap-social/4.12.0/bootstrap-social.css"></link>
+
+<span ng-controller="Preload">
+<!-- data preloaded by the server, becomes part of the Noms scope in angular -->
+<script>
+<% set nomsPreload = preload or none %>
+window.nomsPreload = '<< nomsPreload | json >>';
+</script>
+</span>
+
+
 <!-- End Universal Header -->

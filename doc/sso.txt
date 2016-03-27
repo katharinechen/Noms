@@ -1,0 +1,20 @@
+0.1 create (free) auth0 account
+0.2 expose noms through ngrok
+0.3 add SecretPair API
+0.3.1 use API to add an auth0 secret
+0.3.2 export it
+
+1. add fontawesome, bootstrap-social to universal-header
+2. add login button to navbar
+3. add showLogin to navbar controller, hardcoding callbackURL and key
+4. add callbackURL "/api/sso"
+5. add User class, complete with fromSSO and toJSType
+6. add /api/user handler
+7. add ng-show conditions to navbar
+
+8. create rendering.py to organize templating utilities
+9. add a high-level controller to pass .preload from jinja context to angular
+10. build object publication concepts into rendering.py so we can return pages
+    and queries and documents directly from web handlers
+11. Add server configuration architecture so we can specify our callback URL
+
