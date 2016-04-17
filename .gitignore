@@ -21,3 +21,4 @@ twistd*
 config.json
 twisted/plugins/*.cache
 _trial_temp*
+secret_pair.json
