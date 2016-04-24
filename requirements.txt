@@ -3,3 +3,4 @@ jinja2
 mongoengine
 klein 
 pyOpenSSL
+coverage

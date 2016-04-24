@@ -1,12 +1,30 @@
 """
 Noms Python library - web application
 """
+import sys
 import re
 import inspect
 import types
 
+from twisted.python import usage
+
 
 DATABASE_NAME = "noms"
+
+
+class CLIError(Exception):
+    """
+    A handled error from a command-line program.
+
+    Allows usage.Options-based programs to exit with error messages when something bad but predictable occurs
+    """
+    def __init__(self, program, returnCode, message):
+        self.program = program
+        self.message = message
+        self.returnCode = returnCode
+
+    def __str__(self):
+        return "** {program} exit {returnCode}: {message}".format(**self.__dict__)
 
 
 def urlify(*args):
@@ -15,22 +33,22 @@ def urlify(*args):
     """
     args = list(args)
 
-    for n in args: 
+    for n in args:
         assert isinstance(n, unicode), "Arguments pass to urlify must be unicode"
 
     url = args.pop(0)
-    for n in args: 
+    for n in args:
         url = url + "-" + n
     url = url.encode('punycode')
 
-    return re.sub(r'[^-a-z0-9]', '-', url.lower()) 
+    return re.sub(r'[^-a-z0-9]', '-', url.lower())
 
 
 def eachMethod(decorator, methodFilter=lambda fName: True):
     """
     Class decorator that wraps every single method in its own method decorator
 
-    methodFilter: a function which accepts a function name and should return 
+    methodFilter: a function which accepts a function name and should return
     True if the method is one which we want to decorate, False if we want to
     leave this method alone.
 
@@ -38,7 +56,7 @@ def eachMethod(decorator, methodFilter=lambda fName: True):
     assumed to be the prefix we're looking for.
     """
     raise NotImplementedError("We can't figure out how to use this! :(")
-    
+
     if isinstance(methodFilter, basestring):
         # Is it a string? If it is, change it into a function that takes a string.
         prefix = methodFilter
@@ -48,7 +66,7 @@ def eachMethod(decorator, methodFilter=lambda fName: True):
         for fName, fn in inspect.getmembers(cls):
             if type(fn) is types.UnboundMethodType and methodFilter(fName):
                 setattr(cls, fName, decorator(fn))
-                
+
         return cls
     return innerDeco
 
@@ -107,3 +125,28 @@ class LazyConfig(object):
 
 CONFIG = LazyConfig()
 
+
+class Main(usage.Options):
+    """
+    Extends usage.Options to include a runnable main func
+    """
+    @classmethod
+    def main(cls, args=None):
+        """
+        Fill in command-line arguments from argv
+        """
+        if args is None:
+            args = sys.argv[1:]
+
+        try:
+            o = cls()
+            o.parseOptions(args)
+        except usage.UsageError, e:
+            print str(o)
+            print str(e)
+            return 1
+        except CLIError, ce:
+            print str(ce)
+            return ce.returnCode
+
+        return 0

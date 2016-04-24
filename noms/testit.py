@@ -1,59 +1,89 @@
 """
-Test-running tool 
+Test-running tool
 """
-import sys 
+import shlex
+import subprocess
 
-from twisted.trial import unittest
-from twisted.python import usage 
+from twisted.python.procutils import which
+
+from noms import Main
 
 
-class TestIt(usage.Options): 
+# The tools we will run. This also specifies the order they will run.
+ALL_TOOLS = ['python', 'pyflakes', 'coverage']
+
+
+class TestIt(Main):
     """
-    Command-line options for the test-running tool 
+    Command-line options for the test-running tool
     """
+    synopsis = "testit [individual command params]"
+
+    optParameters = [
+        ['python', 'p', None, 'Run python tests (use -p="" for defaults)'],
+        ['pyflakes', 'k', None, 'Run pyflakes (use -k="" for defaults)'],
+        ['coverage', 'c', None, 'Run the coverage tool (generates HTML by default) (use -c="" for defaults)'],
+    ]
+
     def __init__(self):
         """
-        Initialize the tool dictionary. Empty dictionary means all tools. 
+        Initialize the tool dictionary. Empty dictionary means all tools.
         """
-        usage.Options.__init__(self) # we need to run the superclass's init before overwriting it 
+        super(TestIt, self).__init__() # we need to run the superclass's init before overwriting it
         self.tools = {}
 
-    def opt_python(self): 
+    def postOptions(self):
         """
-        Run python tests 
+        Decide what tools to run and then run them
         """
-        self.tools['python'] = 'python' 
+        for tool in ALL_TOOLS:
+            if self[tool]:
+                self.tools[tool] = self[tool]
 
-    def opt_pyflakes(self):
+        if not self.tools:
+            self.tools = {t: None for t in ALL_TOOLS}
+
+        toolResults = {}
+
+        toolOrder = [(t, self.tools[t]) for t in ALL_TOOLS if t in self.tools]
+
+        for tool, extra in toolOrder:
+            extra = shlex.split(extra or '')
+            rc = getattr(self, 'run_' + tool)(extra)
+            toolResults[tool] = rc
+
+        print '#' * 80
+        for tool, _ in toolOrder:
+            if toolResults[tool] == 0:
+                print tool.ljust(20), 'ok'
+            else:
+                print '**', tool.ljust(17), 'FAIL'
+
+    def run_python(self, extra):
         """
-        Run pyflakes
+        Run python unit tests, with trial, using coverage tracking
         """
-        self.tools['pyflakes'] = 'pyflakes'
+        trial = which('trial')[0]
+        coverage = which('coverage')[0]
+        # we want to run trial with python coverage
+        _args = [coverage, 'run', trial, 'noms']
+        args = _args + (extra or [])
+        return subprocess.call(args)
 
-    def postOptions(self): 
+    def run_coverage(self, extra):
         """
-        Decide what tools to run and then run them 
+        Run Python coverage
         """
-        if not self.tools: 
-            print "Python, Pyflakes"
-        else: 
-            print self.tools.values()
+        coverage = which('coverage')[0]
+        _args = [coverage, 'html']
+        args = _args + (extra or [])
+        return subprocess.call(args)
 
-    # shortcuts for options 
-    opt_p = opt_python 
-    opt_k = opt_pyflakes 
-
-
-def main(args=None):
-    """
-    Fill in command-line arguments from argv 
-    """
-    if args is None: 
-        args = sys.argv[1:]
-
-    o = TestIt()
-    o.parseOptions(args)
-
-
-if __name__ == "__main__": 
-    main()
+    def run_pyflakes(self, extra):
+        """
+        Run pyflakes on Python code
+        """
+        pyflakes = which('pyflakes')[0]
+        _args = [pyflakes, 'noms']
+        args = _args + (extra or [])
+        return subprocess.call(args)
