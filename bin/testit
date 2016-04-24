@@ -2,6 +2,6 @@
 
 import sys
 
-from noms.testit import TestIt
+from noms.testit import TestIt, __doc__
 
 sys.exit(TestIt.main())
