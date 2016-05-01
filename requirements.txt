@@ -4,3 +4,4 @@ mongoengine
 klein 
 pyOpenSSL
 coverage
+codado==0.1
