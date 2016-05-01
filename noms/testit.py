@@ -19,7 +19,7 @@ import webbrowser
 
 from twisted.python.procutils import which
 
-from noms import Main
+from codado.tx import Main
 
 
 # The tools we will run. This also specifies the order they will run.

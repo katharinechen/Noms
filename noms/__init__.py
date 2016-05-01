@@ -1,14 +1,7 @@
 """
 Noms Python library - web application
 """
-import sys
 import re
-import inspect
-import types
-
-from twisted.python import usage
-
-from codado.twisted import Main
 
 
 DATABASE_NAME = "noms"
