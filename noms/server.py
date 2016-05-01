@@ -2,6 +2,9 @@
 Twisted Web Routing 
 """
 import json
+import urllib2  
+
+from bs4 import BeautifulSoup
 from functools import wraps
 
 from twisted.web import static
@@ -170,4 +173,36 @@ class APIServer(object):
         u = getattr(request.getSession(), 'user', user.ANONYMOUS)
         return u
 
+    @app.route("/bookmarklet")
+    def bookmarklet(self, request): 
+        """
+        Schema: https://schema.org/Recipe
+        Food webpage: http://www.foodandwine.com/recipes/cuban-frittata-bacon-and-potatoes 
+        """
+        url = request.uri.split("=")[1] # 'http%3A%2F%2Fwww.foodandwine.com%2Frecipes%2Fcuban-frittata-bacon-and-potatoes' 
+        url = urllib2.unquote(url) # 'http://www.foodandwine.com/recipes/cuban-frittata-bacon-and-potatoes' 
 
+        # get page_source from the url 
+        response = urllib2.urlopen(url)
+        page_source = response.read()
+
+        # using beautifulsoup to parse the information 
+        soup = BeautifulSoup(page_source, 'html.parser')
+
+        # Create a recipe with the right information 
+        recipe = Recipe()
+        recipe.name = soup.find(itemprop="name").get_text() 
+        recipe.author = "Katharine the Cook"
+        recipe.urlKey = urlify(recipe.user, recipe.name)
+
+        ingredients = soup.find_all(itemprop="ingredients")  
+        for i in ingredients: 
+            ingredient = i.get_text()  
+            recipe.ingredients.append(ingredient)
+
+        instructions = soup.find_all(itemprop="recipeInstructions")
+        for i in instructions: 
+            instruction = i.get_text() 
+            recipe.instructions.append(instruction)
+
+        recipe.save()
