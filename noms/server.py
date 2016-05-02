@@ -3,9 +3,11 @@ Twisted Web Routing
 """
 import json
 import urllib2  
+from functools import wraps
+
+import microdata
 
 from bs4 import BeautifulSoup
-from functools import wraps
 
 from twisted.web import static
 from twisted.web.client import getPage
@@ -174,35 +176,23 @@ class APIServer(object):
         return u
 
     @app.route("/bookmarklet")
+    @defer.inlineCallbacks 
     def bookmarklet(self, request): 
         """
         Schema: https://schema.org/Recipe
         Food webpage: http://www.foodandwine.com/recipes/cuban-frittata-bacon-and-potatoes 
         """
-        url = request.uri.split("=")[1] # 'http%3A%2F%2Fwww.foodandwine.com%2Frecipes%2Fcuban-frittata-bacon-and-potatoes' 
-        url = urllib2.unquote(url) # 'http://www.foodandwine.com/recipes/cuban-frittata-bacon-and-potatoes' 
+        url = request.uri.split("=")[1]
+        url = urllib2.unquote(url)
 
-        # get page_source from the url 
-        response = urllib2.urlopen(url)
-        page_source = response.read()
+        pageSource = yield getPage(url)
+        items = microdata.get_items(pageSource)
 
-        # using beautifulsoup to parse the information 
-        soup = BeautifulSoup(page_source, 'html.parser')
+        for i in items: 
+            itemTypeArray = [x.string for x in i.itemtype] 
+            if 'http://schema.org/Recipe' in itemTypeArray: 
+                recipe = i
+                break 
 
-        # Create a recipe with the right information 
-        recipe = Recipe()
-        recipe.name = soup.find(itemprop="name").get_text() 
-        recipe.author = "Katharine the Cook"
-        recipe.urlKey = urlify(recipe.user, recipe.name)
-
-        ingredients = soup.find_all(itemprop="ingredients")  
-        for i in ingredients: 
-            ingredient = i.get_text()  
-            recipe.ingredients.append(ingredient)
-
-        instructions = soup.find_all(itemprop="recipeInstructions")
-        for i in instructions: 
-            instruction = i.get_text() 
-            recipe.instructions.append(instruction)
-
-        recipe.save()
+        r = Recipe.fromMicrodata(recipe)
+        r.save()

@@ -1,13 +1,18 @@
 """
 Recipe Collection
 """
-
 import datetime
+import re 
 
 from mongoengine import fields
 
 from noms.rendering import RenderableDocument
+from noms import urlify 
 
+
+def clean(string): 
+    res = re.sub('\s+', ' ', string)
+    return res.strip()
 
 class Recipe(RenderableDocument):
     """
@@ -51,3 +56,21 @@ class Recipe(RenderableDocument):
                 #"modified": self.modified (date is currently not going to work)
             }
 
+    @classmethod 
+    def fromMicrodata(cls, microdata): 
+        """ 
+        Create a recipe object from microdata
+        """ 
+        self = cls()
+        self.name = clean(microdata.name) 
+        self.author = clean(microdata.author.name) 
+        self.urlKey = urlify(self.user, self.name) 
+        for i in microdata.props['ingredients']: 
+            self.ingredients.append(clean(i))
+
+        array = microdata.props['recipeInstructions'][0].split('\n')
+        for i in array: 
+            i = clean(i)
+            if i: 
+                self.instructions.append(i)
+        return self 
