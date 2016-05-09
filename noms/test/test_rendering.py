@@ -10,7 +10,7 @@ from twisted.trial import unittest
 from mock import patch
 
 from noms.test import resetDatabase
-from noms import rendering, config, secret
+from noms import rendering, config, secret, recipe, urlify
 
 
 class HumanReadableTest(unittest.TestCase):
@@ -60,3 +60,23 @@ class HumanReadableTest(unittest.TestCase):
 
             self.assertEqual(hrString.render(None), expected)
 
+
+class RenderableQuerySetTest(unittest.TestCase):
+    """
+    Cover the RenderableQuerySet
+    """
+    def setUp(self):
+        resetDatabase()
+        author = u'cory'
+        url = urlify(u'delicious sandwich', author)
+        recipe.Recipe(name=u'delicious sandwich', author=author, urlKey=url).save()
+        url = urlify(u'delicious soup', author)
+        recipe.Recipe(name=u'delicious soup', author=author, urlKey=url).save()
+
+    def test_render(self):
+        """
+        Do I produce a json array from a query?
+        """
+        qs = recipe.Recipe.objects()
+        expected = '[{"recipeYield": null, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory-", "user": "katharinechen.ny@gmail.com"}, {"recipeYield": null, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory-", "user": "katharinechen.ny@gmail.com"}]'
+        self.assertEqual(rendering.RenderableQuerySet(qs).render(None), expected)
