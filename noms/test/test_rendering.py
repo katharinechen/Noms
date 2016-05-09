@@ -7,8 +7,10 @@ from jinja2 import Template
 
 from twisted.trial import unittest
 
-from noms.test import dbutil
-from noms import rendering
+from mock import patch
+
+from noms.test import resetDatabase
+from noms import rendering, config, secret
 
 
 class HumanReadableTest(unittest.TestCase):
@@ -17,6 +19,9 @@ class HumanReadableTest(unittest.TestCase):
     """
 
     def setUp(self):
+        resetDatabase()
+        config.Config().save()
+        secret.put('auth0', 'auth0pub', 'auth0s3kr!t')
         self.tplString = cleandoc("""
             hi there
             {{ preload.apparentURL }}
@@ -24,9 +29,6 @@ class HumanReadableTest(unittest.TestCase):
             {{ banana }}
         """)
         self.tplTemplate = Template(self.tplString)
-        self.tplFilename = 'human_readable_test.txt'
-        tplf = open(self.tplFilename, 'w')
-        tplf.write(self.tplString)
 
     def test_render(self):
         """
@@ -38,22 +40,23 @@ class HumanReadableTest(unittest.TestCase):
 
         expected = cleandoc("""
             hi there
-            foo-apparent-url-443
-            32408y3hfsdkf
+            https://app.nomsbook.com
+            auth0pub
             yellow and delicious
             """)
 
-        self.assertEqual(hr.render(None), expected)
-
-        hrString = rendering.HumanReadable(self.tplFilename,
-                banana='brown and gross')
+        self.assertEqual(hrTemplate.render(None), expected)
 
         expected = cleandoc("""
             hi there
-            foo-apparent-url-443
-            32408y3hfsdkf
+            https://app.nomsbook.com
+            auth0pub
             brown and gross
             """)
 
-        self.assertEqual(hr.render(None), expected)
+        with patch.object(rendering.env, 'get_template', return_value=self.tplTemplate):
+            hrString = rendering.HumanReadable('tpl_from_loader.txt',
+                    banana='brown and gross')
+
+            self.assertEqual(hrString.render(None), expected)
 

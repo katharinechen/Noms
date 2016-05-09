@@ -5,3 +5,4 @@ klein
 pyOpenSSL
 coverage
 codado==0.1
+mock
