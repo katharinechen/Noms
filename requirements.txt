@@ -1,8 +1,9 @@
-twisted
-jinja2
-mongoengine
-klein 
-pyOpenSSL
-coverage
 codado==0.1
+coverage
+jinja2
+klein 
 mock
+mongoengine
+mongomock
+pyOpenSSL
+twisted

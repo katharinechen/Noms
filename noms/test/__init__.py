@@ -1,23 +1,54 @@
 """
 Tests for noms python code
 """
+from contextlib import contextmanager
 
 from mongoengine import connect
-from mongoengine.connection import disconnect
 
 
 REPLACE_DB = "noms-test"
+REPLACE_DB_HOST = "mongomock://localhost"
 
 
-def resetDatabase(replaceDB=REPLACE_DB):
+@contextmanager
+def mockDatabase(replaceDB=REPLACE_DB,
+        host=REPLACE_DB_HOST):
+    """
+    Mongomock-based interface to a "database"
+    """
+    con = connect(None, host=host, alias='default')
+    con.drop_database(replaceDB)
+    yield getattr(con, replaceDB)
+    con.drop_database(replaceDB)
+
+
+@contextmanager
+def mockConfig(replaceDB=REPLACE_DB,
+        host=REPLACE_DB_HOST,
+        **configFields):
     """
     Define database connections for code that needs mongo
     """
-    disconnect()
-    # register_connection(replaceDB, replaceDB)
-    con = connect(replaceDB)
-    nomsTestDB = getattr(con, replaceDB)
-    for name in nomsTestDB.collection_names(include_system_collections=False):
-        coll = getattr(nomsTestDB, name)
-        coll.remove()
+    with mockDatabase(replaceDB, host):
+        from noms import config
+        cfg = config.Config(**configFields)
+        cfg.save()
+        yield cfg
 
+
+class ConfigMock(object):
+    """
+    Wraps a mock/unmock operation for config+database
+    """
+    def __init__(self,
+            replaceDB=REPLACE_DB,
+            host=REPLACE_DB_HOST,
+            **configFields):
+        self.cm = mockConfig(replaceDB, host, **configFields)
+        self.config = self.cm.gen.next()
+
+    def finish(self):
+        try:
+            self.cm.gen.next()
+        except StopIteration:
+            "Cleaning up"

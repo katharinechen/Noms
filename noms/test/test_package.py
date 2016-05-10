@@ -1,11 +1,12 @@
 # vim:fileencoding=utf-8
 """
-Test of code contained in noms.__init__
+Test of package-level code contained in noms.__init__
 """
 
 from twisted.trial import unittest
 
 from noms import urlify, LazyConfig
+from noms.test import ConfigMock
 
 
 class FnTest(unittest.TestCase):
@@ -26,16 +27,30 @@ class LazyConfigTest(unittest.TestCase):
     Coverage of LazyConfig
     """
     def setUp(self):
+        self.configMocker = ConfigMock()
         self.config = LazyConfig()
+
+    def tearDown(self):
+        self.configMocker.finish()
 
     def test_laziness(self):
         """
         Do I acquire a config object upon access?
         """
-        1/0
+        self.assertFalse('_realConfig' in self.config.__dict__, 
+                "oops, test config has _realConfig prematurely")
+        self.config.apparentURL
+        self.assertTrue('_realConfig' in self.config.__dict__, 
+                "oops, test config should have _realConfig now but doesn't")
 
-    def test_dictLike(self):
+    def test_attributeAccess(self):
         """
-        Try out the dict-like properties
+        Try out the attribute proxying properties
         """
-        1/0
+        self.assertFalse('_realConfig' in self.config.__dict__, 
+                "oops, test config has _realConfig prematurely")
+        self.assertRaises(TypeError,
+                setattr, self.config, 'uninitialized', 20)
+        self.assertEqual(self.config.apparentURL, 'https://app.nomsbook.com')
+        self.config.apparentURL = 'dfgkljdhf'
+        self.assertEqual(self.config.apparentURL, 'dfgkljdhf')

@@ -31,13 +31,18 @@ class LazyConfig(object):
     This allows us to make CONFIG a simple global instance
     """
     @property
-    def realConfig(self):
-        if '_realConfig' in self.__dict__:
-            """
-            We have already memoized previously
-            """
+    def hasRealConfig(self):
+        """
+        => True if this object is initialized (previously memoized)
+        """
+        return '_realConfig' in self.__dict__
 
-        else:
+    @property
+    def realConfig(self):
+        """
+        Lazily create a config for me to proxy
+        """
+        if not self.hasRealConfig:
             cfg = self.require()
             assert cfg is not None, "Couldn't load a config from the database"
             self.__dict__['_realConfig'] = cfg
@@ -47,14 +52,10 @@ class LazyConfig(object):
     def __getattr__(self, attr):
         return getattr(self.realConfig, attr)
 
-    def __hasattr__(self, attr):
-        return hasattr(self.realConfig, attr)
-
     def __setattr__(self, attr, value):
-        if self.realConfig:
-            self.realConfig.__setattr__(attr, value)
-        else:
-            object.__setattr__(self, attr, value)
+        if not self.hasRealConfig:
+            raise TypeError('Cannot set values on uninitialized config')
+        self.realConfig.__setattr__(attr, value)
 
     @staticmethod
     def require():
