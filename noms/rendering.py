@@ -93,7 +93,13 @@ class RenderableDocument(Document):
     meta = {'abstract': True}
 
     def render(self, request):
+        """
+        => JSON-encoded representation of this object's safe properties
+        """
         return json.dumps(self.safe()).encode('utf-8')
 
     def safe(self):
-        raise NotImplemented
+        """
+        => dict of document's fields, safe for presentation to the browser
+        """
+        raise NotImplementedError("implement safe in a subclass")
