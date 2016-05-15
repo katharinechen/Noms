@@ -196,3 +196,4 @@ class APIServer(object):
 
         r = Recipe.fromMicrodata(recipe)
         r.save()
+        request.redirect("/recipes/" + r.urlKey) 
