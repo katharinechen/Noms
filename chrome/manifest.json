@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+
+  "name": "Noms!",
+  "version": "1.0",
+  "description": "This extension clips the current page and stores it in noms book",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Noms!",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab"
+  ]
+}
