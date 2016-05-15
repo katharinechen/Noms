@@ -6,4 +6,5 @@ mock
 mongoengine
 mongomock
 pyOpenSSL
+service_identity
 twisted
