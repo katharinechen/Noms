@@ -4,7 +4,8 @@ Authentication and users
 
 from mongoengine import fields
 
-from noms import enum
+from codado import enum
+
 from noms.rendering import RenderableDocument
 
 
