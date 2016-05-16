@@ -1,5 +1,11 @@
-twisted
+characteristic
+codado==0.1
+coverage
 jinja2
-mongoengine
 klein 
+mock
+mongoengine
+mongomock
 pyOpenSSL
+service_identity
+twisted
