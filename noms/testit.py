@@ -102,7 +102,8 @@ class TestIt(Main):
 
         if rc == 2:
             print "** Coverage is incomplete"
-            webbrowser.open("htmlcov/index.html")
+            pth = os.path.abspath('htmlcov/index.html')
+            webbrowser.open("file://%s" % pth)
 
         elif rc == 0:
             print "Coverage is 100%"
