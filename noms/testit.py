@@ -87,8 +87,8 @@ class TestIt(Main):
         trial = which('trial')[0]
         coverage = which('coverage')[0]
         # we want to run trial with python coverage
-        _args = [coverage, 'run', trial, 'noms']
-        args = _args + (extra or [])
+        _args = [coverage, 'run', trial]
+        args = _args + (extra or ['noms'])
         return subprocess.call(args)
 
     def run_coverage(self, extra):
