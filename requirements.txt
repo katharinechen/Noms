@@ -6,7 +6,6 @@ klein
 mock
 mongoengine
 mongomock
-pyasn1
 pyOpenSSL
 service_identity
 twisted
