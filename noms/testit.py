@@ -13,6 +13,7 @@ with the defaults and one without, try this syntax:
 $ testit -p "noms.foo" -kk -cc
 """ # note - preserve whitespace in the docstring above.
 
+import os.path
 import shlex
 import subprocess
 import webbrowser
