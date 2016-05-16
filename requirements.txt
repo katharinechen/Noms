@@ -1,3 +1,4 @@
+characteristic
 codado==0.1
 coverage
 jinja2
@@ -5,6 +6,7 @@ klein
 mock
 mongoengine
 mongomock
+pyasn1
 pyOpenSSL
 service_identity
 twisted
