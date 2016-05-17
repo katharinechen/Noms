@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Do database initialization if config collection doesn't have data yet
+
+set -e
+
+rest="$@"
+host="mongo" # hardcoded hostname taken from the link: param of docker-compose.yml
+
+if [ ! -e '/.docker-init' ]; then
+    echo "First-time run: Installing fresh config and secret_pair"
+    noms-sample "$host" && touch /.docker-init
+fi
+
+if [ -n "$rest" ]; then
+    echo $rest
+    exec $rest
+fi
+

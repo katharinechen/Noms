@@ -1,0 +1,17 @@
+version: '2'
+services:
+    noms:
+        build: .
+        image: noms
+        command: "noms --connect mongodb://mongo/noms"
+        ports:
+            - 8080:8080
+        links:
+            - mongo
+
+    mongo:
+        image: mongo
+
+    testit:
+        image: noms
+        command: "testit"

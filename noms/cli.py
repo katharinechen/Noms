@@ -14,18 +14,20 @@ MAIN_FUNC = 'noms.cli.main'
 
 class NomsOptions(tap.Options):
     optParameters = tap.Options.optParameters + [
-            ['db', None, 'noms', 'Database name or connect string'],
+            ['db', None, 'noms', 'Database name'],
+            ['connect', None, None, 'Database connect string'],
             ]
 
     def postOptions(self):
-        mongoengine.connect(db=self['db'])
+        mongoengine.connect(self['db'], host=self['connect'])
         # check to see if there is any config
         if not CONFIG.require():
             config.Config().save()
 
         # now we know CONFIG exists
-        CONFIG.cliOptions = dict(self.items())
-        CONFIG.save()
+        cfg = CONFIG.require()
+        cfg.cliOptions = dict(self.items())
+        cfg.save()
 
         self.opt_class(MAIN_FUNC)
 
@@ -42,7 +44,8 @@ def main():
     """
     Return a resource to start our application
     """
+    print 'NOMS STARTUP', '=' * 40
     resource = Server().app.resource
-    mongoengine.connect(db=CONFIG.cliOptions['db'])
+    mongoengine.connect(CONFIG.cliOptions['db'], host=CONFIG.cliOptions['connect'])
     return resource()
 
