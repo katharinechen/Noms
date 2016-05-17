@@ -1,8 +1,14 @@
 #!/bin/bash
 
+if [ -n "$1" ]; then
+    host="-h $1"
+else
+    host=""
+fi
+
 if [ ! -e config.json ]; then
     cp sample/config.json .
 fi
-mongoimport --drop -d noms -c config config.json
-mongoimport --drop -d noms -c recipe sample/recipe.json
-mongoimport --drop -d noms -c secret_pair secret_pair.json
+mongoimport $host --drop -d noms -c config config.json
+mongoimport $host --drop -d noms -c recipe sample/recipe.json
+mongoimport $host --drop -d noms -c secret_pair secret_pair.json
