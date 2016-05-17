@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Do database initialization if config collection doesn't have data yet
+
+set -e
+
+rest="$@"
+
+if [ ! -e '/.docker-init' ]; then
+    echo "First-time run: Installing fresh config and secret_pair"
+    noms-sample && touch /.docker-init
+fi
+
+if [ -n "$rest" ]; then
+    echo $rest
+    exec $rest
+fi
+
