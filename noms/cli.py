@@ -13,11 +13,17 @@ MAIN_FUNC = 'noms.cli.main'
 
 
 class NomsOptions(tap.Options):
+    """
+    A tap options object suitable for twistd to start, with noms-specific extras
+    """
     optParameters = tap.Options.optParameters + [
             ['db', None, 'noms', 'Database name or connect string'],
             ]
 
     def postOptions(self):
+        """
+        Connect to the noms database and make sure a config exists
+        """
         mongoengine.connect(db=self['db'])
         # check to see if there is any config
         if not CONFIG.require():
