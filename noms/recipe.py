@@ -7,7 +7,8 @@ import re
 from mongoengine import fields
 
 from noms.rendering import RenderableDocument
-from noms import urlify 
+from noms.user import User
+from noms import urlify
 
 
 def clean(string): 
@@ -28,7 +29,7 @@ class Recipe(RenderableDocument):
     """
     name = fields.StringField(require=True)
     author = fields.StringField(require=True) # author of the recipe
-    user = fields.StringField(require=True, default=u"katharinechen.ny@gmail.com")
+    user = fields.ReferenceField('User',dbref=False, require=True) #objectID of the user s
     urlKey = fields.StringField(require=True, unique=True) # combines user+name as the unique id
     ingredients = fields.ListField(fields.StringField(), require=True)
     instructions = fields.ListField(fields.StringField(), require=True)
@@ -57,14 +58,15 @@ class Recipe(RenderableDocument):
             }
 
     @classmethod 
-    def fromMicrodata(cls, microdata): 
+    def fromMicrodata(cls, microdata, userEmail): 
         """ 
         Create a recipe object from microdata
         """ 
         self = cls()
-        self.name = clean(microdata.name) 
+        self.name = clean(microdata.name)
         self.author = clean(microdata.author.name) 
-        self.urlKey = urlify(self.user, self.name) 
+        self.user = User.objects(email=userEmail).first()
+        self.urlKey = urlify(self.user.email, self.name)
         for i in microdata.props['ingredients']: 
             self.ingredients.append(clean(i))
 
@@ -79,6 +81,6 @@ class Recipe(RenderableDocument):
         """
         Save recipe from website
         """
-        if Recipe.objects() and (recipe.urlKey == saveItem): 
+        if Recipe.objects(urlKey=saveItem.urlKey): 
             return
         saveItem.save() 

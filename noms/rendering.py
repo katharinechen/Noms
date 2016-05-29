@@ -29,7 +29,7 @@ env = Environment(
         loader=PackageLoader('noms', 'templates')
     )
 
-env.filters['json'] = json.dumps
+env.filters['json'] = lambda x: json.dumps(x, cls=ResourceEncoder)
 
 
 class EmptyQuery(Exception):
@@ -54,7 +54,18 @@ class RenderableQuerySet(object):
         rr = list(self.qs)
         if not rr:
             raise EmptyQuery("Returned empty query")
-        return json.dumps([o.safe() for o in rr]).encode('utf-8')
+        return json.dumps([o.safe() for o in rr], cls=ResourceEncoder).encode('utf-8')
+
+
+class ResourceEncoder(json.JSONEncoder): 
+    """
+    Replace for default JSONEncoder that will render all RenderableDocuments as json 
+    """
+    def default(self, obj):
+        if hasattr(obj, 'safe'): 
+            return obj.safe()
+        else:
+            return obj
 
 
 class HumanReadable(object):
@@ -96,7 +107,7 @@ class RenderableDocument(Document):
         """
         => JSON-encoded representation of this object's safe properties
         """
-        return json.dumps(self.safe()).encode('utf-8')
+        return json.dumps(self.safe(), cls=ResourceEncoder).encode('utf-8')
 
     def safe(self):
         """

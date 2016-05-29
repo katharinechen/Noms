@@ -182,17 +182,19 @@ class APIServer(object):
         Schema: https://schema.org/Recipe
         Food webpage: http://www.foodandwine.com/recipes/cuban-frittata-bacon-and-potatoes 
         """
+        userEmail = self.user(request).email 
+        
         url = request.uri.split("=")[1]
         url = urllib2.unquote(url)
 
         pageSource = yield getPage(url)
         items = microdata.get_items(pageSource)
-
+        
         for i in items: 
             itemTypeArray = [x.string for x in i.itemtype] 
             if 'http://schema.org/Recipe' in itemTypeArray: 
                 recipe = i
-                saveItem = Recipe.fromMicrodata(recipe)
+                saveItem = Recipe.fromMicrodata(recipe, userEmail)
                 Recipe.clip(saveItem)
                 break 
 
