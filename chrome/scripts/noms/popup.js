@@ -15,6 +15,27 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.tabs.create({url: nomsbook +  encodeURIComponent(url)});
     }; 
     checkPageButton.addEventListener('click', openTab, false);
+
+    // check for http.response? 
+
+
+    // chrome.webRequest.onCompleted.addListener(function(response){ 
+    //         return {}
+    //     }); 
+
+
+
+    //  chrome.webRequest.onBeforeRequest.addListener(
+    //     function(details) {
+    //       return {cancel: details.url.indexOf("://www.evil.com/") != -1};
+    //     },
+    //     {urls: ["<all_urls>"]},
+    //     ["blocking"]);
+      
+
+
 }, false);
 
 // https://developer.chrome.com/extensions/overview
+// https://developer.chrome.com/apps/angular_framework (also talks about Auth0)
+// https://gist.github.com/jjperezaguinaga/4243341 (Awesome docs explaining the architecture)

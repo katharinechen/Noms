@@ -2,10 +2,15 @@
 <html>
   <head>
     <title>Nom Clips</title>
-    <script src="popup.js"></script>
+    <script src="scripts/noms/popup.js"></script>
+    <script src="scripts/3p/angular.min.js"></script>
+    <script src="scripts/noms/clipper.js"></script>
   </head>
-  <body>
-    <h1>Nom Clipper</h1>
-    <button id="checkPage">Check this page now!</button>
+  <body ng-app="clipper">
+    <div ng-controller="Clipper"> 
+      <h1>Nom Clipper</h1>
+      <p>{{ welcomeMsg }}</p>
+      <button id="checkPage">Check this page now!</button>
+    </div>
   </body>
 </html>

@@ -20,7 +20,7 @@ class NomsOptions(tap.Options):
     def postOptions(self):
         mongoengine.connect(db=self['db'])
         CONFIG.load()
-
+        
         # now we know CONFIG exists
         CONFIG.cliOptions = dict(self.items())
         CONFIG.save()
