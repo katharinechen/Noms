@@ -43,9 +43,7 @@ class LazyConfig(object):
         Lazily create a config for me to proxy
         """
         if not self.hasRealConfig:
-            cfg = self.require()
-            assert cfg is not None, "Couldn't load a config from the database"
-            self.__dict__['_realConfig'] = cfg
+            self.load()
 
         return self.__dict__['_realConfig']
 
@@ -57,13 +55,14 @@ class LazyConfig(object):
             raise TypeError('Cannot set values on uninitialized config')
         self.realConfig.__setattr__(attr, value)
 
-    @staticmethod
-    def require():
+    def load(self):
         """
-        => Config object, if any config has been saved in this db
+        Initialize from the database
         """
         from noms.config import Config
-        return Config.objects().first()
+        cfg = Config.objects().first()
+        assert cfg is not None, "Couldn't load a config from the database"
+        self.__dict__['_realConfig'] = cfg
 
 
 CONFIG = LazyConfig()
