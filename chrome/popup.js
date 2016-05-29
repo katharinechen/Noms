@@ -1,8 +1,8 @@
 // DOMCOntentLoaded = this event is fired when the initial HTML document has been completely loaded and parsed 
 document.addEventListener('DOMContentLoaded', function() {
+    
     var url = ""; 
     var nomsbook = "http://localhost:8080/api/bookmarklet?uri=";
-
     var checkPageButton = document.getElementById('checkPage');
 
     // save the url for the current page 

@@ -16,7 +16,7 @@ from twisted.internet import defer
 from klein import Klein
 
 from noms import urlify, user, secret, CONFIG
-from noms.recipe import Recipe 
+from noms.recipe import Recipe
 from noms.rendering import HumanReadable, RenderableQuerySet
 
 
@@ -192,8 +192,8 @@ class APIServer(object):
             itemTypeArray = [x.string for x in i.itemtype] 
             if 'http://schema.org/Recipe' in itemTypeArray: 
                 recipe = i
+                saveItem = Recipe.fromMicrodata(recipe)
+                Recipe.clip(saveItem)
                 break 
 
-        r = Recipe.fromMicrodata(recipe)
-        r.save()
-        request.redirect("/recipes/" + r.urlKey) 
+        request.redirect("/recipes")  
