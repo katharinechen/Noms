@@ -70,7 +70,7 @@ class HumanReadable(object):
             self.template = templateOrFilename
         elif isinstance(templateOrFilename, basestring):
             self.template = env.get_template(templateOrFilename)
-        else:
+        else: # pragma: no cover
             assert 0, "Got %r; needed a template or a template file" % templateOrFilename
         kwargs.setdefault('preload', {}).update({'apparentURL': CONFIG.apparentURL})
         kwargs['preload']['auth0Public'] = secret.get('auth0')[0]
@@ -93,7 +93,13 @@ class RenderableDocument(Document):
     meta = {'abstract': True}
 
     def render(self, request):
+        """
+        => JSON-encoded representation of this object's safe properties
+        """
         return json.dumps(self.safe()).encode('utf-8')
 
     def safe(self):
-        raise NotImplemented
+        """
+        => dict of document's fields, safe for presentation to the browser
+        """
+        raise NotImplementedError("implement safe in a subclass")
