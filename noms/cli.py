@@ -25,9 +25,7 @@ class NomsOptions(tap.Options):
         Connect to the noms database and make sure a config exists
         """
         mongoengine.connect(db=self['db'])
-        # check to see if there is any config
-        if not CONFIG.require():
-            config.Config().save()
+        CONFIG.load()
 
         # now we know CONFIG exists
         CONFIG.cliOptions = dict(self.items())
