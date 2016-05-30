@@ -12,6 +12,7 @@
   },
   "permissions": [
     "tabs", 
-    "webRequest"
+    "cookies",
+    "http://localhost:8080/*"
   ]
 }
