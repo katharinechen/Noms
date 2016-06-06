@@ -50,7 +50,7 @@ class ServerTest(unittest.TestCase):
 
         for hdr, val in responseHeaders:
             req.setHeader(hdr, val)
-        
+
         for k, v in kwargs.items():
             if k.startswith('session_'):
                 setattr(req.session, k[8:], v)

@@ -1,15 +1,15 @@
 """
 Test-running tool.
-------------------------------------------------------------------------        
+------------------------------------------------------------------------
 - If no tool options are specified at all, run all tools with all default
 options.
-                                                                                
+
 - Otherwise, run the specified tools only, with the specified options.
-------------------------------------------------------------------------        
+------------------------------------------------------------------------
 TIP: The parameters above take the extra args you want to pass into the tool
 as a string, but using one will run ONLY that tool. If you want to run several
 with the defaults and one without, try this syntax:
-                                                                                
+
 $ testit -p "noms.foo" -kk -cc
 """ # note - preserve whitespace in the docstring above.
 
