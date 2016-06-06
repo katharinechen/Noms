@@ -29,3 +29,9 @@ class Config(RenderableDocument):
         queues or S3 buckets
         """
         return re.sub(r'[^a-zA-Z0-9]+', '-', self.apparentURL)
+
+    def safe(self):
+        """
+        A representation of the config file suitable for use as a config file
+        """
+        return {'apparentURL': self.apparentURL}

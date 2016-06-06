@@ -99,9 +99,17 @@ class ServerTest(unittest.TestCase):
 
     def test_index(self):
         """
-        Does / return the home page
+        Does / return the home page?
         """
         req = self.request([])
         r = yield self.handler('index', req)
         self.assertRegexpMatches(r.render(req), r'<title>NOM NOM NOM</title>')
+
+    def test_recipes(self):
+        """
+        Does /recipes list recipes?
+        """
+        req = self.request([])
+        r = yield self.handler('showRecipes', req)
+        self.assertRegexpMatches(r.render(req), r'partials/recipe-list.html')
 
