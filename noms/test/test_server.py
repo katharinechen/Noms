@@ -8,10 +8,27 @@ from twisted.trial import unittest
 from twisted.web.test.requesthelper import DummyRequest
 from twisted.internet import defer
 
+from codado import eachMethod
+
 from noms import server, fromNoms
 
 
+class FnTest(unittest.TestCase):
+    """
+    Test top-level functions
+    """
+    def test_querySet(self):
+        """
+        Does querySet(fn)() render the result of the cursor returned by fn?
+        """
+        1/0
+
+
+@eachMethod(defer.inlineCallbacks, 'test_')
 class ServerTest(unittest.TestCase):
+    """
+    Test server handlers
+    """
     defaultHeaders = (
         ('user-agent', ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0)']),
         ('cookie', ['']),
@@ -72,7 +89,6 @@ class ServerTest(unittest.TestCase):
 
         return self.server.app.execute_endpoint(handlerName, req, *a, **kw)
 
-    @defer.inlineCallbacks
     def test_static(self):
         """
         Does /static/ return a FilePath?
@@ -81,5 +97,11 @@ class ServerTest(unittest.TestCase):
             r = yield self.handler('static', postpath=['js', 'app.js'])
             self.assertTrue('app.js' in r.child('js').listdir())
 
-    def test_root(self):
-        1/0
+    def test_index(self):
+        """
+        Does / return the home page
+        """
+        req = self.request([])
+        r = yield self.handler('index', req)
+        self.assertRegexpMatches(r.render(req), r'<title>NOM NOM NOM</title>')
+

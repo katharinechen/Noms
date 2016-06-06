@@ -7,6 +7,8 @@ mock
 mongoengine
 mongomock
 pyflakes
+pytest-flakes
+pytest-cov
 pyOpenSSL
 service_identity
 twisted
