@@ -3,7 +3,8 @@ FROM ubuntu:16.04
 RUN apt-get update && apt-get install -y \
     python python-dev python-pip \
     libffi-dev libssl-dev \
-    mongodb-clients
+    mongodb-clients \
+    netcat
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
