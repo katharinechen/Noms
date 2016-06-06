@@ -1,11 +1,12 @@
 characteristic
-codado==0.1
+codado==0.2
 coverage
 jinja2
 klein 
 mock
 mongoengine
 mongomock
+pyflakes
 pyOpenSSL
 service_identity
 twisted

@@ -30,10 +30,15 @@ def mockConfig(replaceDB=REPLACE_DB,
     Define database connections for code that needs mongo
     """
     with mockDatabase(replaceDB, host):
-        from noms import config
+        from noms import config, CONFIG
         cfg = config.Config(**configFields)
         cfg.save()
-        yield cfg
+        # in tests, we replace the global CONFIG without patching it
+        CONFIG.load()
+        yield CONFIG
+
+    # now in the real database, recreate our original CONFIG
+    CONFIG.load()
 
 
 class ConfigMock(object):

@@ -3,6 +3,11 @@ Noms Python library - web application
 """
 import re
 
+from codado import fromdir
+
+
+fromNoms = fromdir(__file__, '..')
+
 
 DATABASE_NAME = "noms"
 
@@ -63,6 +68,7 @@ class LazyConfig(object):
         cfg = Config.objects().first()
         assert cfg is not None, "Couldn't load a config from the database"
         self.__dict__['_realConfig'] = cfg
+        return self
 
 
 CONFIG = LazyConfig()

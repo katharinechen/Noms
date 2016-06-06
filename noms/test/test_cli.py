@@ -2,12 +2,9 @@
 Test the command-line interface
 """
 from twisted.trial import unittest
-from twisted.internet import reactor
-
-from mock import patch
 
 from noms import cli
-from noms.test import mockDatabase, mockConfig, REPLACE_DB_HOST
+from noms.test import mockConfig, REPLACE_DB_HOST
 
 
 class CLITest(unittest.TestCase):
@@ -23,7 +20,8 @@ class CLITest(unittest.TestCase):
         """
         Does postOptions create the config and return options?
         """
-        with mockDatabase(), patch.object(reactor, 'run', autospec=True) as mReactorRun:
+        with mockConfig() as cfg:
             opts = cli.NomsOptions()
+            opts['hax'] = 'haxor'
             opts.postOptions()
-            mReactorRun.assert_called_once_with()
+            self.assertEqual(cfg.cliOptions.get('hax'), 'haxor')
