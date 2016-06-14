@@ -3,13 +3,30 @@ Noms Python library - web application
 """
 import re
 
-from codado import fromdir
+from codado import fromdir, enum
+
+from mongoengine import register_connection
 
 
 fromNoms = fromdir(__file__, '..')
 
 
-DATABASE_NAME = "noms"
+DBHost = enum(
+        noms='mongodb://localhost/noms',
+        nomsTest='mongomock://localhost/noms-test',
+        )
+
+DBAlias = enum.fromkeys(DBHost.keys())
+
+
+def _registerConnections():
+    """
+    Register all of the connections defined by DBAlias
+    """
+    for k, v in DBHost.items():
+        register_connection(alias=k, host=v)
+
+_registerConnections()
 
 
 def urlify(*args):
