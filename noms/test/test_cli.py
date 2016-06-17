@@ -3,8 +3,8 @@ Test the command-line interface
 """
 from twisted.trial import unittest
 
-from noms import cli
-from noms.test import mockConfig, REPLACE_DB_HOST
+from noms import cli, DBAlias
+from noms.test import mockConfig
 
 
 class CLITest(unittest.TestCase):
@@ -12,7 +12,7 @@ class CLITest(unittest.TestCase):
         """
         Does main return a resource, suitable for starting up twisted web?
         """
-        with mockConfig(cliOptions={'db': REPLACE_DB_HOST}):
+        with mockConfig(cliOptions={'alias': DBAlias.nomsTest}):
             res = cli.main()
             self.assertTrue(hasattr(res, 'render'))
 

@@ -5,28 +5,34 @@ import re
 
 from codado import fromdir, enum
 
-from mongoengine import register_connection
+from pymongo.uri_parser import parse_uri
 
 
 fromNoms = fromdir(__file__, '..')
 
 
 DBHost = enum(
-        noms='mongodb://localhost/noms',
-        nomsTest='mongomock://localhost/noms-test',
+        noms={'host': 'mongodb://localhost/noms'},
+        nomsTest={'host': 'mongomock://localhost/noms-test'},
         )
 
+# mongomock is broken, we need to maintain our own connection aliases
+# See https://github.com/vmalloc/mongomock/issues/233 - we must parse
+# host ourselves and pass in db=, for the benefit of mongomock.
 DBAlias = enum.fromkeys(DBHost.keys())
 
 
-def _registerConnections():
+def _parseHosts():
     """
-    Register all of the connections defined by DBAlias
+    Build a dict of all of the connections defined by DBHost
+
+    Doesn't register a default connection yet.
     """
     for k, v in DBHost.items():
-        register_connection(alias=k, host=v)
+        parts = parse_uri(v['host'].replace('mongomock', 'mongodb')) # hack for a parse_uri restriction
+        DBHost[k]['db'] = parts['database']
 
-_registerConnections()
+_parseHosts()
 
 
 def urlify(*args):
