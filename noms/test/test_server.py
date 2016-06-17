@@ -6,11 +6,11 @@ import json
 
 from twisted.trial import unittest
 from twisted.web.test.requesthelper import DummyRequest
-from twisted.internet import defer
 
 from codado import eachMethod
 
-from noms import server, fromNoms
+from noms import server, fromNoms, config
+from noms.test import mockConfig, wrapDatabaseAndCallbacks
 
 
 class FnTest(unittest.TestCase):
@@ -21,10 +21,15 @@ class FnTest(unittest.TestCase):
         """
         Does querySet(fn)() render the result of the cursor returned by fn?
         """
-        1/0
+        def _configs(req):
+            return config.Config.objects()
+
+        with mockConfig():
+            configsFn = server.querySet(_configs)
+            self.assertEqual(configsFn(None), '[{"apparentURL": "https://app.nomsbook.com"}]')
 
 
-@eachMethod(defer.inlineCallbacks, 'test_')
+@eachMethod(wrapDatabaseAndCallbacks, 'test_')
 class ServerTest(unittest.TestCase):
     """
     Test server handlers

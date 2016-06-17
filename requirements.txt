@@ -1,5 +1,6 @@
 characteristic
 codado==0.2
+contextdecorator
 coverage
 jinja2
 klein 

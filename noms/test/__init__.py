@@ -1,15 +1,28 @@
 """
 Tests for noms python code
 """
-from contextlib import contextmanager
+from functools import wraps
 
 from mongoengine import connect
+
+from twisted.internet import defer
+
+from contextdecorator import contextmanager
 
 from noms import DBAlias, DBHost
 
 
 # do this first so tests use the test db
 _client = connect(**DBHost[DBAlias.nomsTest])
+
+
+def wrapDatabaseAndCallbacks(fn):
+    """
+    Decorator; convenience for methods that need mock db and yield-Deferred syntax
+    """
+    fnICB = defer.inlineCallbacks(fn)
+    fnMockedConfig = mockConfig()(fnICB)
+    return wraps(fn)(fnMockedConfig)
 
 
 @contextmanager
@@ -32,13 +45,13 @@ def mockConfig(**configFields):
     """
     with mockDatabase() as db:
         try:
+            # this check required after an exhausting couple of days trying to
+            # figure out how to REALLY drop the mongomock database
             cols = db.collection_names()
-            docs = 0
-            for c in cols:
-                docs += db[c].count()
+            docs = sum(db[c].count() for c in cols)
             assert docs == 0
+
             from noms.config import Config
-            ct = Config.objects.count()
             cfg = Config(**configFields)
             cfg.save()
 
@@ -48,12 +61,11 @@ def mockConfig(**configFields):
             yield CONFIG
 
         finally:
+            # despite dropping the database we have to do this, because it's
+            # still an object in memory
             cfg.delete()
-    del CONFIG.__dict__['_realConfig']
 
-    ct = Config.objects.count()
-    if not ct == 0:
-        import pdb; pdb.set_trace()
+    del CONFIG.__dict__['_realConfig']
 
 
 class ConfigMock(object):
