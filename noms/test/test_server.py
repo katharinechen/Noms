@@ -6,6 +6,11 @@ import json
 
 from twisted.trial import unittest
 from twisted.web.test.requesthelper import DummyRequest
+from twisted.python.components import registerAdapter
+
+from klein.app import KleinRequest, KleinResource
+# from klein import KleinResource
+from klein.interfaces import IKleinRequest
 
 from codado import eachMethod
 
@@ -13,10 +18,19 @@ from noms import server, fromNoms, config
 from noms.test import mockConfig, wrapDatabaseAndCallbacks
 
 
+# klein adapts Request to KleinRequest internally when the Klein() object
+# begins handling a request. This isn't explicitly done for DummyRequest
+# (because this is an object that only appears in tests), so we create our own
+# adapter -- now we can use DummyRequest wherever a Klein() object appears in
+# our code
+registerAdapter(KleinRequest, DummyRequest, IKleinRequest)
+
+
 class FnTest(unittest.TestCase):
     """
     Test top-level functions
     """
+    @mockConfig()
     def test_querySet(self):
         """
         Does querySet(fn)() render the result of the cursor returned by fn?
@@ -24,9 +38,8 @@ class FnTest(unittest.TestCase):
         def _configs(req):
             return config.Config.objects()
 
-        with mockConfig():
-            configsFn = server.querySet(_configs)
-            self.assertEqual(configsFn(None), '[{"apparentURL": "https://app.nomsbook.com"}]')
+        configsFn = server.querySet(_configs)
+        self.assertEqual(configsFn(None), '[{"apparentURL": "https://app.nomsbook.com"}]')
 
 
 @eachMethod(wrapDatabaseAndCallbacks, 'test_')
@@ -110,7 +123,7 @@ class ServerTest(unittest.TestCase):
         r = yield self.handler('index', req)
         self.assertRegexpMatches(r.render(req), r'<title>NOM NOM NOM</title>')
 
-    def test_recipes(self):
+    def test_showRecipes(self):
         """
         Does /recipes list recipes?
         """
@@ -118,3 +131,49 @@ class ServerTest(unittest.TestCase):
         r = yield self.handler('showRecipes', req)
         self.assertRegexpMatches(r.render(req), r'partials/recipe-list.html')
 
+    def test_createRecipe(self):
+        """
+        Does /recipes/new show the creation page?
+        """
+        req = self.request([])
+        r = yield self.handler('createRecipe', req)
+        self.assertRegexpMatches(r.render(req), r'partials/recipe-new.html')
+
+    def test_createIngredient(self):
+        """
+        Does /ingredients/new show the ingredient creation page?
+        """
+        req = self.request([])
+        r = yield self.handler('createIngredient', req)
+        self.assertRegexpMatches(r.render(req), r'partials/ingredient-new.html')
+
+    def test_showRecipe(self):
+        """
+        Does /recipes/xxx show recipe xxx?
+        """
+        req = self.request([])
+        r = yield self.handler('showRecipe', req, 'foo-gmail-com-honeyed-cream-cheese-pear-pie-')
+        rendered = r.render(req)
+        self.assertRegexpMatches(rendered, r'partials/recipe.html')
+        self.assertRegexpMatches(rendered, r'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-')
+
+    def test_api(self):
+        """
+        Does the /api/ URL hand off to the right resource?
+        """
+        req = self.request([])
+
+        def _cleanup():
+            del self.server._api
+
+        self.addCleanup(_cleanup)
+
+        # does it create the _api object when needed?
+        self.assertEqual(self.server._api, None)
+        r1 = yield self.handler('api', req)
+        self.assertIdentical(r1, self.server._api)
+        self.assertTrue(isinstance(r1, KleinResource))
+
+        # does it return the same _api object when requested again?
+        r2 = yield self.handler('api', req)
+        self.assertIdentical(r1, r2)

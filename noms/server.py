@@ -42,7 +42,7 @@ class Server(object):
     @app.route("/recipes/new")
     def createRecipe(self, request):
         return HumanReadable('application.html',
-                partial='new-list.html')
+                partial='recipe-new.html')
 
     @app.route("/recipes/<string:urlKey>")
     def showRecipe(self, request, urlKey):
@@ -58,7 +58,7 @@ class Server(object):
     @app.route("/ingredients/new")
     def createIngredient(self, request):
         return HumanReadable("application.html",
-                partial="new-ingredient.html")
+                partial="ingredient-new.html")
 
     _api = None
     @app.route("/api/", branch=True)
