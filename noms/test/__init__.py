@@ -26,6 +26,48 @@ def wrapDatabaseAndCallbacks(fn):
     return wraps(fn)(fnMockedConfig)
 
 
+def onSave(doc):
+    """
+    Override document save behavior
+    """
+    _unsaves.add(doc)
+    """
+    Logging objects saved - we should probably discuss
+
+    ### data = '{now}: {db} {collection} {doc!r}\n'.format(
+    ###         now=datetime.now(),
+    ###         db=doc.__class__._collection._database,
+    ###         collection=doc.__class__._collection.name,
+    ###         doc=doc)
+    ### open('/tmp/log.txt', 'a').write(data)
+    """
+
+
+_unsaves = set()
+
+documentutil.onSave = onSave
+
+
+def unsave():
+    """
+    Remove all Document instances which were previously saved
+    """
+    for x in _unsaves:
+        """
+        Logging objects unsaved - tb discussed
+
+        ### data = '{now}: DELETE {db} {collection} {doc!r}\n'.format(
+        ###         now=datetime.now(),
+        ###         db=x.__class__._collection._database,
+        ###         collection=x.__class__._collection.name,
+        ###         doc=x)
+        ### open('/tmp/log.txt', 'a').write(data)
+        """
+        x.delete()
+
+    _unsaves.clear()
+
+
 @contextmanager
 def mockDatabase():
     """
