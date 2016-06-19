@@ -12,4 +12,5 @@ pytest-flakes
 pytest-cov
 pyOpenSSL
 service_identity
+treq
 twisted

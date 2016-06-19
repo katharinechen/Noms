@@ -5,8 +5,8 @@ import json
 from functools import wraps
 
 from twisted.web import static
-from twisted.web.client import getPage
 from twisted.internet import defer
+import treq
 
 from klein import Klein
 
@@ -147,13 +147,15 @@ class APIServer(object):
           'code':          code,
           'grant_type':    'authorization_code'
         }
-        tokenInfo = yield getPage(TOKEN_URL, method="POST",
-                postdata=json.dumps(tokenPayload),
-                headers={'Content-Type': 'application/json'})
-        tokenInfo = json.loads(tokenInfo)
+        r1 = yield treq.post(TOKEN_URL,
+                json.dumps(tokenPayload),
+                headers={'Content-Type': ['application/json']}
+                ).addCallback(treq.content)
+        tokenInfo = json.loads(r1)
 
         userURL = '{base}{access_token}'.format(base=USER_URL, **tokenInfo)
-        userInfo = json.loads((yield getPage(userURL)))
+        r2 = yield treq.get(userURL).addCallback(treq.content)
+        userInfo = json.loads(r2)
         u = user.User.objects(email=userInfo['email']).first()
         if u is None:
             u = user.User.fromSSO(userInfo)
