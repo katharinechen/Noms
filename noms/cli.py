@@ -7,7 +7,7 @@ import mongoengine
 from twisted.web import tap
 
 from noms.server import Server
-from noms import config, CONFIG
+from noms import CONFIG
 
 MAIN_FUNC = 'noms.cli.main'
 
