@@ -1,7 +1,6 @@
 """
 Tests of noms.server, mostly handlers
 """
-from cStringIO import StringIO
 import json
 
 from twisted.trial import unittest
@@ -9,12 +8,16 @@ from twisted.web.test.requesthelper import DummyRequest
 from twisted.python.components import registerAdapter
 from twisted.internet import defer
 
+import treq
+
 from klein.app import KleinRequest, KleinResource
 from klein.interfaces import IKleinRequest
 
 from codado import eachMethod
 
-from noms import server, fromNoms, config, recipe, urlify, user
+from mock import patch, ANY
+
+from noms import server, fromNoms, config, recipe, urlify, user, CONFIG
 from noms.rendering import EmptyQuery
 from noms.test import mockConfig, wrapDatabaseAndCallbacks
 
@@ -89,9 +92,12 @@ class BaseServerTest(unittest.TestCase):
         """
         content = kwargs.pop('content', None)
         if isinstance(content, dict):
-            kwargs['content'] = StringIO(json.dumps(content))
-        elif content:
-            kwargs['content'] = StringIO(str(content))
+            """
+            tb discussed - this has been useful in Aorta but we don't need yet
+            ###    kwargs['content'] = StringIO(json.dumps(content))
+            ###elif content:
+            ###    kwargs['content'] = StringIO(str(content))
+            """
         else:
             kwargs['content'] = None
 
@@ -243,3 +249,58 @@ class APIServerTest(BaseServerTest):
         req = self.requestJSON([], session_user=u)
         r = yield self.handler('user', req)
         self.assertEqual(r.email, 'weirdo@gmail.com')
+
+    def test_sso(self):
+        """
+        Does /api/sso create or return a good user?
+        """
+        pPost = patch.object(treq, 'post',
+                return_value=defer.succeed(None),
+                autospec=True)
+        pGet = patch.object(treq, 'get', 
+                return_value=defer.succeed(None),
+                autospec=True)
+
+        @defer.inlineCallbacks
+        def negotiateSSO(req, **user):
+            def auth0tokenizer():
+                return defer.succeed(json.dumps({'access_token': 'IDK!@#BBQ'}))
+
+            def auth0userGetter():
+                return defer.succeed(json.dumps(dict(**user)))
+
+            pContent = patch.object(treq, 'content', 
+                    side_effect=[auth0tokenizer(), auth0userGetter()],
+                    autospec=True)
+
+            with pPost as mPost, pGet as mGet, pContent:
+                yield self.handler('sso', req)
+                mPost.assert_called_once_with(
+                    server.TOKEN_URL,
+                    json.dumps({'client_id': 'abc123',
+                     'client_secret': 'ABC!@#',
+                     'redirect_uri': CONFIG.apparentURL + '/api/sso',
+                     'code': 'idk123bbq',
+                     'grant_type': 'authorization_code',
+                     }),
+                    headers=ANY)
+                mGet.assert_called_once_with(server.USER_URL + 'IDK!@#BBQ')
+
+        # test once with an existing user
+        u = self._users()[0]
+        req = self.requestJSON([], args={'code': ['idk123bbq']})
+        yield negotiateSSO(req, email=u.email)
+        self.assertEqual(req.getSession().user, u)
+        self.assertEqual(req.responseCode, 302)
+        self.assertEqual(req.responseHeaders.getRawHeaders('location'), ['/'])
+
+        # test again with a new user
+        req = self.requestJSON([], args={'code': ['idk123bbq']})
+        yield negotiateSSO(req,
+                email='weirdo2@gmail.com',
+                family_name='2',
+                given_name='weirdo'
+                )
+        self.assertEqual(req.getSession().user.email, 'weirdo2@gmail.com')
+        self.assertEqual(req.responseCode, 302)
+        self.assertEqual(req.responseHeaders.getRawHeaders('location'), ['/'])
