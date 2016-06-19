@@ -30,9 +30,8 @@ class NomsOptions(tap.Options):
         CONFIG.load()
 
         # now we know CONFIG exists
-        cfg = CONFIG.require()
-        cfg.cliOptions = dict(self.items())
-        cfg.save()
+        CONFIG.cliOptions = dict(self.items())
+        CONFIG.save()
 
         self.opt_class(MAIN_FUNC)
 
