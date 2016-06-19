@@ -14,7 +14,7 @@ from klein.interfaces import IKleinRequest
 
 from codado import eachMethod
 
-from noms import server, fromNoms, config, recipe, urlify
+from noms import server, fromNoms, config, recipe, urlify, user
 from noms.rendering import EmptyQuery
 from noms.test import mockConfig, wrapDatabaseAndCallbacks
 
@@ -75,7 +75,8 @@ class BaseServerTest(unittest.TestCase):
 
         for k, v in kwargs.items():
             if k.startswith('session_'):
-                setattr(req.session, k[8:], v)
+                ses = req.getSession()
+                setattr(ses, k[8:], v)
             else:
                 setattr(req, k, v)
 
@@ -89,8 +90,10 @@ class BaseServerTest(unittest.TestCase):
         content = kwargs.pop('content', None)
         if isinstance(content, dict):
             kwargs['content'] = StringIO(json.dumps(content))
-        else:
+        elif content:
             kwargs['content'] = StringIO(str(content))
+        else:
+            kwargs['content'] = None
 
         responseHeaders = responseHeaders + (('content-type', ['application/json']),)
         req = self.request(postpath, requestHeaders, responseHeaders, **kwargs)
@@ -196,18 +199,44 @@ class APIServerTest(BaseServerTest):
     """
     serverCls = server.APIServer
 
+    def _users(self):
+        """
+        Set up some users explicitly during a test
+        """
+        return (user.User(email='weirdo@gmail.com').save(),)
+
+    def _recipes(self):
+        """
+        Set up some recipes explicitly during a test
+        """
+        author = u'cory'
+        url = urlify(u'weird sandwich', author)
+        r1 = recipe.Recipe(name=u'weird sandwich', author=author, urlKey=url).save()
+        url = urlify(u'weird soup', author)
+        r2 = recipe.Recipe(name=u'weird soup', author=author, urlKey=url).save()
+        return (r1, r2)
+
+    def test_getRecipe(self):
+        """
+        Does /recipe/.... return a specific recipe?
+        """
+        self._recipes()
+        r = yield self.handler('getRecipe', self.reqJS, 'weird-soup-cory-')
+        self.assertEqual(r['name'], 'weird soup')
+
     def test_recipeList(self):
         """
         Does /recipe/list return a structured list of recipes from the database?
         """
         yield self.assertFailure(self.handler('recipeList'), EmptyQuery)
 
-        author = u'cory'
-        url = urlify(u'weird sandwich', author)
-        recipe.Recipe(name=u'weird sandwich', author=author, urlKey=url).save()
-        url = urlify(u'weird soup', author)
-        recipe.Recipe(name=u'weird soup', author=author, urlKey=url).save()
-
+        self._recipes()
         r = json.loads((yield self.handler('recipeList')))
         keys = [x['urlKey'] for x in r]
         self.assertEqual(keys, ['weird-sandwich-cory-', 'weird-soup-cory-'])
+
+    def test_user(self):
+        u = self._users()[0]
+        req = self.requestJSON([], session_user=u)
+        r = yield self.handler('user', req)
+        self.assertEqual(r.email, 'weirdo@gmail.com')
