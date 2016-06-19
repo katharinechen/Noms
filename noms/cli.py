@@ -7,7 +7,7 @@ import mongoengine
 from twisted.web import tap
 
 from noms.server import Server
-from noms import config, CONFIG
+from noms import CONFIG
 
 MAIN_FUNC = 'noms.cli.main'
 
@@ -20,9 +20,7 @@ class NomsOptions(tap.Options):
 
     def postOptions(self):
         mongoengine.connect(self['db'], host=self['connect'])
-        # check to see if there is any config
-        if not CONFIG.require():
-            config.Config().save()
+        CONFIG.load()
 
         # now we know CONFIG exists
         cfg = CONFIG.require()

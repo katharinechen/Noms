@@ -9,4 +9,5 @@ mongomock
 pyflakes
 pyOpenSSL
 service_identity
+treq
 twisted
