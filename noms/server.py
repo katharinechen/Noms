@@ -1,5 +1,5 @@
 """
-Twisted Web Routing 
+Twisted Web Routing
 """
 import json
 from functools import wraps
@@ -11,7 +11,7 @@ import treq
 from klein import Klein
 
 from noms import urlify, user, secret, CONFIG
-from noms.recipe import Recipe 
+from noms.recipe import Recipe
 from noms.rendering import HumanReadable, RenderableQuerySet
 
 
@@ -20,18 +20,18 @@ USER_URL = "https://{domain}/userinfo?access_token=".format(domain='nomsbook.aut
 OAUTH_GRANT_TYPE = 'authorization_code'
 
 
-class Server(object): 
+class Server(object):
     """
-    The web server for html and miscell. 
+    The web server for html and miscell.
     """
-    app = Klein() 
+    app = Klein()
 
     @app.route("/static/", branch=True)
-    def static(self, request): 
+    def static(self, request):
         return static.File("./static")
 
     @app.route("/")
-    def index(self, request): 
+    def index(self, request):
         return HumanReadable('index.html')
 
     @app.route("/recipes")
@@ -40,27 +40,27 @@ class Server(object):
                 partial='recipe-list.html')
 
     @app.route("/recipes/new")
-    def createRecipe(self, request): 
+    def createRecipe(self, request):
         return HumanReadable('application.html',
-                partial='new-list.html')
+                partial='recipe-new.html')
 
     @app.route("/recipes/<string:urlKey>")
-    def showRecipe(self, request, urlKey): 
+    def showRecipe(self, request, urlKey):
         """
-        Show individual recipe pages 
+        Show individual recipe pages
         """
-        # urlKey = unique id made up of author's email + recipe name 
+        # urlKey = unique id made up of author's email + recipe name
         return HumanReadable('application.html',
                 partial='recipe.html',
                 preload={'urlKey': urlKey}
                 )
 
     @app.route("/ingredients/new")
-    def createIngredient(self, request): 
+    def createIngredient(self, request):
         return HumanReadable("application.html",
-                partial="new-ingredient.html")
+                partial="ingredient-new.html")
 
-    _api = None 
+    _api = None
     @app.route("/api/", branch=True)
     def api(self, request):
         """
@@ -70,17 +70,17 @@ class Server(object):
         using API keys instead of cookies.
 
         We memoize APIServer().app.resource() so we only have to create one.
-        """ 
+        """
         request.setHeader('content-type', 'application/json')
-        request.setHeader('expires', "-1") 
-        if self._api is None: 
-            self._api = APIServer().app.resource() 
+        request.setHeader('expires', "-1")
+        if self._api is None:
+            self._api = APIServer().app.resource()
         return self._api
 
 
 def querySet(fn):
     """
-    Unwraps queryset results 
+    Unwraps queryset results
     """
     @wraps(fn)
     def deco(request, *a, **kw):
@@ -89,27 +89,31 @@ def querySet(fn):
     return deco
 
 
-class APIServer(object): 
+class APIServer(object):
     """
-    The web server for JSON API 
+    The web server for JSON API
 
     Organizes /api URLs
     """
-    app = Klein() 
+    app = Klein()
 
     @app.route("/recipe/list")
     @querySet
     def recipeList(self, request):
         """
-        List all recipes 
+        List all recipes
         """
-        # we are only sending limited information to the client because of security risk 
+        # we are only sending limited information to the client because of security risk
         return Recipe.objects()
 
     @app.route("/recipe/create")
-    def createRecipeSave(self, request):
+    def createRecipeSave(self, request): # pragma: nocover
+                                         # I suspect this is going to
+                                         # drastically change when the chrome
+                                         # extension branch lands, so i'm not
+                                         # testing it.
         """
-        Save recipes 
+        Save recipes
         """
         data = json.load(request.content)
         data = { k.encode('utf-8'): v for (k,v) in data.items()}
@@ -120,14 +124,14 @@ class APIServer(object):
         for i in data['ingredients']:
             recipe.ingredients.append(i)
         for i in data['instructions']:
-            recipe.instructions.append(i) 
+            recipe.instructions.append(i)
 
         recipe.save()
 
     @app.route("/recipe/<string:urlKey>")
-    def getRecipe(self, request, urlKey): 
+    def getRecipe(self, request, urlKey):
         """
-        Return a specific recipe from its urlKey 
+        Return a specific recipe from its urlKey
         """
         return Recipe.objects(urlKey=urlKey).first()
 
@@ -136,10 +140,16 @@ class APIServer(object):
     def sso(self, request):
         """
         From the browser's access attempt via auth0, acquire the user from auth0
+
+        NOTE: This request is always made by an auth0-hosted API client, not by the
+        user's browser.
         """
-        auth0ID, auth0Secret = secret.get('auth0')
+        # Auth0 begins the handshake by giving us a code for the transaction
         code = request.args.get('code')[0]
 
+        # Ask auth0 to continue, passing back the one-use code, and proving
+        # that we are an authorized auth0 SP by using the client_secret.
+        auth0ID, auth0Secret = secret.get('auth0')
         tokenPayload = {
           'client_id':     auth0ID,
           'client_secret': auth0Secret,
@@ -153,15 +163,21 @@ class APIServer(object):
                 ).addCallback(treq.content)
         tokenInfo = json.loads(r1)
 
+        # Ask auth0 to look up the right user in the IdP, by querying with access_token
         userURL = '{base}{access_token}'.format(base=USER_URL, **tokenInfo)
         r2 = yield treq.get(userURL).addCallback(treq.content)
         userInfo = json.loads(r2)
+
+        # Get or create a user account matching auth0's reply
         u = user.User.objects(email=userInfo['email']).first()
         if u is None:
             u = user.User.fromSSO(userInfo)
 
+        # Also associate that user with the session
+        # TODO - persistent sessions
         request.getSession().user = u
 
+        # Tell auth0 to redirect. This makes auth0 tell the browser to redirect.
         defer.returnValue(request.redirect('/'))
 
     @app.route("/user")
@@ -171,5 +187,4 @@ class APIServer(object):
         """
         u = getattr(request.getSession(), 'user', user.ANONYMOUS)
         return u
-
 

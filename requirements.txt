@@ -1,12 +1,14 @@
 characteristic
-codado==0.1
+codado>=0.2
+contextdecorator
 coverage
 jinja2
 klein 
 mock
 mongoengine
 mongomock
-pyflakes
+pytest-flakes
+pytest-cov
 pyOpenSSL
 service_identity
 treq
