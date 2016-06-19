@@ -1,10 +1,12 @@
 """
 Passwords, intended to be stored in the database
 """
-from mongoengine import Document, fields
+from mongoengine import fields
+
+from noms import documentutil
 
 
-class SecretPair(Document):
+class SecretPair(documentutil.ReverseableDocument):
     """
     A named password, auth token, or other secret with its public pair
     """

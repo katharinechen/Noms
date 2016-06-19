@@ -42,7 +42,7 @@ def urlify(*args):
     args = list(args)
 
     for n in args:
-        assert isinstance(n, unicode), "Arguments pass to urlify must be unicode"
+        assert isinstance(n, unicode), "Arguments passed to urlify must be unicode"
 
     url = args.pop(0)
     for n in args:

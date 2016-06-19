@@ -13,6 +13,9 @@ Roles = enum.fromkeys(['user', 'superuser'])
 
 
 class User(RenderableDocument):
+    """
+    A person with a login account (or the ANONYMOUS user)
+    """
     email = fields.StringField(require=True, unique=True)
     passwordHash = fields.StringField()
     roles = fields.ListField(fields.StringField(choices=Roles.keys()))
@@ -45,5 +48,6 @@ class User(RenderableDocument):
                 familyName=self.familyName,
                 roles=self.roles
                 )
+
 
 ANONYMOUS = User(email='', roles=[])

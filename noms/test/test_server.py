@@ -7,14 +7,15 @@ import json
 from twisted.trial import unittest
 from twisted.web.test.requesthelper import DummyRequest
 from twisted.python.components import registerAdapter
+from twisted.internet import defer
 
 from klein.app import KleinRequest, KleinResource
-# from klein import KleinResource
 from klein.interfaces import IKleinRequest
 
 from codado import eachMethod
 
-from noms import server, fromNoms, config
+from noms import server, fromNoms, config, recipe, urlify
+from noms.rendering import EmptyQuery
 from noms.test import mockConfig, wrapDatabaseAndCallbacks
 
 
@@ -42,21 +43,24 @@ class FnTest(unittest.TestCase):
         self.assertEqual(configsFn(None), '[{"apparentURL": "https://app.nomsbook.com"}]')
 
 
-@eachMethod(wrapDatabaseAndCallbacks, 'test_')
-class ServerTest(unittest.TestCase):
-    """
-    Test server handlers
-    """
+class BaseServerTest(unittest.TestCase):
     defaultHeaders = (
         ('user-agent', ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0)']),
         ('cookie', ['']),
         )
 
+    serverCls = None
+
     def setUp(self):
         if hasattr(self, 'server'):
             "Using memoized server instance"
         else:
-            ServerTest.server = server.Server()
+            self.__class__.server = self.serverCls()
+
+        # feel free to replace this request with your own, but lots of tests
+        # just need this.
+        self.req = self.request([])
+        self.reqJS = self.requestJSON([])
 
     def request(self, postpath, requestHeaders=defaultHeaders, responseHeaders=(), **kwargs):
         """
@@ -88,7 +92,7 @@ class ServerTest(unittest.TestCase):
         else:
             kwargs['content'] = StringIO(str(content))
 
-        responseHeaders = responseHeaders + ('content-type', ['application/json'])
+        responseHeaders = responseHeaders + (('content-type', ['application/json']),)
         req = self.request(postpath, requestHeaders, responseHeaders, **kwargs)
 
         return req
@@ -105,7 +109,18 @@ class ServerTest(unittest.TestCase):
             postpath = kw.pop('postpath', [])
             req = self.request(postpath)
 
-        return self.server.app.execute_endpoint(handlerName, req, *a, **kw)
+        return defer.maybeDeferred(
+                self.server.app.execute_endpoint,
+                handlerName, req, *a, **kw
+                )
+
+
+@eachMethod(wrapDatabaseAndCallbacks, 'test_')
+class ServerTest(BaseServerTest):
+    """
+    Test server handlers
+    """
+    serverCls = server.Server
 
     def test_static(self):
         """
@@ -119,41 +134,36 @@ class ServerTest(unittest.TestCase):
         """
         Does / return the home page?
         """
-        req = self.request([])
-        r = yield self.handler('index', req)
-        self.assertRegexpMatches(r.render(req), r'<title>NOM NOM NOM</title>')
+        r = yield self.handler('index', self.req)
+        self.assertRegexpMatches(r.render(self.req), r'<title>NOM NOM NOM</title>')
 
     def test_showRecipes(self):
         """
         Does /recipes list recipes?
         """
-        req = self.request([])
-        r = yield self.handler('showRecipes', req)
-        self.assertRegexpMatches(r.render(req), r'partials/recipe-list.html')
+        r = yield self.handler('showRecipes', self.req)
+        self.assertRegexpMatches(r.render(self.req), r'partials/recipe-list.html')
 
     def test_createRecipe(self):
         """
         Does /recipes/new show the creation page?
         """
-        req = self.request([])
-        r = yield self.handler('createRecipe', req)
-        self.assertRegexpMatches(r.render(req), r'partials/recipe-new.html')
+        r = yield self.handler('createRecipe', self.req)
+        self.assertRegexpMatches(r.render(self.req), r'partials/recipe-new.html')
 
     def test_createIngredient(self):
         """
         Does /ingredients/new show the ingredient creation page?
         """
-        req = self.request([])
-        r = yield self.handler('createIngredient', req)
-        self.assertRegexpMatches(r.render(req), r'partials/ingredient-new.html')
+        r = yield self.handler('createIngredient', self.req)
+        self.assertRegexpMatches(r.render(self.req), r'partials/ingredient-new.html')
 
     def test_showRecipe(self):
         """
         Does /recipes/xxx show recipe xxx?
         """
-        req = self.request([])
-        r = yield self.handler('showRecipe', req, 'foo-gmail-com-honeyed-cream-cheese-pear-pie-')
-        rendered = r.render(req)
+        r = yield self.handler('showRecipe', self.req, 'foo-gmail-com-honeyed-cream-cheese-pear-pie-')
+        rendered = r.render(self.req)
         self.assertRegexpMatches(rendered, r'partials/recipe.html')
         self.assertRegexpMatches(rendered, r'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-')
 
@@ -177,3 +187,27 @@ class ServerTest(unittest.TestCase):
         # does it return the same _api object when requested again?
         r2 = yield self.handler('api', req)
         self.assertIdentical(r1, r2)
+
+
+@eachMethod(wrapDatabaseAndCallbacks, 'test_')
+class APIServerTest(BaseServerTest):
+    """
+    Test API handlers
+    """
+    serverCls = server.APIServer
+
+    def test_recipeList(self):
+        """
+        Does /recipe/list return a structured list of recipes from the database?
+        """
+        yield self.assertFailure(self.handler('recipeList'), EmptyQuery)
+
+        author = u'cory'
+        url = urlify(u'weird sandwich', author)
+        recipe.Recipe(name=u'weird sandwich', author=author, urlKey=url).save()
+        url = urlify(u'weird soup', author)
+        recipe.Recipe(name=u'weird soup', author=author, urlKey=url).save()
+
+        r = json.loads((yield self.handler('recipeList')))
+        keys = [x['urlKey'] for x in r]
+        self.assertEqual(keys, ['weird-sandwich-cory-', 'weird-soup-cory-'])

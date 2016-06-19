@@ -170,4 +170,3 @@ class APIServer(object):
         u = getattr(request.getSession(), 'user', user.ANONYMOUS)
         return u
 
-

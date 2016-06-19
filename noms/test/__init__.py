@@ -10,6 +10,7 @@ from twisted.internet import defer
 from contextdecorator import contextmanager
 
 from noms import DBAlias, DBHost
+from noms import documentutil
 
 
 # do this first so tests use the test db
@@ -32,10 +33,20 @@ def mockDatabase():
     """
     try:
         db = _client.get_default_database()
-        _client.drop_database(db)
+        _scrubMongoEngineBecauseMongoEngineIsSoStupid(_client, db)
         yield db
     finally:
-        _client.drop_database(db)
+        _scrubMongoEngineBecauseMongoEngineIsSoStupid(_client, db)
+
+
+def _scrubMongoEngineBecauseMongoEngineIsSoStupid(client, db):
+    """
+    XXX - Mongoengine and mongomock do NOT work well together. Collection switching
+    and other factors mean you have to scrub every collection, every time.
+    Dropping the database doesn't work.
+    """
+    unsave()
+    client.drop_database(db)
 
 
 @contextmanager
@@ -54,6 +65,9 @@ def mockConfig(**configFields):
             from noms.config import Config
             cfg = Config(**configFields)
             cfg.save()
+
+            from noms import secret
+            secret.put('auth0', 'abc123', 'ABC!@#')
 
             # in tests, we replace the global CONFIG without patching it
             from noms import CONFIG
