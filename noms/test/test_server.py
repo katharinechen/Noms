@@ -218,7 +218,7 @@ class APIServerTest(BaseServerTest):
 
     def test_getRecipe(self):
         """
-        Does /recipe/.... return a specific recipe?
+        Does /api/recipe/.... return a specific recipe?
         """
         self._recipes()
         r = yield self.handler('getRecipe', self.reqJS, 'weird-soup-cory-')
@@ -226,7 +226,7 @@ class APIServerTest(BaseServerTest):
 
     def test_recipeList(self):
         """
-        Does /recipe/list return a structured list of recipes from the database?
+        Does /api/recipe/list return a structured list of recipes from the database?
         """
         yield self.assertFailure(self.handler('recipeList'), EmptyQuery)
 
@@ -236,6 +236,9 @@ class APIServerTest(BaseServerTest):
         self.assertEqual(keys, ['weird-sandwich-cory-', 'weird-soup-cory-'])
 
     def test_user(self):
+        """
+        Does /api/user return the current user?
+        """
         u = self._users()[0]
         req = self.requestJSON([], session_user=u)
         r = yield self.handler('user', req)

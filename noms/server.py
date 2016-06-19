@@ -107,7 +107,11 @@ class APIServer(object):
         return Recipe.objects()
 
     @app.route("/recipe/create")
-    def createRecipeSave(self, request):
+    def createRecipeSave(self, request): # pragma: nocover
+                                         # I suspect this is going to
+                                         # drastically change when the chrome
+                                         # extension branch lands, so i'm not
+                                         # testing it.
         """
         Save recipes
         """
@@ -136,10 +140,16 @@ class APIServer(object):
     def sso(self, request):
         """
         From the browser's access attempt via auth0, acquire the user from auth0
+
+        NOTE: This request is always made by an auth0-hosted API client, not by the
+        user's browser.
         """
-        auth0ID, auth0Secret = secret.get('auth0')
+        # Auth0 begins the handshake by giving us a code for the transaction
         code = request.args.get('code')[0]
 
+        # Ask auth0 to continue, passing back the one-use code, and proving
+        # that we are an authorized auth0 SP by using the client_secret.
+        auth0ID, auth0Secret = secret.get('auth0')
         tokenPayload = {
           'client_id':     auth0ID,
           'client_secret': auth0Secret,
@@ -153,15 +163,21 @@ class APIServer(object):
                 ).addCallback(treq.content)
         tokenInfo = json.loads(r1)
 
+        # Ask auth0 to look up the right user in the IdP, by querying with access_token
         userURL = '{base}{access_token}'.format(base=USER_URL, **tokenInfo)
         r2 = yield treq.get(userURL).addCallback(treq.content)
         userInfo = json.loads(r2)
+
+        # Get or create a user account matching auth0's reply
         u = user.User.objects(email=userInfo['email']).first()
         if u is None:
             u = user.User.fromSSO(userInfo)
 
+        # Also associate that user with the session
+        # TODO - persistent sessions
         request.getSession().user = u
 
+        # Tell auth0 to redirect. This makes auth0 tell the browser to redirect.
         defer.returnValue(request.redirect('/'))
 
     @app.route("/user")
