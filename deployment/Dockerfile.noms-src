@@ -4,9 +4,9 @@ FROM corydodt/gitonly
 ENV noms /opt/Noms
 
 WORKDIR $noms
-COPY ./env /env
 RUN git clone https://github.com/corydodt/Noms $noms
-RUN . /env && git checkout $NOMS_VERSION
+COPY ./env .
+RUN . ./env && git checkout $NOMS_VERSION
 VOLUME $noms
 
 CMD ["/bin/bash"]
