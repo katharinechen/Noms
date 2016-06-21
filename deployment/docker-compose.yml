@@ -5,7 +5,7 @@ services:
             context: .
             dockerfile: Dockerfile.noms-main
         image: corydodt/noms-main
-        command: "noms --connect mongodb://noms-db/noms"
+        command: "noms"
         ports:
             - 8080:8080
         links:
