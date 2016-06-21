@@ -1,0 +1,29 @@
+version: '2'
+services:
+    noms-main:
+        build:
+            context: .
+            dockerfile: Dockerfile.noms-main
+        image: corydodt/noms-main
+        command: "noms --connect mongodb://noms-db/noms"
+        ports:
+            - 8080:8080
+        links:
+            - mongo
+            - noms-src
+        depends_on:
+            - mongo
+            - noms-src
+        volumes_from:
+            - noms-src
+
+    mongo:
+        image: mongo
+
+    noms-src:
+        build:
+            context: .
+            dockerfile: Dockerfile.noms-src
+        image: "corydodt/noms-src:${NOMS_VERSION}"
+        command: /bin/bash
+        tty: true
