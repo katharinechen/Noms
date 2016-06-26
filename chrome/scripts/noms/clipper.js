@@ -6,26 +6,28 @@ var app = angular.module("clipper", []);
 var Clipper = app.controller("Clipper", ['$scope', '$http', function ($scope, $http) {
     var nomsbook = "http://localhost:8080/api/bookmarklet?uri=";
     $scope.message = "Please press button!"
+    $scope.saved = false; 
 
     // user clicked the save button 
     $scope.saveme = function() { 
-        // find the active tab and get the url 
         chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
             $scope.url = tabs[0].url; 
-  
-            // make a http request to bookmarklet 
             $http({method: 'GET', url: nomsbook + $scope.url}).then(function successCallback(response) { 
-                var data = response['data'];                 
-                if (data === "Error") { 
+                console.log(response['data']); 
+                var recipes = response['data'];  
+                // not sure we need this... 
+                if (recipes === "Error") {
+                    $scope.saved = false;  
                     $scope.message = "We are not able to save your recipe at this time. Sorry!"
                 } else { 
-                    $scope.message = "We saved the following recipes: " + data.join(", ")
+                    // need to send back the url keys (link = nomsbook + urlKey)
+                    $scope.saved = true; 
+                    $scope.recipes = recipes; 
+                    $scope.message = "We saved the following recipes: " 
                 }
-
             }, function errorCallback(response) { 
-                // called asynchronously if an error occus or server returns response with an error status 
                 console.log(response);
-                console.log("server gave me an error"); 
+                $scope.message = "We are not not able to save your recipe at this time. Sorry!"
             }); 
         }); 
     }; 

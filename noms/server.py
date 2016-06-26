@@ -195,11 +195,10 @@ class APIServer(object):
             itemTypeArray = [x.string for x in i.itemtype] 
             if 'http://schema.org/Recipe' in itemTypeArray: 
                 recipe = i
-                # do this only if a user is logged in
                 if userEmail: 
                     saveItem = Recipe.fromMicrodata(recipe, userEmail)
                     Recipe.clip(saveItem)
-                    recipeSaved.append(saveItem.name) #an array of all of the recipes names 
+                    recipeSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey}) 
                 else: 
                     recipeSaved = "Error" 
                 break 
