@@ -32,16 +32,6 @@ def onSave(doc):
     application that was saved. We can later call unsave() to remove them.
     """
     _unsaves.add(doc)
-    """
-    Logging objects saved - we should probably discuss
-
-    ### data = '{now}: {db} {collection} {doc!r}\n'.format(
-    ###         now=datetime.now(),
-    ###         db=doc.__class__._collection._database,
-    ###         collection=doc.__class__._collection.name,
-    ###         doc=doc)
-    ### open('/tmp/log.txt', 'a').write(data)
-    """
 
 
 _unsaves = set()
@@ -54,16 +44,6 @@ def unsave():
     Remove all Document instances which were previously saved by tests
     """
     for x in _unsaves:
-        """
-        Logging objects unsaved - tb discussed
-
-        ### data = '{now}: DELETE {db} {collection} {doc!r}\n'.format(
-        ###         now=datetime.now(),
-        ###         db=x.__class__._collection._database,
-        ###         collection=x.__class__._collection.name,
-        ###         doc=x)
-        ### open('/tmp/log.txt', 'a').write(data)
-        """
         x.delete()
 
     _unsaves.clear()
