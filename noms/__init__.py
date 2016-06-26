@@ -3,8 +3,36 @@ Noms Python library - web application
 """
 import re
 
+from codado import fromdir, enum
 
-DATABASE_NAME = "noms"
+from pymongo.uri_parser import parse_uri
+
+
+fromNoms = fromdir(__file__, '..')
+
+
+DBHost = enum(
+        noms={'host': 'mongodb://localhost/noms'},
+        nomsTest={'host': 'mongomock://localhost/noms-test'},
+        )
+
+# mongomock is broken, we need to maintain our own connection aliases
+# See https://github.com/vmalloc/mongomock/issues/233 - we must parse
+# host ourselves and pass in db=, for the benefit of mongomock.
+DBAlias = enum.fromkeys(DBHost.keys())
+
+
+def _parseHosts():
+    """
+    Build a dict of all of the connections defined by DBHost
+
+    Doesn't register a default connection yet.
+    """
+    for k, v in DBHost.items():
+        parts = parse_uri(v['host'].replace('mongomock', 'mongodb')) # hack for a parse_uri restriction
+        DBHost[k]['db'] = parts['database']
+
+_parseHosts()
 
 
 def urlify(*args):
@@ -14,7 +42,7 @@ def urlify(*args):
     args = list(args)
 
     for n in args:
-        assert isinstance(n, unicode), "Arguments pass to urlify must be unicode"
+        assert isinstance(n, unicode), "Arguments passed to urlify must be unicode"
 
     url = args.pop(0)
     for n in args:
@@ -63,6 +91,7 @@ class LazyConfig(object):
         cfg = Config.objects().first()
         assert cfg is not None, "Couldn't load a config from the database"
         self.__dict__['_realConfig'] = cfg
+        return self
 
 
 CONFIG = LazyConfig()
