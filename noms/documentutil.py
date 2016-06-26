@@ -5,23 +5,28 @@ Extend Document to make test cleanup easier
 from mongoengine import Document
 
 
-# Monkey-patching this (which is done in tests) will make unsave() work
 def onSave(doc):
     """
-    This does nothing by default
+    No-op override that happens during Document.save() for all documents.
+
+    This is a hook that can be replaced in test code by monkey-patching
+    documentutil.onSave() to do whatever setUp/tearDown you need to do.
     """
 
 
-class ReverseableDocument(Document):
+class NomsDocument(Document):
     """
-    Base Document class that hooks into save so we can cleanup
+    Base Document class that overrides save().
 
-    ReverseableDocument.collectObject() registers every object in an unsave
-    list, but this does not get hooked up unless noms.test is imported
+    Use this as the base class for all noms Documents, and then patch
+    onSave() if you want to do anything special in a test.
     """
     meta = {'abstract': True}
 
     def save(self):
-        r = super(ReverseableDocument, self).save()
+        """
+        Save, and call onSave()
+        """
+        r = super(NomsDocument, self).save()
         onSave(self)
         return r

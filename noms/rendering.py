@@ -14,7 +14,7 @@ from zope.interface import implements
 from twisted.web import resource
 
 from noms import CONFIG, secret
-from noms.documentutil import ReverseableDocument
+from noms.documentutil import NomsDocument
 
 
 #Jinja template context
@@ -82,7 +82,7 @@ class HumanReadable(object):
         return self.template.render(**self.renderContext).encode('utf-8')
 
 
-class RenderableDocument(ReverseableDocument):
+class RenderableDocument(NomsDocument):
     """
     A mongoengine Document that can be rendered as json
 

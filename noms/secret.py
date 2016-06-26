@@ -6,7 +6,7 @@ from mongoengine import fields
 from noms import documentutil
 
 
-class SecretPair(documentutil.ReverseableDocument):
+class SecretPair(documentutil.NomsDocument):
     """
     A named password, auth token, or other secret with its public pair
     """

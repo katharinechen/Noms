@@ -28,7 +28,8 @@ def wrapDatabaseAndCallbacks(fn):
 
 def onSave(doc):
     """
-    Override document save behavior
+    Hook into Document.save() and keep a reference to any object in our
+    application that was saved. We can later call unsave() to remove them.
     """
     _unsaves.add(doc)
     """
@@ -50,7 +51,7 @@ documentutil.onSave = onSave
 
 def unsave():
     """
-    Remove all Document instances which were previously saved
+    Remove all Document instances which were previously saved by tests
     """
     for x in _unsaves:
         """
@@ -98,8 +99,6 @@ def mockConfig(**configFields):
     """
     with mockDatabase() as db:
         try:
-            # this check required after an exhausting couple of days trying to
-            # figure out how to REALLY drop the mongomock database
             cols = db.collection_names()
             docs = sum(db[c].count() for c in cols)
             assert docs == 0
