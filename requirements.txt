@@ -1,5 +1,5 @@
 characteristic
-codado==0.2
+codado>=0.2.3
 contextdecorator
 coverage
 jinja2
