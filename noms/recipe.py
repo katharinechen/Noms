@@ -50,4 +50,3 @@ class Recipe(RenderableDocument):
                 "tags": self.tags,
                 #"modified": self.modified (date is currently not going to work)
             }
-

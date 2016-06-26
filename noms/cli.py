@@ -1,24 +1,32 @@
 """
 Command-line interface for noms
 """
-
-import mongoengine
-
 from twisted.web import tap
 
+from mongoengine import connect
+
 from noms.server import Server
-from noms import CONFIG
+from noms import CONFIG, DBAlias, DBHost
+
 
 MAIN_FUNC = 'noms.cli.main'
 
 
 class NomsOptions(tap.Options):
+    """
+    A tap options object suitable for twistd to start, with noms-specific extras
+    """
     optParameters = tap.Options.optParameters + [
-            ['db', None, 'noms', 'Database name or connect string'],
+            ['alias', None, 'noms', 'Alias for a database connection (see noms.DBAlias)'],
             ]
 
     def postOptions(self):
-        mongoengine.connect(db=self['db'])
+        """
+        Connect to the noms database and make sure a config exists
+        """
+        alias = self['alias']
+        assert alias in DBAlias
+        connect(**DBHost[alias])
         CONFIG.load()
 
         # now we know CONFIG exists
@@ -41,6 +49,7 @@ def main():
     Return a resource to start our application
     """
     resource = Server().app.resource
-    mongoengine.connect(db=CONFIG.cliOptions['db'])
+    alias = CONFIG.cliOptions['alias']
+    connect(**DBHost[alias])
     return resource()
 

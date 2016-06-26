@@ -37,17 +37,17 @@ class LazyConfigTest(unittest.TestCase):
         """
         Do I acquire a config object upon access?
         """
-        self.assertFalse('_realConfig' in self.config.__dict__, 
+        self.assertFalse('_realConfig' in self.config.__dict__,
                 "oops, test config has _realConfig prematurely")
         self.config.apparentURL
-        self.assertTrue('_realConfig' in self.config.__dict__, 
+        self.assertTrue('_realConfig' in self.config.__dict__,
                 "oops, test config should have _realConfig now but doesn't")
 
     def test_attributeAccess(self):
         """
         Try out the attribute proxying properties
         """
-        self.assertFalse('_realConfig' in self.config.__dict__, 
+        self.assertFalse('_realConfig' in self.config.__dict__,
                 "oops, test config has _realConfig prematurely")
         self.assertRaises(TypeError,
                 setattr, self.config, 'uninitialized', 20)
