@@ -189,19 +189,18 @@ class APIServer(object):
 
         pageSource = yield getPage(url)
         items = microdata.get_items(pageSource)
-        
+
         recipeSaved = []
         for i in items: 
             itemTypeArray = [x.string for x in i.itemtype] 
             if 'http://schema.org/Recipe' in itemTypeArray: 
                 recipe = i
-                saveItem = Recipe.fromMicrodata(recipe, userEmail)
-                Recipe.clip(saveItem)
-                recipeSaved.append(saveItem)
+                # do this only if a user is logged in
+                if userEmail: 
+                    saveItem = Recipe.fromMicrodata(recipe, userEmail)
+                    Recipe.clip(saveItem)
+                    recipeSaved.append(saveItem.name) #an array of all of the recipes names 
+                else: 
+                    recipeSaved = "Error" 
                 break 
-
-        defer.returnValue(recipeSaved)
-
-
-
-
+        defer.returnValue(json.dumps(recipeSaved))
