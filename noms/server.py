@@ -162,16 +162,14 @@ class APIServer(object):
           'code':          code,
           'grant_type':    'authorization_code'
         }
-        r1 = yield treq.post(TOKEN_URL,
+        tokenInfo = yield treq.post(TOKEN_URL,
                 json.dumps(tokenPayload),
                 headers={'Content-Type': ['application/json']}
-                ).addCallback(treq.content)
-        tokenInfo = json.loads(r1)
+                ).addCallback(treq.json_content)
 
         # Ask auth0 to look up the right user in the IdP, by querying with access_token
         userURL = '{base}{access_token}'.format(base=USER_URL, **tokenInfo)
-        r2 = yield treq.get(userURL).addCallback(treq.content)
-        userInfo = json.loads(r2)
+        userInfo = yield treq.get(userURL).addCallback(treq.json_content)
 
         # Get or create a user account matching auth0's reply
         u = user.User.objects(email=userInfo['email']).first()
@@ -200,24 +198,36 @@ class APIServer(object):
         Schema: https://schema.org/Recipe
         Food webpage: http://www.foodandwine.com/recipes/cuban-frittata-bacon-and-potatoes 
         """
+
+        def returnResponse(status, recipes, message): 
+            """
+            Return the appropriate data structure to the http response 
+            """
+            data = {'status': status, 
+                    'recipes': recipes, 
+                    'message': message} 
+            defer.returnValue(json.dumps(data)) 
+
         userEmail = self.user(request).email 
-        
+        if not userEmail: 
+            returnResponse(status="error", recipes=[], message="User was not logged in.")
+
         url = request.uri.split("=")[1]
         url = urllib2.unquote(url)
-
-        pageSource = yield getPage(url)
+        pageSource = yield treq.get(url).addCallback(treq.content)
         items = microdata.get_items(pageSource)
-
         recipeSaved = []
+
         for i in items: 
             itemTypeArray = [x.string for x in i.itemtype] 
             if 'http://schema.org/Recipe' in itemTypeArray: 
                 recipe = i
-                if userEmail: 
-                    saveItem = Recipe.fromMicrodata(recipe, userEmail)
-                    Recipe.clip(saveItem)
-                    recipeSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey}) 
-                else: 
-                    recipeSaved = "Error" 
+                saveItem = Recipe.fromMicrodata(recipe, userEmail)
+                Recipe.clip(saveItem)
+                recipeSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey}) 
                 break 
-        defer.returnValue(json.dumps(recipeSaved))
+        
+        if len(recipeSaved) == 0:
+            returnResponse(status="error", recipes=[], message="There are no recipes on this page.") 
+
+        returnResponse(status="ok", recipes=recipeSaved, message="")
