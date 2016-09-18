@@ -63,11 +63,6 @@ class Server(object):
         return HumanReadable("application.html",
                 partial="ingredient-new.html")
 
-    @app.route("/users")
-    def showUsers(self, request): 
-        return HumanReadable('application.html',
-                partial='user-list.html')
-
     _api = None
     @app.route("/api/", branch=True)
     def api(self, request):
@@ -113,14 +108,6 @@ class APIServer(object):
         """
         # we are only sending limited information to the client because of security risk
         return Recipe.objects()
-
-    @app.route("/user/list")
-    @querySet
-    def userList(self, request): 
-        """
-        List all users 
-        """
-        return User.objects()
 
     @app.route("/recipe/create")
     def createRecipeSave(self, request): # pragma: nocover

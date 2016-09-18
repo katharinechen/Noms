@@ -11,7 +11,7 @@
       <p>{{ message }}</p>
       <ul ng-show="saved" ng-repeat="r in recipes">
         <li>
-          <a ng-href="http://localhost:8080/recipes/{{ r.urlKey }}">{{ r.name}}</a>
+          <a target="noms" ng-href="http://localhost:8080/recipes/{{ r.urlKey }}">{{ r.name }}</a>
         </li>
       </ul> 
       <button ng-click="saveme()" id="checkPage">Check this page now!</button>

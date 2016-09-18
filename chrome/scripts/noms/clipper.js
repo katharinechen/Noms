@@ -5,7 +5,7 @@ var app = angular.module("clipper", []);
 
 var Clipper = app.controller("Clipper", ['$scope', '$http', function ($scope, $http) {
     var nomsbook = "http://localhost:8080/api/bookmarklet?uri=";
-    $scope.message = "Please press button!"
+    $scope.message = "Please press button!"; 
     $scope.saved = false; 
 
     // user clicked the save button 
@@ -27,7 +27,7 @@ var Clipper = app.controller("Clipper", ['$scope', '$http', function ($scope, $h
                 }
             }, function errorCallback(response) { 
                 // traceback occur on the server 404, 500 
-                $scope.message = "We are not not able to save your recipe at this time. Sorry!"
+                $scope.message = "We are not not able to save your recipe at this time. Sorry! For the time being, you have to be on localhost and login to Noms!"; 
             }); 
         }); 
     }; 
