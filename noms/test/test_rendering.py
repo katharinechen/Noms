@@ -13,7 +13,7 @@ from mongoengine import StringField, IntField
 from mock import patch
 
 from noms.test import mockConfig, mockDatabase
-from noms import rendering, secret, recipe, urlify
+from noms import rendering, secret, recipe, urlify, user
 
 
 class HumanReadableTest(unittest.TestCase):
@@ -81,14 +81,19 @@ class RenderableQuerySetTest(unittest.TestCase):
         Do I produce a json array from a query?
         """
         author = u'cory'
+        
+        u = user.User(email="dude@gmail.com")
+        u.save()
+
         url = urlify(u'delicious sandwich', author)
-        recipe.Recipe(name=u'delicious sandwich', author=author, urlKey=url).save()
+        recipe.Recipe(name=u'delicious sandwich', author=author, urlKey=url, user=u).save()
         url = urlify(u'delicious soup', author)
-        recipe.Recipe(name=u'delicious soup', author=author, urlKey=url).save()
+        recipe.Recipe(name=u'delicious soup', author=author, urlKey=url, user=u).save()
 
         qs = recipe.Recipe.objects()
-        expected = '[{"recipeYield": null, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory-", "user": "katharinechen.ny@gmail.com"}, {"recipeYield": null, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory-", "user": "katharinechen.ny@gmail.com"}]'
-        self.assertEqual(rendering.RenderableQuerySet(qs).render(None), expected)
+        expected = ('[{"recipeYield": null, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory-", "user": {"roles": [], "givenName": null, "email": "dude@gmail.com", "familyName": null}}, ' 
+                     '{"recipeYield": null, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory-", "user": {"roles": [], "givenName": null, "email": "dude@gmail.com", "familyName": null}}]')
+        assert rendering.RenderableQuerySet(qs).render(None) == expected
 
 
 class RenderableDocumentTest(unittest.TestCase):

@@ -264,12 +264,12 @@ class APIServerTest(BaseServerTest):
         @defer.inlineCallbacks
         def negotiateSSO(req, **user):
             def auth0tokenizer():
-                return defer.succeed(json.dumps({'access_token': 'IDK!@#BBQ'}))
+                return defer.succeed({'access_token': 'IDK!@#BBQ'})
 
             def auth0userGetter():
-                return defer.succeed(json.dumps(dict(**user)))
+                return defer.succeed(dict(**user))
 
-            pContent = patch.object(treq, 'content', 
+            pContent = patch.object(treq, 'json_content', 
                     side_effect=[auth0tokenizer(), auth0userGetter()],
                     autospec=True)
 

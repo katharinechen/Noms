@@ -29,7 +29,7 @@ class Recipe(RenderableDocument):
     """
     name = fields.StringField(require=True)
     author = fields.StringField(require=True) # author of the recipe
-    user = fields.ReferenceField('User',dbref=False, require=True) #objectID of the user s
+    user = fields.ReferenceField('User', dbref=False, require=True) #objectID of the user s
     urlKey = fields.StringField(require=True, unique=True) # combines user+name as the unique id
     ingredients = fields.ListField(fields.StringField(), require=True)
     instructions = fields.ListField(fields.StringField(), require=True)
