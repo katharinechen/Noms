@@ -4,6 +4,7 @@ contextdecorator
 coverage
 jinja2
 klein 
+microdata
 mock
 mongoengine
 mongomock
