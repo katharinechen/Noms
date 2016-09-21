@@ -193,8 +193,7 @@ class APIServer(object):
     @defer.inlineCallbacks 
     def bookmarklet(self, request): 
         """
-        Schema: https://schema.org/Recipe
-        Food webpage: http://www.foodandwine.com/recipes/cuban-frittata-bacon-and-potatoes 
+        Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension 
         """
 
         def returnResponse(status, recipes, message): 
@@ -206,13 +205,13 @@ class APIServer(object):
                     'message': message} 
             defer.returnValue(json.dumps(data)) 
 
-        userEmail = self.user(request).email 
+        userEmail = self.user(request).email
         if not userEmail: 
             returnResponse(status="error", recipes=[], message="User was not logged in.")
 
-        url = request.uri.split("=")[1]
-        url = urllib2.unquote(url)
+        url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
+
         items = microdata.get_items(pageSource)
         recipeSaved = []
 
@@ -221,7 +220,7 @@ class APIServer(object):
             if 'http://schema.org/Recipe' in itemTypeArray: 
                 recipe = i
                 saveItem = Recipe.fromMicrodata(recipe, userEmail)
-                Recipe.clip(saveItem)
+                Recipe.saveOnlyOnce(saveItem)
                 recipeSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey}) 
                 break 
         

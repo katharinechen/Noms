@@ -77,10 +77,10 @@ class Recipe(RenderableDocument):
                 self.instructions.append(i)
         return self 
 
-    def clip(saveItem): 
+    def saveOnlyOnce(self): 
         """
         Save recipe from website
         """
-        if Recipe.objects(urlKey=saveItem.urlKey): 
+        if Recipe.objects(urlKey=self.urlKey): 
             return
-        saveItem.save() 
+        self.save() 

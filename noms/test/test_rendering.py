@@ -8,6 +8,8 @@ from jinja2 import Template
 
 from twisted.trial import unittest
 
+from py.test import raises 
+
 from mongoengine import StringField, IntField
 
 from mock import patch
@@ -118,3 +120,21 @@ class RenderableDocumentTest(unittest.TestCase):
         self.assertEqual(doc.render(None),
                 json.dumps({'safe': 'good', 'int': 12})
                 )
+
+
+# this is in the style of py.test 
+def test_resourceEncoder():
+    """
+    Test that json encoder works on our objects 
+    """
+    class SafeClass(object): 
+        def safe(self):
+            return "19"
+    ret = json.dumps(SafeClass(), cls=rendering.ResourceEncoder)
+    assert ret == '"19"'
+
+    class NotSoSafeClass(object): 
+        pass 
+
+    with raises(TypeError): 
+        json.dumps(NotSoSafeClass(), cls=rendering.ResourceEncoder)

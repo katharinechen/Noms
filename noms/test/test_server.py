@@ -13,7 +13,7 @@ import treq
 from klein.app import KleinRequest, KleinResource
 from klein.interfaces import IKleinRequest
 
-from codado import eachMethod
+from codado import eachMethod, fromdir
 
 from mock import patch, ANY
 
@@ -304,3 +304,20 @@ class APIServerTest(BaseServerTest):
         self.assertEqual(req.getSession().user.email, 'weirdo2@gmail.com')
         self.assertEqual(req.responseCode, 302)
         self.assertEqual(req.responseHeaders.getRawHeaders('location'), ['/'])
+
+    def test_bookmarklet(self):
+        fromTest = fromdir(__file__)
+        loc = fromTest('recipe_page_source.html')
+        pageSource = open(loc).read()
+
+        pGet = patch.object(treq, 'get', 
+                return_value=defer.succeed(pageSource),
+                autospec=True)
+
+        u = self._users()[0]
+        req = self.requestJSON([], session_user=u) 
+        req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
+        r = yield self.handler('bookmarklet', req)
+        
+        with pGet: 
+            self.assertEqual(len(recipe.Recipe.objects()), 1)

@@ -50,6 +50,7 @@ class RenderableQuerySet(object):
         """
         Just wraps an array around the results
         """
+        print "I am in render"
         rr = list(self.qs)
         if not rr:
             raise EmptyQuery("Returned empty query")
@@ -63,8 +64,7 @@ class ResourceEncoder(json.JSONEncoder):
     def default(self, obj):
         if hasattr(obj, 'safe'): 
             return obj.safe()
-        else:
-            return obj
+        return json.JSONEncoder.default(self, obj)
 
 
 class HumanReadable(object):
