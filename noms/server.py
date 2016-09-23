@@ -2,7 +2,6 @@
 Twisted Web Routing
 """
 import json
-import urllib2  
 from functools import wraps
 
 import microdata
@@ -195,7 +194,6 @@ class APIServer(object):
         """
         Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension 
         """
-
         def returnResponse(status, recipes, message): 
             """
             Return the appropriate data structure to the http response 
@@ -211,7 +209,7 @@ class APIServer(object):
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
-
+        
         items = microdata.get_items(pageSource)
         recipeSaved = []
 
