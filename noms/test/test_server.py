@@ -326,11 +326,6 @@ class APIServerTest(BaseServerTest):
             expectedResults = '{"status": "ok", "recipes": [{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}], "message": ""}'
             assert ret == expectedResults  
 
-            # bookmarketing the recipe again will still result in just one saved recipe 
-            # yield self.handler('bookmarklet', req)
-            # mSaveOnlyOnce.assert_called_once_with()
-            # self.assertEqual(len(recipe.Recipe.objects()), 1)
-
             # # not signed in to noms; bookmarketing should not be allowed 
             req = self.requestJSON([])
             req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
@@ -353,28 +348,3 @@ class APIServerTest(BaseServerTest):
             ret = yield self.handler('bookmarklet', req)
             expectedResults = '{"status": "error", "recipes": [], "message": "There are no recipes on this page."}'
             assert ret == expectedResults
-
-    # don't know why it is not working; look into it later 
-    # def test_OnlySaveOncePerBookmark(self): 
-    #     """
-    #     Only save once per recipe
-    #     """
-    #     fromTest = fromdir(__file__)
-    #     loc = fromTest('recipe_page_source.html')
-    #     pageSource = open(loc).read()
-
-    #     pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
-    #     pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(pageSource), autospec=True)
-        
-    #     with pGet, pTreqContent:  
-    #         # normal bookmarketing 
-    #         u = self._users()[0]
-    #         req = self.requestJSON([], session_user=u) 
-    #         req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
-    #         yield self.handler('bookmarklet', req)
-
-    #         u = self._users()[0]
-    #         req = self.requestJSON([], session_user=u) 
-    #         req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
-    #         yield self.handler('bookmarklet', req)
-    #         self.assertEqual(len(recipe.Recipe.objects()), 1)
