@@ -3,7 +3,7 @@
 
   "name": "Noms!",
   "version": "1.0",
-  "description": "This extension clips the current page and stores it in noms book",
+  "description": "This extension clips the current page and stores it in Noms",
 
   "browser_action": {
     "default_icon": "images/icon.png",
