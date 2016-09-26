@@ -3,6 +3,7 @@ Twisted Web Routing
 """
 import json
 from functools import wraps
+from enum import Enum 
 
 import microdata
 
@@ -20,6 +21,15 @@ from noms.rendering import HumanReadable, RenderableQuerySet
 TOKEN_URL = "https://{domain}/oauth/token".format(domain='nomsbook.auth0.com')
 USER_URL = "https://{domain}/userinfo?access_token=".format(domain='nomsbook.auth0.com')
 OAUTH_GRANT_TYPE = 'authorization_code'
+RECIPE_SCHEMA = 'http://schema.org/Recipe'
+
+class ResponseMsg(Enum): 
+    """
+    Message responses for the bookmarklet 
+    """
+    NOT_LOGGED_IN = "User was not logged in."
+    NO_RECIPE = "There are no recipes on this page."
+    BLANK = ""
 
 
 class Server(object):
@@ -200,12 +210,12 @@ class APIServer(object):
             """
             data = {'status': status, 
                     'recipes': recipes, 
-                    'message': message} 
+                    'message': message.value} 
             defer.returnValue(json.dumps(data)) 
 
         userEmail = self.user(request).email
         if not userEmail: 
-            returnResponse(status="error", recipes=[], message="User was not logged in.")
+            returnResponse(status="error", recipes=[], message=ResponseMsg.NOT_LOGGED_IN)
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
@@ -215,7 +225,7 @@ class APIServer(object):
 
         for i in items: 
             itemTypeArray = [x.string for x in i.itemtype] 
-            if 'http://schema.org/Recipe' in itemTypeArray: 
+            if RECIPE_SCHEMA in itemTypeArray: 
                 recipe = i
                 saveItem = Recipe.fromMicrodata(recipe, userEmail)
                 Recipe.saveOnlyOnce(saveItem)
@@ -223,6 +233,6 @@ class APIServer(object):
                 break 
         
         if len(recipeSaved) == 0:
-            returnResponse(status="error", recipes=[], message="There are no recipes on this page.") 
+            returnResponse(status="error", recipes=[], message=ResponseMsg.NO_RECIPE) 
 
-        returnResponse(status="ok", recipes=recipeSaved, message="")
+        returnResponse(status="ok", recipes=recipeSaved, message=ResponseMsg.BLANK)

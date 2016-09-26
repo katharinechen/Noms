@@ -8,13 +8,22 @@
   <body ng-app="clipper">
     <div ng-controller="Clipper"> 
       <h1>Noms Clipper</h1>
-      <p>{{ message }}</p>
+
+      <div ng-if="message == 'statusError'"> 
+        <p>{{ responseError }}</p>
+      </div> 
+
+      <div ng-if="message == 'error'"> 
+        <p>We are not able to save your recipe at this time. For the time being, you have to login to Noms before clipping a recipe!</p>
+      </div> 
+
       <ul ng-show="saved" ng-repeat="r in recipes">
+        <p>We saved the following recipes:</p>
         <li>
           <a target="noms" ng-href="http://localhost:8080/recipes/{{ r.urlKey }}">{{ r.name }}</a>
         </li>
       </ul> 
-      <button ng-click="saveme()" id="checkPage">Clip this recipe!</button>
+      <button ng-show="showButton" ng-click="saveme()" id="checkPage">Clip this recipe!</button>
     </div>
   </body>
 </html>
