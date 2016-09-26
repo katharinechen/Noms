@@ -307,7 +307,7 @@ class APIServerTest(BaseServerTest):
 
     def test_bookmarklet(self):
         """
-        Does /bookmarklet fetch, save, and return a response for the recipe? 
+        Does api/bookmarklet fetch, save, and return a response for the recipe? 
         """
         fromTest = fromdir(__file__)
         loc = fromTest('recipe_page_source.html')
