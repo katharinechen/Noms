@@ -3,7 +3,8 @@ Twisted Web Routing
 """
 import json
 from functools import wraps
-from enum import Enum 
+
+from codado import enum
 
 import microdata
 
@@ -23,13 +24,12 @@ USER_URL = "https://{domain}/userinfo?access_token=".format(domain='nomsbook.aut
 OAUTH_GRANT_TYPE = 'authorization_code'
 RECIPE_SCHEMA = 'http://schema.org/Recipe'
 
-class ResponseMsg(Enum): 
-    """
-    Message responses for the bookmarklet 
-    """
-    NOT_LOGGED_IN = "User was not logged in."
-    NO_RECIPE = "There are no recipes on this page."
-    BLANK = ""
+
+ResponseMsg = enum(
+        not_logged_in='User was not logged in.', 
+        no_recipe='There are no recipes on this page.', 
+        blank=''
+        )
 
 
 class Server(object):
@@ -210,12 +210,12 @@ class APIServer(object):
             """
             data = {'status': status, 
                     'recipes': recipes, 
-                    'message': message.value} 
+                    'message': message} 
             defer.returnValue(json.dumps(data)) 
 
         userEmail = self.user(request).email
         if not userEmail: 
-            returnResponse(status="error", recipes=[], message=ResponseMsg.NOT_LOGGED_IN)
+            returnResponse(status="error", recipes=[], message=ResponseMsg.not_logged_in)
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
@@ -233,6 +233,6 @@ class APIServer(object):
                 break 
         
         if len(recipeSaved) == 0:
-            returnResponse(status="error", recipes=[], message=ResponseMsg.NO_RECIPE) 
+            returnResponse(status="error", recipes=[], message=ResponseMsg.no_recipe) 
 
-        returnResponse(status="ok", recipes=recipeSaved, message=ResponseMsg.BLANK)
+        returnResponse(status="ok", recipes=recipeSaved, message=ResponseMsg.blank)

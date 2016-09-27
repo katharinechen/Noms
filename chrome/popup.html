@@ -20,7 +20,7 @@
       <ul ng-show="saved" ng-repeat="r in recipes">
         <p>We saved the following recipes:</p>
         <li>
-          <a target="noms" ng-href="http://localhost:8080/recipes/{{ r.urlKey }}">{{ r.name }}</a>
+          <a target="noms" ng-href="{{ domainURL }}/recipes/{{ r.urlKey }}">{{ r.name }}</a>
         </li>
       </ul> 
       <button ng-show="showButton" ng-click="saveme()" id="checkPage">Clip this recipe!</button>

@@ -7,6 +7,7 @@ var Clipper = app.controller("Clipper", ['$scope', '$http', function ($scope, $h
     var nomsbook = "http://localhost:8080/api/bookmarklet?uri=";
     $scope.saved = false; 
     $scope.showButton = true; 
+    $scope.domainURL = "http://localhost:8080"
 
     // user clicked the save button 
     $scope.saveme = function() { 
