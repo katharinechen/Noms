@@ -11,29 +11,47 @@
     <table class="table">
       <thread> 
         <tbody>
+
           <tr>
             <td><strong>Author</strong></td>
             <td>{{ recipe.author }}</td> 
           </tr>
+
           <tr>
             <td><strong>User<strong></td>
-            <td>{{ recipe.user }}</td> 
+            <td>{{ recipe.user.givenName }} {{ recipe.user.familyName }} ({{ recipe.user.email}})</td> 
           </tr>
+
           <tr>
             <td><strong>Ingredients</strong></td>
-            <td>{{ recipe.ingredients }}</td> 
+            <td>
+              <ul ng-repeat="ingredient in recipe.ingredients">
+                <li>{{ ingredient }}</li> 
+              </ul> 
+            </td> 
           </tr>
+
           <tr>
             <td><strong>Recipe Yield<strong></td>
             <td>{{ recipe.recipeYield }}</td> 
           </tr>
+
           <tr>
             <td><strong>Instructions</strong></td>
-            <td>{{ recipe.instructions }}</td> 
-          </tr>
+            <td>
+              <ul ng-repeat="instruction in recipe.instructions">
+                <li>{{ instruction }}</li> 
+              </ul> 
+            </td>
+          </tr> 
+
           <tr>
             <td><strong>Tags<strong></td>
-            <td>{{ recipe.tags }}</td> 
+            <td> 
+              <ul ng-repeat="tag in recipe.tags">
+                <li>{{ tag }}</li> 
+              </ul>
+            </td> 
           </tr>
           <tr>
             <td><strong>Last Modified</strong></td>
@@ -46,5 +64,3 @@
   </div>
 </div>
 <!-- individual recipe end --> 
-
-

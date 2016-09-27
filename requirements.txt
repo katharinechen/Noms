@@ -4,12 +4,14 @@ contextdecorator
 coverage
 jinja2
 klein 
+microdata
 mock
 mongoengine
 mongomock
 pyflakes
 pytest-flakes
 pytest-cov
+pytest>=3.0
 pyOpenSSL
 service_identity
 treq

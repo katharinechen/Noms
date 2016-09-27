@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "Noms!",
+  "version": "1.0",
+  "description": "This extension clips the current page and stores it in Noms",
+
+  "browser_action": {
+    "default_icon": "images/icon.png",
+    "default_title": "Noms!",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "tabs", 
+    "cookies",
+    "http://localhost:8080/*"
+  ]
+}

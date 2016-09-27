@@ -13,7 +13,7 @@ import treq
 from klein.app import KleinRequest, KleinResource
 from klein.interfaces import IKleinRequest
 
-from codado import eachMethod
+from codado import eachMethod, fromdir
 
 from mock import patch, ANY
 
@@ -264,12 +264,12 @@ class APIServerTest(BaseServerTest):
         @defer.inlineCallbacks
         def negotiateSSO(req, **user):
             def auth0tokenizer():
-                return defer.succeed(json.dumps({'access_token': 'IDK!@#BBQ'}))
+                return defer.succeed({'access_token': 'IDK!@#BBQ'})
 
             def auth0userGetter():
-                return defer.succeed(json.dumps(dict(**user)))
+                return defer.succeed(dict(**user))
 
-            pContent = patch.object(treq, 'content', 
+            pContent = patch.object(treq, 'json_content', 
                     side_effect=[auth0tokenizer(), auth0userGetter()],
                     autospec=True)
 
@@ -304,3 +304,47 @@ class APIServerTest(BaseServerTest):
         self.assertEqual(req.getSession().user.email, 'weirdo2@gmail.com')
         self.assertEqual(req.responseCode, 302)
         self.assertEqual(req.responseHeaders.getRawHeaders('location'), ['/'])
+
+    def test_bookmarklet(self):
+        """
+        Does api/bookmarklet fetch, save, and return a response for the recipe? 
+        """
+        fromTest = fromdir(__file__)
+        loc = fromTest('recipe_page_source.html')
+        pageSource = open(loc).read()
+
+        pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
+        pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(pageSource), autospec=True)
+        
+        with pGet, pTreqContent:  
+            # normal bookmarketing 
+            u = self._users()[0]
+            req = self.requestJSON([], session_user=u) 
+            req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
+            ret = yield self.handler('bookmarklet', req)
+            self.assertEqual(len(recipe.Recipe.objects()), 1)
+            expectedResults = '{"status": "ok", "recipes": [{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}], "message": ""}'
+            assert ret == expectedResults  
+
+            # # not signed in to noms; bookmarketing should not be allowed 
+            req = self.requestJSON([])
+            req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
+            ret = yield self.handler('bookmarklet', req)
+            expectedResults = '{"status": "error", "recipes": [], "message": "User was not logged in."}'
+            assert ret == expectedResults
+
+    def test_noRecipeToBookmark(self):
+        """
+        Does the application still work if there are no recipes? 
+        """
+        pageSource = ''
+        pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
+        pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(pageSource), autospec=True)
+
+        with pGet, pTreqContent:
+            u = self._users()[0]
+            req = self.requestJSON([], session_user=u) 
+            req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
+            ret = yield self.handler('bookmarklet', req)
+            expectedResults = '{"status": "error", "recipes": [], "message": "There are no recipes on this page."}'
+            assert ret == expectedResults

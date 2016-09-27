@@ -28,7 +28,7 @@ class NomsOptions(tap.Options):
         assert alias in DBAlias
         connect(**DBHost[alias])
         CONFIG.load()
-
+        
         # now we know CONFIG exists
         CONFIG.cliOptions = dict(self.items())
         CONFIG.save()

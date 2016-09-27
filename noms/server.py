@@ -4,6 +4,10 @@ Twisted Web Routing
 import json
 from functools import wraps
 
+from codado import enum
+
+import microdata
+
 from twisted.web import static
 from twisted.internet import defer
 import treq
@@ -18,6 +22,14 @@ from noms.rendering import HumanReadable, RenderableQuerySet
 TOKEN_URL = "https://{domain}/oauth/token".format(domain='nomsbook.auth0.com')
 USER_URL = "https://{domain}/userinfo?access_token=".format(domain='nomsbook.auth0.com')
 OAUTH_GRANT_TYPE = 'authorization_code'
+RECIPE_SCHEMA = 'http://schema.org/Recipe'
+
+
+ResponseMsg = enum(
+        not_logged_in='User was not logged in.', 
+        no_recipe='There are no recipes on this page.', 
+        blank=''
+        )
 
 
 class Server(object):
@@ -157,16 +169,14 @@ class APIServer(object):
           'code':          code,
           'grant_type':    'authorization_code'
         }
-        r1 = yield treq.post(TOKEN_URL,
+        tokenInfo = yield treq.post(TOKEN_URL,
                 json.dumps(tokenPayload),
                 headers={'Content-Type': ['application/json']}
-                ).addCallback(treq.content)
-        tokenInfo = json.loads(r1)
+                ).addCallback(treq.json_content)
 
         # Ask auth0 to look up the right user in the IdP, by querying with access_token
         userURL = '{base}{access_token}'.format(base=USER_URL, **tokenInfo)
-        r2 = yield treq.get(userURL).addCallback(treq.content)
-        userInfo = json.loads(r2)
+        userInfo = yield treq.get(userURL).addCallback(treq.json_content)
 
         # Get or create a user account matching auth0's reply
         u = user.User.objects(email=userInfo['email']).first()
@@ -188,3 +198,41 @@ class APIServer(object):
         u = getattr(request.getSession(), 'user', user.ANONYMOUS)
         return u
 
+    @app.route("/bookmarklet")
+    @defer.inlineCallbacks 
+    def bookmarklet(self, request): 
+        """
+        Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension 
+        """
+        def returnResponse(status, recipes, message): 
+            """
+            Return the appropriate data structure to the http response 
+            """
+            data = {'status': status, 
+                    'recipes': recipes, 
+                    'message': message} 
+            defer.returnValue(json.dumps(data)) 
+
+        userEmail = self.user(request).email
+        if not userEmail: 
+            returnResponse(status="error", recipes=[], message=ResponseMsg.not_logged_in)
+
+        url = request.args['uri'][0]
+        pageSource = yield treq.get(url).addCallback(treq.content)
+        
+        items = microdata.get_items(pageSource)
+        recipeSaved = []
+
+        for i in items: 
+            itemTypeArray = [x.string for x in i.itemtype] 
+            if RECIPE_SCHEMA in itemTypeArray: 
+                recipe = i
+                saveItem = Recipe.fromMicrodata(recipe, userEmail)
+                Recipe.saveOnlyOnce(saveItem)
+                recipeSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey}) 
+                break 
+        
+        if len(recipeSaved) == 0:
+            returnResponse(status="error", recipes=[], message=ResponseMsg.no_recipe) 
+
+        returnResponse(status="ok", recipes=recipeSaved, message=ResponseMsg.blank)
