@@ -1,12 +1,13 @@
-'use strict'; 
+/* globals Auth0Lock: false */
+'use strict';
 
 // login and other top-screen controls
 app.controller('NavbarCtrl', ['$scope', '$http', function($scope, $http) {
 
     $http({method: 'GET', url: '/api/user'}).then(function(user) {
-        $scope.user = user.data; 
-    }); 
-  
+        $scope.user = user.data;
+    });
+
     $scope.showLogin = function _a_showLogin() {
         var lock = new Auth0Lock(
                 $scope.preload.auth0Public,
@@ -21,5 +22,5 @@ app.controller('NavbarCtrl', ['$scope', '$http', function($scope, $http) {
         });
     };
 
-}]); 
+}]);
 
