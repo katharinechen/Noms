@@ -15,6 +15,7 @@ def clean(string):
     res = re.sub('\s+', ' ', string)
     return res.strip()
 
+
 class Recipe(RenderableDocument):
     """
     Recipe Collection
@@ -62,9 +63,13 @@ class Recipe(RenderableDocument):
         """ 
         Create a recipe object from microdata
         """ 
+        anon = User.objects.get(email='anonymous@example.com')
         self = cls()
         self.name = clean(microdata.name)
-        self.author = clean(microdata.author.name) 
+        if microdata.author:
+            self.author = clean(microdata.author.name)
+        else:
+            self.author = anon.givenName
         self.user = User.objects(email=userEmail).first()
         self.urlKey = urlify(self.user.email, self.name)
         for i in microdata.props['ingredients']: 

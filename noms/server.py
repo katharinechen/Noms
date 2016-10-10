@@ -127,11 +127,12 @@ class APIServer(object):
         """
         Save recipes
         """
+        anon = User.objects(email='anonymous@example.com')
         data = json.load(request.content)
         data = { k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
-        recipe.author = data['author']
+        recipe.author = data.get('author', anon.firstName)
         recipe.urlKey = urlify(recipe.user, recipe.name)
         for i in data['ingredients']:
             recipe.ingredients.append(i)
