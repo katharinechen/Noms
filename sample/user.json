@@ -1,0 +1,2 @@
+{"_id": {"$oid": "57fabf388a99d217631c68a1"}, "email": "mr.nommer@gmail.com", "roles": ["user"], "givenName": "Noms", "familyName": "Dodt"}
+{"_id": {"$oid": "57fac8208a99d21c21df8cd4"}, "email": "anonymous@example.com", "roles": ["user"], "givenName": "Anonymous", "familyName": ""}
