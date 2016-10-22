@@ -35,10 +35,9 @@ class NomsOptions(tap.Options):
         CONFIG.cliOptions = dict(self.items())
         CONFIG.save()
 
-        # set up sass files 
-        baseSassFile = 'static/scss/base.scss'
-        baseCssFile = 'static/css/base.css'
-        subprocess.check_output(["sass", baseSassFile, baseCssFile, "--trace"])
+        # run Sass
+        bashCommand = "sass --watch static/scss/base.scss:static/css/base.css --trace"
+        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 
         self.opt_class(MAIN_FUNC)
 
