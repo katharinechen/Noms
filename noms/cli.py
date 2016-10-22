@@ -1,6 +1,8 @@
 """
 Command-line interface for noms
 """
+import subprocess 
+
 from twisted.web import tap
 
 from mongoengine import connect
@@ -32,6 +34,11 @@ class NomsOptions(tap.Options):
         # now we know CONFIG exists
         CONFIG.cliOptions = dict(self.items())
         CONFIG.save()
+
+        # set up sass files 
+        baseSassFile = 'static/scss/base.scss'
+        baseCssFile = 'static/css/base.css'
+        subprocess.check_output(["sass", baseSassFile, baseCssFile, "--trace"])
 
         self.opt_class(MAIN_FUNC)
 
