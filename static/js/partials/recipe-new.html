@@ -1,10 +1,28 @@
-<div ng-controller="NewRecipeCtrl">
-  <form novalidate class="simple-form">
-    Name: <input type="text" ng-model="recipe.name" /><br />
-    Author: <input type="text" ng-model="recipe.author" /><br />
-    Ingredients: <textarea ng-model="recipe.ingredients"></textarea><br /> 
-    Instructions: <textarea ng-model="recipe.instructions"></textarea><br /> 
+<div class="container-form" ng-controller="NewRecipeCtrl">
+
+  <form class="special-form">
+    <!--     All the rows of the survey  -->
+    <div class="row"> 
+      <label>Name:</label>  
+      <input type="text" ng-model="recipe.name" />
+    </div> 
+    <div class="row"> 
+      <label>Author:</label>
+      <input type="text" ng-model="recipe.author" />
+    </div> 
+    <div> 
+      <label>Ingredients:</label>
+      <textarea ng-model="recipe.ingredients"></textarea>
+    </div> 
+    <div> 
+      <label>Instructions:</label>
+      <textarea ng-model="recipe.instructions"></textarea>
+    </div> 
+    
+    <!--     Button  -->
     <input type="submit" ng-click="update(recipe)" value="Save" />
+  
   </form>
+
   <div ng-show="ok">{{ message }}</div> 
 </div>
