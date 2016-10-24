@@ -6,7 +6,7 @@ from twisted.web import tap
 from mongoengine import connect
 
 from noms.server import Server
-from noms import CONFIG, DBAlias, DBHost
+from noms import CONFIG, DBAlias, DBHost, user
 
 
 MAIN_FUNC = 'noms.cli.main'
@@ -32,6 +32,9 @@ class NomsOptions(tap.Options):
         # now we know CONFIG exists
         CONFIG.cliOptions = dict(self.items())
         CONFIG.save()
+
+        # ensure that at least the anonymous user exists
+        user.requireAnonymous()
 
         self.opt_class(MAIN_FUNC)
 

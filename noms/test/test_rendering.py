@@ -6,123 +6,108 @@ from inspect import cleandoc
 
 from jinja2 import Template
 
-from twisted.trial import unittest
-
-from py.test import raises 
+from pytest import raises 
 
 from mongoengine import StringField, IntField
 
 from mock import patch
 
-from noms.test import mockConfig, mockDatabase
 from noms import rendering, secret, recipe, urlify, user
 
 
-class HumanReadableTest(unittest.TestCase):
+def test_renderHumanReadable(mockConfig):
     """
-    Cover the HumanReadable renderable object
+    Do I produce a string using my template that uses all the variables I
+    provided?
     """
-    @mockConfig()
-    def test_render(self):
-        """
-        Do I produce a string using my template that uses all the variables I
-        provided?
-        """
-        pubkey, seckey = secret.get('auth0')
-        self.assertEqual((pubkey, seckey), ('abc123', 'ABC!@#'))
-        self.tplString = cleandoc("""
-            hi there
-            {{ preload.apparentURL }}
-            {{ preload.auth0Public }}
-            {{ banana }}
+    pubkey, seckey = secret.get('auth0')
+    assert (pubkey, seckey) == ('abc123', 'ABC!@#')
+    tplString = cleandoc("""
+        hi there
+        {{ preload.apparentURL }}
+        {{ preload.auth0Public }}
+        {{ banana }}
+    """)
+    tplTemplate = Template(tplString)
+
+    hrTemplate = rendering.HumanReadable(tplTemplate,
+            banana='yellow and delicious')
+
+    expected = cleandoc("""
+        hi there
+        https://app.nomsbook.com
+        abc123
+        yellow and delicious
         """)
-        self.tplTemplate = Template(self.tplString)
 
-        hrTemplate = rendering.HumanReadable(self.tplTemplate,
-                banana='yellow and delicious')
+    assert hrTemplate.render(None) == expected
 
-        expected = cleandoc("""
-            hi there
-            https://app.nomsbook.com
-            abc123
-            yellow and delicious
-            """)
+    expected = cleandoc("""
+        hi there
+        https://app.nomsbook.com
+        abc123
+        brown and gross
+        """)
 
-        self.assertEqual(hrTemplate.render(None), expected)
+    with patch.object(rendering.env, 'get_template', return_value=tplTemplate):
+        hrString = rendering.HumanReadable('tpl_from_loader.txt',
+                banana='brown and gross')
 
-        expected = cleandoc("""
-            hi there
-            https://app.nomsbook.com
-            abc123
-            brown and gross
-            """)
-
-        with patch.object(rendering.env, 'get_template', return_value=self.tplTemplate):
-            hrString = rendering.HumanReadable('tpl_from_loader.txt',
-                    banana='brown and gross')
-
-            self.assertEqual(hrString.render(None), expected)
+        assert hrString.render(None) == expected
 
 
-class RenderableQuerySetTest(unittest.TestCase):
+def test_emptyRenderableQuerySet(mockConfig):
     """
-    Cover the RenderableQuerySet
+    Do I correctly produce an error for empty queries?
     """
-    @mockConfig()
-    def test_empty(self):
-        """
-        Do I correctly produce an error for empty queries?
-        """
-        qs = recipe.Recipe.objects()
-        rqs = rendering.RenderableQuerySet(qs)
-        self.assertRaises(rendering.EmptyQuery, rqs.render, None)
+    qs = recipe.Recipe.objects()
+    rqs = rendering.RenderableQuerySet(qs)
 
-    @mockConfig()
-    def test_render(self):
-        """
-        Do I produce a json array from a query?
-        """
-        author = u'cory'
-        
-        u = user.User(email="dude@gmail.com")
-        u.save()
-
-        url = urlify(u'delicious sandwich', author)
-        recipe.Recipe(name=u'delicious sandwich', author=author, urlKey=url, user=u).save()
-        url = urlify(u'delicious soup', author)
-        recipe.Recipe(name=u'delicious soup', author=author, urlKey=url, user=u).save()
-
-        qs = recipe.Recipe.objects()
-        expected = ('[{"recipeYield": null, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory-", "user": {"roles": [], "givenName": null, "email": "dude@gmail.com", "familyName": null}}, ' 
-                     '{"recipeYield": null, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory-", "user": {"roles": [], "givenName": null, "email": "dude@gmail.com", "familyName": null}}]')
-        assert rendering.RenderableQuerySet(qs).render(None) == expected
+    with raises(rendering.EmptyQuery):
+        rqs.render(None)
 
 
-class RenderableDocumentTest(unittest.TestCase):
-    @mockDatabase()
-    def test_safe(self):
-        class Doc(rendering.RenderableDocument):
-            pass
+def test_renderRenderableQuerySet(mockConfig):
+    """
+    Do I produce a json array from a query?
+    """
+    author = u'cory'
+    
+    u = user.User(email="dude@gmail.com")
+    u.save()
 
-        self.assertRaises(NotImplementedError, Doc().safe)
+    url = urlify(u'delicious sandwich', author)
+    recipe.Recipe(name=u'delicious sandwich', author=author, urlKey=url, user=u).save()
+    url = urlify(u'delicious soup', author)
+    recipe.Recipe(name=u'delicious soup', author=author, urlKey=url, user=u).save()
 
-    @mockDatabase()
-    def test_render(self):
-        class Doc(rendering.RenderableDocument):
-            safeValue = StringField()
-            badValue = StringField()
-            intValue = IntField()
-
-            def safe(self):
-                return {'safe': self.safeValue, 'int': self.intValue}
-
-        doc = Doc(safeValue='good', badValue='no', intValue=12)
-        self.assertEqual(doc.render(None),
-                json.dumps({'safe': 'good', 'int': 12})
-                )
+    qs = recipe.Recipe.objects()
+    expected = ('[{"recipeYield": null, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory-", "user": {"roles": [], "givenName": null, "email": "dude@gmail.com", "familyName": null}}, ' 
+                 '{"recipeYield": null, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory-", "user": {"roles": [], "givenName": null, "email": "dude@gmail.com", "familyName": null}}]')
+    assert rendering.RenderableQuerySet(qs).render(None) == expected
 
 
-# this is in the style of py.test 
+def test_safe(mockDatabase):
+    class Doc(rendering.RenderableDocument):
+        pass
+
+    with raises(NotImplementedError):
+        Doc().safe()
+
+
+def test_render(mockDatabase):
+    class Doc(rendering.RenderableDocument):
+        safeValue = StringField()
+        badValue = StringField()
+        intValue = IntField()
+
+        def safe(self):
+            return {'safe': self.safeValue, 'int': self.intValue}
+
+    doc = Doc(safeValue='good', badValue='no', intValue=12)
+    assert doc.render(None) == json.dumps({'safe': 'good', 'int': 12})
+
+
 def test_resourceEncoder():
     """
     Test that json encoder works on our objects 

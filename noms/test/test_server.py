@@ -2,8 +2,8 @@
 Tests of noms.server, mostly handlers
 """
 import json
+import re
 
-from twisted.trial import unittest
 from twisted.web.test.requesthelper import DummyRequest
 from twisted.python.components import registerAdapter
 from twisted.internet import defer
@@ -13,13 +13,17 @@ import treq
 from klein.app import KleinRequest, KleinResource
 from klein.interfaces import IKleinRequest
 
-from codado import eachMethod, fromdir
+import attr
+
+from codado import fromdir
 
 from mock import patch, ANY
 
+from pytest import fixture, inlineCallbacks
+
 from noms import server, fromNoms, config, recipe, urlify, user, CONFIG
 from noms.rendering import EmptyQuery
-from noms.test import mockConfig, wrapDatabaseAndCallbacks
+from noms.conftest import assertFailure
 
 
 # klein adapts Request to KleinRequest internally when the Klein() object
@@ -30,81 +34,79 @@ from noms.test import mockConfig, wrapDatabaseAndCallbacks
 registerAdapter(KleinRequest, DummyRequest, IKleinRequest)
 
 
-class FnTest(unittest.TestCase):
+def test_querySet(mockConfig):
     """
-    Test top-level functions
+    Does querySet(fn)() render the result of the cursor returned by fn?
     """
-    @mockConfig()
-    def test_querySet(self):
-        """
-        Does querySet(fn)() render the result of the cursor returned by fn?
-        """
-        def _configs(req):
-            return config.Config.objects()
+    def _configs(req):
+        return config.Config.objects()
 
-        configsFn = server.querySet(_configs)
-        self.assertEqual(configsFn(None), '[{"apparentURL": "https://app.nomsbook.com"}]')
+    configsFn = server.querySet(_configs)
+    assert configsFn(None) == '[{"apparentURL": "https://app.nomsbook.com"}]'
 
 
-class BaseServerTest(unittest.TestCase):
-    defaultHeaders = (
-        ('user-agent', ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0)']),
-        ('cookie', ['']),
-        )
+DEFAULT_HEADERS = (
+    ('user-agent', ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0)']),
+    ('cookie', ['']),
+    )
 
-    serverCls = None
 
-    def setUp(self):
-        if hasattr(self, 'server'):
-            "Using memoized server instance"
+def request(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
+    """
+    Build a fake request for tests
+    """
+    req = DummyRequest(postpath)
+    for hdr, val in requestHeaders:
+        req.requestHeaders.setRawHeaders(hdr, val)
+
+    for hdr, val in responseHeaders:
+        req.setHeader(hdr, val)
+
+    for k, v in kwargs.items():
+        if k.startswith('session_'):
+            ses = req.getSession()
+            setattr(ses, k[8:], v)
         else:
-            self.__class__.server = self.serverCls()
+            setattr(req, k, v)
 
-        # feel free to replace this request with your own, but lots of tests
-        # just need this.
-        self.req = self.request([])
-        self.reqJS = self.requestJSON([])
+    return req
 
-    def request(self, postpath, requestHeaders=defaultHeaders, responseHeaders=(), **kwargs):
+
+def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
+    """
+    As ServerTest.request, but force content-type header, and coerce
+    kwargs['content'] to the right thing
+    """
+    content = kwargs.pop('content', None)
+    if isinstance(content, dict):
         """
-        Build a fake request for tests
+        tb discussed - this has been useful in Aorta but we don't need yet
+        ###    kwargs['content'] = StringIO(json.dumps(content))
+        ###elif content:
+        ###    kwargs['content'] = StringIO(str(content))
         """
-        req = DummyRequest(postpath)
-        for hdr, val in requestHeaders:
-            req.requestHeaders.setRawHeaders(hdr, val)
+    else:
+        kwargs['content'] = None
 
-        for hdr, val in responseHeaders:
-            req.setHeader(hdr, val)
+    responseHeaders = responseHeaders + (('content-type', ['application/json']),)
+    req = request(postpath, requestHeaders, responseHeaders, **kwargs)
 
-        for k, v in kwargs.items():
-            if k.startswith('session_'):
-                ses = req.getSession()
-                setattr(ses, k[8:], v)
-            else:
-                setattr(req, k, v)
+    return req
 
-        return req
 
-    def requestJSON(self, postpath, requestHeaders=defaultHeaders, responseHeaders=(), **kwargs):
-        """
-        As ServerTest.request, but force content-type header, and coerce
-        kwargs['content'] to the right thing
-        """
-        content = kwargs.pop('content', None)
-        if isinstance(content, dict):
-            """
-            tb discussed - this has been useful in Aorta but we don't need yet
-            ###    kwargs['content'] = StringIO(json.dumps(content))
-            ###elif content:
-            ###    kwargs['content'] = StringIO(str(content))
-            """
-        else:
-            kwargs['content'] = None
 
-        responseHeaders = responseHeaders + (('content-type', ['application/json']),)
-        req = self.request(postpath, requestHeaders, responseHeaders, **kwargs)
+@attr.s(init=False)
+class EZServer(object):
+    """
+    Convenience abstraction over Server/APIServer to simplify test code
+    """
+    cls = attr.ib()
+    inst = attr.ib(default=None)
 
-        return req
+
+    def __init__(self, cls):
+        self.cls = cls
+        self.inst = cls()
 
     def handler(self, handlerName, req=None, *a, **kw):
         """
@@ -116,235 +118,277 @@ class BaseServerTest(unittest.TestCase):
             # path. In other words, we've already found the final resource when
             # execute_endpoint is called.
             postpath = kw.pop('postpath', [])
-            req = self.request(postpath)
+            req = request(postpath)
 
         return defer.maybeDeferred(
-                self.server.app.execute_endpoint,
+                self.inst.app.execute_endpoint,
                 handlerName, req, *a, **kw
                 )
 
 
-@eachMethod(wrapDatabaseAndCallbacks, 'test_')
-class ServerTest(BaseServerTest):
+@fixture
+def rootServer():
     """
-    Test server handlers
+    Instance of EZServer using the server.Server routes
     """
-    serverCls = server.Server
-
-    def test_static(self):
-        """
-        Does /static/ return a FilePath?
-        """
-        with fromNoms:
-            r = yield self.handler('static', postpath=['js', 'app.js'])
-            self.assertTrue('app.js' in r.child('js').listdir())
-
-    def test_index(self):
-        """
-        Does / return the home page?
-        """
-        r = yield self.handler('index', self.req)
-        self.assertRegexpMatches(r.render(self.req), r'<title>NOM NOM NOM</title>')
-
-    def test_showRecipes(self):
-        """
-        Does /recipes list recipes?
-        """
-        r = yield self.handler('showRecipes', self.req)
-        self.assertRegexpMatches(r.render(self.req), r'partials/recipe-list.html')
-
-    def test_createRecipe(self):
-        """
-        Does /recipes/new show the creation page?
-        """
-        r = yield self.handler('createRecipe', self.req)
-        self.assertRegexpMatches(r.render(self.req), r'partials/recipe-new.html')
-
-    def test_createIngredient(self):
-        """
-        Does /ingredients/new show the ingredient creation page?
-        """
-        r = yield self.handler('createIngredient', self.req)
-        self.assertRegexpMatches(r.render(self.req), r'partials/ingredient-new.html')
-
-    def test_showRecipe(self):
-        """
-        Does /recipes/xxx show recipe xxx?
-        """
-        r = yield self.handler('showRecipe', self.req, 'foo-gmail-com-honeyed-cream-cheese-pear-pie-')
-        rendered = r.render(self.req)
-        self.assertRegexpMatches(rendered, r'partials/recipe.html')
-        self.assertRegexpMatches(rendered, r'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-')
-
-    def test_api(self):
-        """
-        Does the /api/ URL hand off to the right resource?
-        """
-        req = self.request([])
-
-        def _cleanup():
-            del self.server._api
-
-        self.addCleanup(_cleanup)
-
-        # does it create the _api object when needed?
-        self.assertEqual(self.server._api, None)
-        r1 = yield self.handler('api', req)
-        self.assertIdentical(r1, self.server._api)
-        self.assertTrue(isinstance(r1, KleinResource))
-
-        # does it return the same _api object when requested again?
-        r2 = yield self.handler('api', req)
-        self.assertIdentical(r1, r2)
+    return EZServer(server.Server)
 
 
-@eachMethod(wrapDatabaseAndCallbacks, 'test_')
-class APIServerTest(BaseServerTest):
+@fixture
+def apiServer():
     """
-    Test API handlers
+    Instance of EZServer using the server.APIServer routes
     """
-    serverCls = server.APIServer
+    return EZServer(server.APIServer)
 
-    def _users(self):
-        """
-        Set up some users explicitly during a test
-        """
-        return (user.User(email='weirdo@gmail.com').save(),)
 
-    def _recipes(self):
-        """
-        Set up some recipes explicitly during a test
-        """
-        author = u'cory'
-        url = urlify(u'weird sandwich', author)
-        r1 = recipe.Recipe(name=u'weird sandwich', author=author, urlKey=url).save()
-        url = urlify(u'weird soup', author)
-        r2 = recipe.Recipe(name=u'weird soup', author=author, urlKey=url).save()
-        return (r1, r2)
+@fixture
+def req():
+    """
+    Basic empty request
+    """
+    return request([])
 
-    def test_getRecipe(self):
-        """
-        Does /api/recipe/.... return a specific recipe?
-        """
-        self._recipes()
-        r = yield self.handler('getRecipe', self.reqJS, 'weird-soup-cory-')
-        self.assertEqual(r['name'], 'weird soup')
 
-    def test_recipeList(self):
-        """
-        Does /api/recipe/list return a structured list of recipes from the database?
-        """
-        yield self.assertFailure(self.handler('recipeList'), EmptyQuery)
+@fixture
+def reqJS():
+    """
+    Basic empty request that uses JSON request wrapping/unwrapping
+    """
+    return requestJSON([])
 
-        self._recipes()
-        r = json.loads((yield self.handler('recipeList')))
-        keys = [x['urlKey'] for x in r]
-        self.assertEqual(keys, ['weird-sandwich-cory-', 'weird-soup-cory-'])
 
-    def test_user(self):
-        """
-        Does /api/user return the current user?
-        """
-        u = self._users()[0]
-        req = self.requestJSON([], session_user=u)
-        r = yield self.handler('user', req)
-        self.assertEqual(r.email, 'weirdo@gmail.com')
+@inlineCallbacks
+def test_static(mockConfig, rootServer):
+    """
+    Does /static/ return a FilePath?
+    """
+    with fromNoms:
+        r = yield rootServer.handler('static', postpath=['js', 'app.js'])
+        assert 'app.js' in r.child('js').listdir()
 
-    def test_sso(self):
-        """
-        Does /api/sso create or return a good user?
-        """
-        pPost = patch.object(treq, 'post',
-                return_value=defer.succeed(None),
+
+@inlineCallbacks
+def test_index(mockConfig, rootServer, req):
+    """
+    Does / return the home page?
+    """
+    r = yield rootServer.handler('index', req)
+    assert re.search(r'<title>NOM NOM NOM</title>', r.render(req))
+
+
+@inlineCallbacks
+def test_showRecipes(mockConfig, rootServer, req):
+    """
+    Does /recipes list recipes?
+    """
+    r = yield rootServer.handler('showRecipes', req)
+    assert re.search(r'partials/recipe-list.html', r.render(req))
+
+
+@inlineCallbacks
+def test_createRecipe(mockConfig, rootServer, req):
+    """
+    Does /recipes/new show the creation page?
+    """
+    r = yield rootServer.handler('createRecipe', req)
+    assert re.search(r'partials/recipe-new.html', r.render(req))
+
+
+@inlineCallbacks
+def test_createIngredient(mockConfig, rootServer, req):
+    """
+    Does /ingredients/new show the ingredient creation page?
+    """
+    r = yield rootServer.handler('createIngredient', req)
+    assert re.search(r'partials/ingredient-new.html', r.render(req))
+
+
+@inlineCallbacks
+def test_showRecipe(mockConfig, rootServer, req):
+    """
+    Does /recipes/xxx show recipe xxx?
+    """
+    r = yield rootServer.handler('showRecipe', req, 'foo-gmail-com-honeyed-cream-cheese-pear-pie-')
+    rendered = r.render(req)
+    assert re.search(r'partials/recipe.html', rendered)
+    assert re.search(r'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-',
+        rendered)
+
+
+@inlineCallbacks
+def test_api(mockConfig, rootServer, req):
+    """
+    Does the /api/ URL hand off to the right resource?
+    """
+    # does it create the _api object when needed?
+    assert rootServer.inst._api is None
+    r1 = yield rootServer.handler('api', req)
+    assert r1 is rootServer.inst._api
+    assert isinstance(r1, KleinResource)
+
+    # does it return the same _api object when requested again?
+    r2 = yield rootServer.handler('api', req)
+    assert r1 is r2
+
+
+@fixture
+def weirdo():
+    """
+    Create the weirdo users, for tests
+    """
+    return user.User(email='weirdo@gmail.com').save()
+
+
+@fixture
+def recipes():
+    """
+    Set up some recipes explicitly during a test
+    """
+    author = u'cory'
+    url = urlify(u'weird sandwich', author)
+    r1 = recipe.Recipe(name=u'weird sandwich', author=author, urlKey=url).save()
+    url = urlify(u'weird soup', author)
+    r2 = recipe.Recipe(name=u'weird soup', author=author, urlKey=url).save()
+    return (r1, r2)
+
+
+@inlineCallbacks
+def test_getRecipe(mockConfig, apiServer, recipes, reqJS):
+    """
+    Does /api/recipe/.... return a specific recipe?
+    """
+    r = yield apiServer.handler('getRecipe', reqJS, 'weird-soup-cory-')
+    assert r['name'] == 'weird soup'
+
+
+@inlineCallbacks
+def test_recipeListNone(mockConfig, apiServer):
+    """
+    Does /api/recipe/list raise the right exception when empty?
+    """
+    yield assertFailure(apiServer.handler('recipeList'), EmptyQuery)
+
+
+@inlineCallbacks
+def test_recipeList(mockConfig, apiServer, recipes):
+    """
+    Does /api/recipe/list return a structured list of recipes from the database?
+    """
+    r = json.loads((yield apiServer.handler('recipeList')))
+    keys = [x['urlKey'] for x in r]
+    assert keys == ['weird-sandwich-cory-', 'weird-soup-cory-']
+
+
+@inlineCallbacks
+def test_user(mockConfig, apiServer, weirdo):
+    """
+    Does /api/user return the current user?
+    """
+    req = requestJSON([], session_user=weirdo)
+    r = yield apiServer.handler('user', req)
+    assert r.email == 'weirdo@gmail.com'
+
+
+@inlineCallbacks
+def test_sso(mockConfig, apiServer, req, weirdo):
+    """
+    Does /api/sso create or return a good user?
+    """
+    pPost = patch.object(treq, 'post',
+            return_value=defer.succeed(None),
+            autospec=True)
+    pGet = patch.object(treq, 'get',
+            return_value=defer.succeed(None),
+            autospec=True)
+
+    @defer.inlineCallbacks
+    def negotiateSSO(req=req, **user):
+        def auth0tokenizer():
+            return defer.succeed({'access_token': 'IDK!@#BBQ'})
+
+        def auth0userGetter():
+            return defer.succeed(dict(**user))
+
+        pContent = patch.object(treq, 'json_content',
+                side_effect=[auth0tokenizer(), auth0userGetter()],
                 autospec=True)
-        pGet = patch.object(treq, 'get', 
-                return_value=defer.succeed(None),
-                autospec=True)
 
-        @defer.inlineCallbacks
-        def negotiateSSO(req, **user):
-            def auth0tokenizer():
-                return defer.succeed({'access_token': 'IDK!@#BBQ'})
+        with pPost as mPost, pGet as mGet, pContent:
+            yield apiServer.handler('sso', req)
+            mPost.assert_called_once_with(
+                server.TOKEN_URL,
+                json.dumps({'client_id': 'abc123',
+                 'client_secret': 'ABC!@#',
+                 'redirect_uri': CONFIG.apparentURL + '/api/sso',
+                 'code': 'idk123bbq',
+                 'grant_type': 'authorization_code',
+                 }),
+                headers=ANY)
+            mGet.assert_called_once_with(server.USER_URL + 'IDK!@#BBQ')
 
-            def auth0userGetter():
-                return defer.succeed(dict(**user))
+    # test once with an existing user
+    reqJS = requestJSON([], args={'code': ['idk123bbq']})
+    yield negotiateSSO(reqJS, email=weirdo.email)
+    assert reqJS.getSession().user == weirdo
+    assert reqJS.responseCode == 302
+    assert reqJS.responseHeaders.getRawHeaders('location') == ['/']
 
-            pContent = patch.object(treq, 'json_content', 
-                    side_effect=[auth0tokenizer(), auth0userGetter()],
-                    autospec=True)
+    # test again with a new user
+    reqJS = requestJSON([], args={'code': ['idk123bbq']})
+    yield negotiateSSO(reqJS,
+            email='weirdo2@gmail.com',
+            family_name='2',
+            given_name='weirdo'
+            )
+    assert reqJS.getSession().user.email == 'weirdo2@gmail.com'
+    assert reqJS.responseCode == 302
+    assert reqJS.responseHeaders.getRawHeaders('location') == ['/']
 
-            with pPost as mPost, pGet as mGet, pContent:
-                yield self.handler('sso', req)
-                mPost.assert_called_once_with(
-                    server.TOKEN_URL,
-                    json.dumps({'client_id': 'abc123',
-                     'client_secret': 'ABC!@#',
-                     'redirect_uri': CONFIG.apparentURL + '/api/sso',
-                     'code': 'idk123bbq',
-                     'grant_type': 'authorization_code',
-                     }),
-                    headers=ANY)
-                mGet.assert_called_once_with(server.USER_URL + 'IDK!@#BBQ')
 
-        # test once with an existing user
-        u = self._users()[0]
-        req = self.requestJSON([], args={'code': ['idk123bbq']})
-        yield negotiateSSO(req, email=u.email)
-        self.assertEqual(req.getSession().user, u)
-        self.assertEqual(req.responseCode, 302)
-        self.assertEqual(req.responseHeaders.getRawHeaders('location'), ['/'])
+@inlineCallbacks
+def test_noRecipeToBookmark(mockConfig, weirdo, apiServer):
+    """
+    Does the application still work if there are no recipes?
+    """
+    pageSource = ''
+    pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
+    pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(pageSource), autospec=True)
 
-        # test again with a new user
-        req = self.requestJSON([], args={'code': ['idk123bbq']})
-        yield negotiateSSO(req,
-                email='weirdo2@gmail.com',
-                family_name='2',
-                given_name='weirdo'
-                )
-        self.assertEqual(req.getSession().user.email, 'weirdo2@gmail.com')
-        self.assertEqual(req.responseCode, 302)
-        self.assertEqual(req.responseHeaders.getRawHeaders('location'), ['/'])
+    with pGet, pTreqContent:
+        reqJS = requestJSON([], session_user=weirdo)
+        reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
+        ret = yield apiServer.handler('bookmarklet', reqJS)
+        expectedResults = '{"status": "error", "recipes": [], "message": "There are no recipes on this page."}'
+        assert ret == expectedResults
 
-    def test_bookmarklet(self):
-        """
-        Does api/bookmarklet fetch, save, and return a response for the recipe? 
-        """
-        fromTest = fromdir(__file__)
-        loc = fromTest('recipe_page_source.html')
-        pageSource = open(loc).read()
 
-        pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
-        pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(pageSource), autospec=True)
-        
-        with pGet, pTreqContent:  
-            # normal bookmarketing 
-            u = self._users()[0]
-            req = self.requestJSON([], session_user=u) 
-            req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
-            ret = yield self.handler('bookmarklet', req)
-            self.assertEqual(len(recipe.Recipe.objects()), 1)
-            expectedResults = '{"status": "ok", "recipes": [{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}], "message": ""}'
-            assert ret == expectedResults  
+@fixture
+def recipePageHTML():
+    return open(fromdir(__file__)('recipe_page_source.html')).read()
 
-            # # not signed in to noms; bookmarketing should not be allowed 
-            req = self.requestJSON([])
-            req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
-            ret = yield self.handler('bookmarklet', req)
-            expectedResults = '{"status": "error", "recipes": [], "message": "User was not logged in."}'
-            assert ret == expectedResults
 
-    def test_noRecipeToBookmark(self):
-        """
-        Does the application still work if there are no recipes? 
-        """
-        pageSource = ''
-        pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
-        pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(pageSource), autospec=True)
+@inlineCallbacks
+def test_bookmarklet(mockConfig, apiServer, anonymous, weirdo, recipePageHTML):
+    """
+    Does api/bookmarklet fetch, save, and return a response for the recipe?
+    """
+    pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
+    pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(recipePageHTML), autospec=True)
 
-        with pGet, pTreqContent:
-            u = self._users()[0]
-            req = self.requestJSON([], session_user=u) 
-            req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
-            ret = yield self.handler('bookmarklet', req)
-            expectedResults = '{"status": "error", "recipes": [], "message": "There are no recipes on this page."}'
-            assert ret == expectedResults
+    with pGet, pTreqContent:
+        # normal bookmarkleting
+        reqJS = requestJSON([], session_user=weirdo)
+        reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
+        ret = yield apiServer.handler('bookmarklet', reqJS)
+        assert len(recipe.Recipe.objects()) == 1
+        expectedResults = '{"status": "ok", "recipes": [{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}], "message": ""}'
+        assert ret == expectedResults
+
+        # not signed in to noms; bookmarkleting should not be allowed
+        reqJS = requestJSON([])
+        reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
+        ret = yield apiServer.handler('bookmarklet', reqJS)
+        expectedResults = '{"status": "error", "recipes": [], "message": "User was not logged in."}'
+        assert ret == expectedResults
+

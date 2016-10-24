@@ -14,7 +14,8 @@ import treq
 
 from klein import Klein
 
-from noms import urlify, user, secret, CONFIG
+from noms import urlify, secret, CONFIG
+from noms.user import User, ANONYMOUS
 from noms.recipe import Recipe
 from noms.rendering import HumanReadable, RenderableQuerySet
 
@@ -26,8 +27,8 @@ RECIPE_SCHEMA = 'http://schema.org/Recipe'
 
 
 ResponseMsg = enum(
-        not_logged_in='User was not logged in.', 
-        no_recipe='There are no recipes on this page.', 
+        notLoggedIn='User was not logged in.', 
+        noRecipe='There are no recipes on this page.', 
         blank=''
         )
 
@@ -119,15 +120,11 @@ class APIServer(object):
         return Recipe.objects()
 
     @app.route("/recipe/create")
-    def createRecipeSave(self, request): # pragma: nocover
-                                         # I suspect this is going to
-                                         # drastically change when the chrome
-                                         # extension branch lands, so i'm not
-                                         # testing it.
+    def createRecipeSave(self, request):
         """
         Save recipes
         """
-        anon = User.objects(email='anonymous@example.com')
+        anon = User.objects.get(email=ANONYMOUS.email)
         data = json.load(request.content)
         data = { k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
@@ -180,9 +177,9 @@ class APIServer(object):
         userInfo = yield treq.get(userURL).addCallback(treq.json_content)
 
         # Get or create a user account matching auth0's reply
-        u = user.User.objects(email=userInfo['email']).first()
+        u = User.objects(email=userInfo['email']).first()
         if u is None:
-            u = user.User.fromSSO(userInfo)
+            u = User.fromSSO(userInfo)
 
         # Also associate that user with the session
         # TODO - persistent sessions
@@ -196,7 +193,7 @@ class APIServer(object):
         """
         The current user as data
         """
-        u = getattr(request.getSession(), 'user', user.ANONYMOUS)
+        u = getattr(request.getSession(), 'user', ANONYMOUS)
         return u
 
     @app.route("/bookmarklet")
@@ -215,8 +212,8 @@ class APIServer(object):
             defer.returnValue(json.dumps(data)) 
 
         userEmail = self.user(request).email
-        if not userEmail: 
-            returnResponse(status="error", recipes=[], message=ResponseMsg.not_logged_in)
+        if userEmail == ANONYMOUS.email or not userEmail:
+            returnResponse(status="error", recipes=[], message=ResponseMsg.notLoggedIn)
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
@@ -234,6 +231,6 @@ class APIServer(object):
                 break 
         
         if len(recipeSaved) == 0:
-            returnResponse(status="error", recipes=[], message=ResponseMsg.no_recipe) 
+            returnResponse(status="error", recipes=[], message=ResponseMsg.noRecipe) 
 
         returnResponse(status="ok", recipes=recipeSaved, message=ResponseMsg.blank)
