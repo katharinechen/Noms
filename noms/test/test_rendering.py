@@ -123,3 +123,14 @@ def test_resourceEncoder():
 
     with raises(TypeError): 
         json.dumps(NotSoSafeClass(), cls=rendering.ResourceEncoder)
+
+
+def test_responseData():
+    """
+    Test that json encoder works on ResponseData structures
+    """
+    ret = rendering.OK().render(None)
+    assert ret == '{"status": "ok", "message": ""}'
+
+    ret = rendering.ERROR(message="ono!").render(None)
+    assert ret == '{"status": "error", "message": "ono!"}'

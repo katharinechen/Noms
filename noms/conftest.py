@@ -5,6 +5,8 @@ from pytest import fixture
 
 from mongoengine import connect
 
+from codado import fromdir
+
 from noms import DBAlias, DBHost
 from noms import documentutil
 
@@ -127,7 +129,26 @@ def mockConfig(mockDatabase):
 @fixture
 def anonymous():
     """
-    Preload the anonymous user for tests
+    Preload the anonymous user
     """
     from noms import user
     user.requireAnonymous()
+
+
+@fixture
+def weirdo():
+    """
+    Preload the weirdo user
+    """
+    from noms import user
+    return user.User(
+            email='weirdo@gmail.com', 
+            givenName='Weirdo',
+            familyName='User', 
+            roles=[user.Roles.user]).save()
+
+
+@fixture
+def recipePageHTML():
+    return open(fromdir(__file__, 'test')('recipe_page_source.html')).read()
+

@@ -16,13 +16,11 @@ from klein.interfaces import IKleinRequest
 
 import attr
 
-from codado import fromdir
-
 from mock import patch, ANY
 
 from pytest import fixture, inlineCallbacks
 
-from noms import server, fromNoms, config, recipe, urlify, user, CONFIG
+from noms import server, fromNoms, config, recipe, urlify, CONFIG
 from noms.rendering import EmptyQuery, ResponseStatus as RS, OK, ERROR
 from noms.conftest import assertFailure
 
@@ -231,14 +229,6 @@ def test_api(mockConfig, rootServer, req):
 
 
 @fixture
-def weirdo():
-    """
-    Create the weirdo users, for tests
-    """
-    return user.User(email='weirdo@gmail.com').save()
-
-
-@fixture
 def recipes():
     """
     Set up some recipes explicitly during a test
@@ -364,11 +354,6 @@ def test_noRecipeToBookmark(mockConfig, weirdo, apiServer):
         assert ret == expectedResults
 
 
-@fixture
-def recipePageHTML():
-    return open(fromdir(__file__)('recipe_page_source.html')).read()
-
-
 @inlineCallbacks
 def test_bookmarklet(mockConfig, apiServer, anonymous, weirdo, recipePageHTML):
     """
@@ -411,6 +396,7 @@ def weirdSoupPOST():
             ingredients=['weirdness', 'soup'],
             instructions=['mix together ingredients', 'heat through'],
             )
+
 
 @inlineCallbacks
 def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
