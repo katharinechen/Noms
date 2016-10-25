@@ -4,14 +4,18 @@ Object publishing
 - Render templates
 - Conversions for various types into string
 """
-
 import json
+from functools import partial
+
+import attr
 
 from jinja2 import Template, Environment, PackageLoader
 
 from zope.interface import implements
 
 from twisted.web import resource
+
+from codado import enum
 
 from noms import CONFIG, secret
 from noms.documentutil import NomsDocument
@@ -112,3 +116,27 @@ class RenderableDocument(NomsDocument):
         => dict of document's fields, safe for presentation to the browser
         """
         raise NotImplementedError("implement safe in a subclass")
+
+
+ResponseStatus = enum(ok='ok', error='error')
+
+
+@attr.s
+class ResponseData(object):
+    """
+    Generic container for an API response
+    """
+    implements(resource.IResource)
+
+    status = attr.ib()
+    message = attr.ib(default='')
+
+    def render(self, request):
+        """
+        => JSON-encoded representation of this object's safe properties
+        """
+        return json.dumps(attr.asdict(self), cls=ResourceEncoder).encode('utf-8')
+
+
+OK = partial(ResponseData, status=ResponseStatus.ok)
+ERROR = partial(ResponseData, status=ResponseStatus.error)

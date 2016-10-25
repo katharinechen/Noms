@@ -3,6 +3,7 @@ Tests of noms.server, mostly handlers
 """
 import json
 import re
+from cStringIO import StringIO
 
 from twisted.web.test.requesthelper import DummyRequest
 from twisted.python.components import registerAdapter
@@ -22,7 +23,7 @@ from mock import patch, ANY
 from pytest import fixture, inlineCallbacks
 
 from noms import server, fromNoms, config, recipe, urlify, user, CONFIG
-from noms.rendering import EmptyQuery
+from noms.rendering import EmptyQuery, ResponseStatus as RS, OK, ERROR
 from noms.conftest import assertFailure
 
 
@@ -79,12 +80,9 @@ def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **
     """
     content = kwargs.pop('content', None)
     if isinstance(content, dict):
-        """
-        tb discussed - this has been useful in Aorta but we don't need yet
-        ###    kwargs['content'] = StringIO(json.dumps(content))
-        ###elif content:
-        ###    kwargs['content'] = StringIO(str(content))
-        """
+        kwargs['content'] = StringIO(json.dumps(content))
+    elif content: # pragma: nocover
+        kwargs['content'] = StringIO(str(content))
     else:
         kwargs['content'] = None
 
@@ -359,7 +357,10 @@ def test_noRecipeToBookmark(mockConfig, weirdo, apiServer):
         reqJS = requestJSON([], session_user=weirdo)
         reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
         ret = yield apiServer.handler('bookmarklet', reqJS)
-        expectedResults = '{"status": "error", "recipes": [], "message": "There are no recipes on this page."}'
+        expectedResults = server.ClipResponse(
+                status=RS.error, message=server.ResponseMsg.noRecipe,
+                recipes=[],
+                )
         assert ret == expectedResults
 
 
@@ -382,13 +383,49 @@ def test_bookmarklet(mockConfig, apiServer, anonymous, weirdo, recipePageHTML):
         reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
         ret = yield apiServer.handler('bookmarklet', reqJS)
         assert len(recipe.Recipe.objects()) == 1
-        expectedResults = '{"status": "ok", "recipes": [{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}], "message": ""}'
+        expectedResults = server.ClipResponse(
+                status=RS.ok, message='',
+                recipes=[{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}]
+                )
         assert ret == expectedResults
 
         # not signed in to noms; bookmarkleting should not be allowed
         reqJS = requestJSON([])
         reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
         ret = yield apiServer.handler('bookmarklet', reqJS)
-        expectedResults = '{"status": "error", "recipes": [], "message": "User was not logged in."}'
+        expectedResults = server.ClipResponse(
+                status=RS.error, message=server.ResponseMsg.notLoggedIn,
+                recipes=[],
+                )
         assert ret == expectedResults
 
+
+@fixture
+def weirdSoupPOST():
+    """
+    Data structure for a recipe posted from the create form
+    """
+    return dict(
+            name='Weird soup',
+            author='Weird Soup Man',
+            ingredients=['weirdness', 'soup'],
+            instructions=['mix together ingredients', 'heat through'],
+            )
+
+@inlineCallbacks
+def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
+    """
+    Do we save data from the create form successfully?
+    """
+    reqJS = requestJSON([], content=weirdSoupPOST, session_user=weirdo)
+    resp = yield apiServer.handler('createRecipeSave', reqJS)
+    assert resp == OK()
+
+    # the second time we should get an error because it exists
+    reqJS = requestJSON([], content=weirdSoupPOST, session_user=weirdo)
+    resp = yield apiServer.handler('createRecipeSave', reqJS)
+    assert resp == ERROR(message=server.ResponseMsg.renameRecipe)
+
+    anonJS = requestJSON([])
+    resp = yield apiServer.handler('createRecipeSave', anonJS)
+    assert resp == ERROR(message=server.ResponseMsg.notLoggedIn)

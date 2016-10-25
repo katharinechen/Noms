@@ -1,7 +1,6 @@
 """
 Authentication and users
 """
-
 from mongoengine import fields
 
 from codado import enum
