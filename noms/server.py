@@ -120,8 +120,7 @@ class APIServer(object):
         """
         List all recipes
         """
-        # we are only sending limited information to the client because of security risk
-        return Recipe.objects()
+        return Recipe.objects(user=self.user(request))
 
     def isAnonymous(self, request):
         """
@@ -129,7 +128,7 @@ class APIServer(object):
         """
         ## FIXME!! add logged-in-or-403 permission decorators
         u = self.user(request)
-        if not u or u.email == ANONYMOUS.email:
+        if not u or u.email == ANONYMOUS().email:
             return True
         return False
 

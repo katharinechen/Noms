@@ -55,8 +55,6 @@ class RenderableQuerySet(object):
         Just wraps an array around the results
         """
         rr = list(self.qs)
-        if not rr:
-            raise EmptyQuery("Returned empty query")
         return json.dumps([o.safe() for o in rr], cls=ResourceEncoder).encode('utf-8')
 
 
