@@ -68,7 +68,7 @@ class Recipe(RenderableDocument):
         if microdata.author:
             self.author = clean(microdata.author.name)
         else:
-            self.author = ANONYMOUS.givenName
+            self.author = ANONYMOUS().givenName
         self.user = User.objects.get(email=userEmail)
         self.urlKey = urlify(self.user.email, self.name)
         for i in microdata.props['ingredients']: 

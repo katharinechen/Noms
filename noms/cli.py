@@ -34,7 +34,7 @@ class NomsOptions(tap.Options):
         CONFIG.save()
 
         # ensure that at least the anonymous user exists
-        user.requireAnonymous()
+        user.ANONYMOUS()
 
         self.opt_class(MAIN_FUNC)
 

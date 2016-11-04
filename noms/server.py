@@ -149,7 +149,7 @@ class APIServer(object):
         if Recipe.objects(urlKey=recipe.urlKey).first():
             return ERROR(message=ResponseMsg.renameRecipe)
 
-        recipe.author = data.get('author', ANONYMOUS.givenName)
+        recipe.author = data.get('author', ANONYMOUS().givenName)
         for i in data['ingredients']:
             recipe.ingredients.append(i)
         for i in data['instructions']:
@@ -213,7 +213,7 @@ class APIServer(object):
         """
         The current user as data
         """
-        u = getattr(request.getSession(), 'user', ANONYMOUS)
+        u = getattr(request.getSession(), 'user', ANONYMOUS())
         return u
 
     @app.route("/bookmarklet")

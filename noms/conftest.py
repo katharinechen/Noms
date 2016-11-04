@@ -132,7 +132,7 @@ def anonymous():
     Preload the anonymous user
     """
     from noms import user
-    user.requireAnonymous()
+    user.ANONYMOUS()
 
 
 @fixture

@@ -49,17 +49,24 @@ class User(RenderableDocument):
                 )
 
 
-ANONYMOUS = User(
+_anonymous = User(
         email='anonymous@example.com', 
         roles=[Roles.user],
         givenName='Anonymous',
         )
 
 
-def requireAnonymous():
+def ANONYMOUS():
     """
     Ensure that the ANONYMOUS user exists in the database
     """
-    anon = User.objects(email=ANONYMOUS.email).first()
+    global _anonymous
+    if getattr(_anonymous, 'id', None):
+        return _anonymous
+    anon = User.objects(email=_anonymous.email).first()
     if anon is None:
-        ANONYMOUS.save(force_insert=True)
+        _anonymous.save(force_insert=True)
+    else:
+        _anonymous = anon
+    assert _anonymous.id
+    return _anonymous
