@@ -120,7 +120,7 @@ class APIServer(object):
         """
         List all recipes
         """
-        return Recipe.objects(user=self.user(request))
+        return Recipe.objects()
 
     def isAnonymous(self, request):
         """
@@ -200,6 +200,7 @@ class APIServer(object):
         u = User.objects(email=userInfo['email']).first()
         if u is None:
             u = User.fromSSO(userInfo)
+            u.save()
 
         # Also associate that user with the session
         # TODO - persistent sessions
