@@ -282,7 +282,7 @@ class APIServerTest(BaseServerTest):
                      'redirect_uri': CONFIG.apparentURL + '/api/sso',
                      'code': 'idk123bbq',
                      'grant_type': 'authorization_code',
-                     }),
+                     }, sort_keys=True),
                     headers=ANY)
                 mGet.assert_called_once_with(server.USER_URL + 'IDK!@#BBQ')
 
@@ -323,14 +323,16 @@ class APIServerTest(BaseServerTest):
             req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
             ret = yield self.handler('bookmarklet', req)
             self.assertEqual(len(recipe.Recipe.objects()), 1)
-            expectedResults = '{"status": "ok", "recipes": [{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}], "message": ""}'
+            expectedResults = {"status": "ok", "recipes": [{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}], "message": ""}
+            expectedResults = json.dumps(expectedResults, sort_keys=True)
             assert ret == expectedResults  
 
             # # not signed in to noms; bookmarketing should not be allowed 
             req = self.requestJSON([])
             req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
             ret = yield self.handler('bookmarklet', req)
-            expectedResults = '{"status": "error", "recipes": [], "message": "User was not logged in."}'
+            expectedResults = {"status": "error", "recipes": [], "message": "User was not logged in."}
+            expectedResults = json.dumps(expectedResults, sort_keys=True)
             assert ret == expectedResults
 
     def test_noRecipeToBookmark(self):
@@ -346,5 +348,6 @@ class APIServerTest(BaseServerTest):
             req = self.requestJSON([], session_user=u) 
             req.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
             ret = yield self.handler('bookmarklet', req)
-            expectedResults = '{"status": "error", "recipes": [], "message": "There are no recipes on this page."}'
+            expectedResults = {"status": "error", "recipes": [], "message": "There are no recipes on this page."}
+            expectedResults = json.dumps(expectedResults, sort_keys=True)
             assert ret == expectedResults
