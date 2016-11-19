@@ -32,7 +32,7 @@ env = Environment(
         loader=PackageLoader('noms', 'templates')
     )
 
-env.filters['json'] = lambda x: json.dumps(x, cls=ResourceEncoder)
+env.filters['json'] = lambda x: json.dumps(x, cls=ResourceEncoder, sort_keys=True)
 
 
 class RenderableQuerySet(object):
@@ -49,7 +49,7 @@ class RenderableQuerySet(object):
         Just wraps an array around the results
         """
         rr = list(self.qs)
-        return json.dumps([o.safe() for o in rr], cls=ResourceEncoder).encode('utf-8')
+        return json.dumps([o.safe() for o in rr], cls=ResourceEncoder, sort_keys=True).encode('utf-8')
 
 
 class ResourceEncoder(json.JSONEncoder): 
@@ -101,7 +101,7 @@ class RenderableDocument(NomsDocument):
         """
         => JSON-encoded representation of this object's safe properties
         """
-        return json.dumps(self.safe(), cls=ResourceEncoder).encode('utf-8')
+        return json.dumps(self.safe(), cls=ResourceEncoder, sort_keys=True).encode('utf-8')
 
     def safe(self):
         """

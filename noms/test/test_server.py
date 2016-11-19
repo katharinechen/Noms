@@ -302,7 +302,7 @@ def test_sso(mockConfig, apiServer, req, weirdo):
                  'redirect_uri': CONFIG.apparentURL + '/api/sso',
                  'code': 'idk123bbq',
                  'grant_type': 'authorization_code',
-                 }),
+                 }, sort_keys=True),
                 headers=ANY)
             mGet.assert_called_once_with(server.USER_URL + 'IDK!@#BBQ')
 

@@ -188,7 +188,7 @@ class APIServer(object):
           'grant_type':    'authorization_code'
         }
         tokenInfo = yield treq.post(TOKEN_URL,
-                json.dumps(tokenPayload),
+                json.dumps(tokenPayload, sort_keys=True),
                 headers={'Content-Type': ['application/json']}
                 ).addCallback(treq.json_content)
 
@@ -218,10 +218,10 @@ class APIServer(object):
         return u
 
     @app.route("/bookmarklet")
-    @defer.inlineCallbacks 
-    def bookmarklet(self, request): 
+    @defer.inlineCallbacks
+    def bookmarklet(self, request):
         """
-        Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension 
+        Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension
         """
         error = lambda **kw: defer.returnValue(ClipResponse(status=RS.error, **kw))
         ok = lambda **kw: defer.returnValue(ClipResponse(status=RS.ok, **kw))
@@ -233,13 +233,13 @@ class APIServer(object):
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
-        
+ 
         items = microdata.get_items(pageSource)
         recipesSaved = []
 
-        for i in items: 
-            itemTypeArray = [x.string for x in i.itemtype] 
-            if RECIPE_SCHEMA in itemTypeArray: 
+        for i in items:
+            itemTypeArray = [x.string for x in i.itemtype]
+            if RECIPE_SCHEMA in itemTypeArray:
                 recipe = i
                 saveItem = Recipe.fromMicrodata(recipe, u.email)
                 Recipe.saveOnlyOnce(saveItem)
