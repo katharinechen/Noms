@@ -56,17 +56,6 @@ def test_renderHumanReadable(mockConfig):
         assert hrString.render(None) == expected
 
 
-def test_emptyRenderableQuerySet(mockConfig):
-    """
-    Do I correctly produce an error for empty queries?
-    """
-    qs = recipe.Recipe.objects()
-    rqs = rendering.RenderableQuerySet(qs)
-
-    with raises(rendering.EmptyQuery):
-        rqs.render(None)
-
-
 def test_renderRenderableQuerySet(mockConfig):
     """
     Do I produce a json array from a query?

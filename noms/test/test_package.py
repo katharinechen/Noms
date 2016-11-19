@@ -6,7 +6,8 @@ from pytest import raises, inlineCallbacks
 
 from twisted.internet import defer
 
-from noms import urlify, conftest
+from noms import urlify
+from noms.test import conftest
 
 
 def test_urlify():

@@ -66,7 +66,5 @@ def ANONYMOUS():
     anon = User.objects(email=_anonymous.email).first()
     if anon is None:
         _anonymous.save(force_insert=True)
-    else:
-        _anonymous = anon
     assert _anonymous.id
     return _anonymous

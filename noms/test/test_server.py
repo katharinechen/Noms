@@ -21,8 +21,7 @@ from mock import patch, ANY
 from pytest import fixture, inlineCallbacks
 
 from noms import server, fromNoms, config, recipe, urlify, CONFIG
-from noms.rendering import EmptyQuery, ResponseStatus as RS, OK, ERROR
-from noms.conftest import assertFailure
+from noms.rendering import ResponseStatus as RS, OK, ERROR
 
 
 # klein adapts Request to KleinRequest internally when the Klein() object
@@ -248,14 +247,6 @@ def test_getRecipe(mockConfig, apiServer, recipes, reqJS):
     """
     r = yield apiServer.handler('getRecipe', reqJS, 'weird-soup-cory-')
     assert r['name'] == 'weird soup'
-
-
-@inlineCallbacks
-def test_recipeListNone(mockConfig, apiServer):
-    """
-    Does /api/recipe/list raise the right exception when empty?
-    """
-    yield assertFailure(apiServer.handler('recipeList'), EmptyQuery)
 
 
 @inlineCallbacks

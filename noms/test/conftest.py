@@ -150,5 +150,5 @@ def weirdo():
 
 @fixture
 def recipePageHTML():
-    return open(fromdir(__file__, 'test')('recipe_page_source.html')).read()
+    return open(fromdir(__file__)('recipe_page_source.html')).read()
 

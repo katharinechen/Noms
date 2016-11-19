@@ -32,3 +32,12 @@ def test_safe():
             'familyName': None, 
             'roles': [u'user'], 
             }
+
+
+def test_anonymousAlreadyExists():
+    """
+    Do we return the already-existing anonymous user if it already exists?
+    """
+    anon = user.ANONYMOUS()
+    new1 = user.ANONYMOUS()
+    assert anon.id == new1.id

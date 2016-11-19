@@ -35,12 +35,6 @@ env = Environment(
 env.filters['json'] = lambda x: json.dumps(x, cls=ResourceEncoder)
 
 
-class EmptyQuery(Exception):
-    """
-    Returned empty query
-    """
-
-
 class RenderableQuerySet(object):
     """
     A mongo queryset representable as a json array.
