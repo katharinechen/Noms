@@ -1,40 +1,43 @@
 """
 Test the User object
 """
-from twisted.trial import unittest
-
 from noms import user
-from noms.test import mockDatabase
 
 
-class UserTest(unittest.TestCase):
+def test_fromSSO(mockDatabase):
     """
-    Cover the User object and related
+    Do I create a valid user object from SSO registration?
     """
-    def test_fromSSO(self):
-        """
-        Do I create a valid user object from SSO registration?
-        """
-        ssoData = {
-                'email': 'ssodude@ssoplace.com',
-                'given_name': 'Sso',
-                'family_name': 'Dude',
-                }
-        with mockDatabase():
-            u = user.User.fromSSO(ssoData)
-            x = user.User.objects(email='ssodude@ssoplace.com').first()
-            self.assertEqual(x.id, u.id)
-            self.assertEqual(x.familyName, ssoData['family_name'])
-            self.assertEqual(x.roles, [user.Roles.user])
+    ssoData = {
+            'email': 'ssodude@ssoplace.com',
+            'given_name': 'Sso',
+            'family_name': 'Dude',
+            }
+    u = user.User.fromSSO(ssoData)
+    x = user.User.objects(email='ssodude@ssoplace.com').first()
+    assert x.id == u.id
+    assert x.familyName == ssoData['family_name']
+    assert x.roles == [user.Roles.user]
 
-    def test_safe(self):
-        """
-        Do I produce a web-safe rendering of the user object?
-        """
-        u = user.User(email='hello@hello.com', roles=[user.Roles.user])
-        self.assertEqual(u.safe(),
-               {'email': u'hello@hello.com',
-                'givenName': None,
-                'familyName': None,
-                'roles': [u'user'],
-                })
+
+def test_safe():
+    """
+    Do I produce a web-safe rendering of the user object?
+    """
+    u = user.User(email='hello@hello.com', roles=[user.Roles.user])
+
+    assert u.safe() == {
+            'email': u'hello@hello.com', 
+            'givenName': None, 
+            'familyName': None, 
+            'roles': [u'user'], 
+            }
+
+
+def test_anonymousAlreadyExists():
+    """
+    Do we return the already-existing anonymous user if it already exists?
+    """
+    anon = user.ANONYMOUS()
+    new1 = user.ANONYMOUS()
+    assert anon.id == new1.id

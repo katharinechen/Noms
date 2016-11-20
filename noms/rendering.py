@@ -4,14 +4,18 @@ Object publishing
 - Render templates
 - Conversions for various types into string
 """
-
 import json
+from functools import partial
+
+import attr
 
 from jinja2 import Template, Environment, PackageLoader
 
 from zope.interface import implements
 
 from twisted.web import resource
+
+from codado import enum
 
 from noms import CONFIG, secret
 from noms.documentutil import NomsDocument
@@ -31,12 +35,6 @@ env = Environment(
 env.filters['json'] = lambda x: json.dumps(x, cls=ResourceEncoder, sort_keys=True)
 
 
-class EmptyQuery(Exception):
-    """
-    Returned empty query
-    """
-
-
 class RenderableQuerySet(object):
     """
     A mongo queryset representable as a json array.
@@ -51,8 +49,6 @@ class RenderableQuerySet(object):
         Just wraps an array around the results
         """
         rr = list(self.qs)
-        if not rr:
-            raise EmptyQuery("Returned empty query")
         return json.dumps([o.safe() for o in rr], cls=ResourceEncoder, sort_keys=True).encode('utf-8')
 
 
@@ -112,3 +108,27 @@ class RenderableDocument(NomsDocument):
         => dict of document's fields, safe for presentation to the browser
         """
         raise NotImplementedError("implement safe in a subclass")
+
+
+ResponseStatus = enum(ok='ok', error='error')
+
+
+@attr.s
+class ResponseData(object):
+    """
+    Generic container for an API response
+    """
+    implements(resource.IResource)
+
+    status = attr.ib()
+    message = attr.ib(default='')
+
+    def render(self, request):
+        """
+        => JSON-encoded representation of this object's safe properties
+        """
+        return json.dumps(attr.asdict(self), cls=ResourceEncoder).encode('utf-8')
+
+
+OK = partial(ResponseData, status=ResponseStatus.ok)
+ERROR = partial(ResponseData, status=ResponseStatus.error)
