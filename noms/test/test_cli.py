@@ -16,6 +16,7 @@ def test_postOptions(mockConfig):
     """
     Does postOptions create the config and return options?
     """
+    TODO("mock the startup of the sass process so tests don't start sass in the background ---- to kill sass, it's pgrep -lf sass then kill <pid>")
     opts = cli.NomsOptions()
     opts['hax'] = 'haxor'
     opts.postOptions()

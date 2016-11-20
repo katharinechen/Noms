@@ -66,5 +66,8 @@ def ANONYMOUS():
     anon = User.objects(email=_anonymous.email).first()
     if anon is None:
         _anonymous.save(force_insert=True)
+    else: # WHY IS THIS NEEDED?? removing it, the app fails to start up, but
+          # only in noms-23 branch
+        _anonymous = anon
     assert _anonymous.id
     return _anonymous
