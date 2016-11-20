@@ -12,10 +12,14 @@ app.controller('NewRecipeCtrl', ['$scope', '$http', function($scope, $http) {
 
       $http.post('/api/recipe/create', recipe).success(function(data) {
         $scope.ok = true;
-        $scope.message = "Done";
+        if (data.status === "error") {
+            $scope.message = 'Error: ' + data.message;
+        } else {
+            $scope.message = "Done";
+        }
       }).error(function (err) {
         $scope.ok = true;
-        $scope.message = "ERRRORROROROR";
+        $scope.message = "Server error with this request";
       });
     };
 }]);

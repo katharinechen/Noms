@@ -8,7 +8,7 @@ from twisted.web import tap
 from mongoengine import connect
 
 from noms.server import Server
-from noms import CONFIG, DBAlias, DBHost
+from noms import CONFIG, DBAlias, DBHost, user
 
 
 MAIN_FUNC = 'noms.cli.main'
@@ -38,6 +38,9 @@ class NomsOptions(tap.Options):
         # run Sass
         bashCommand = "sass --watch static/scss/base.scss:static/css/base.css --trace"
         process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+
+        # ensure that at least the anonymous user exists
+        user.ANONYMOUS()
 
         self.opt_class(MAIN_FUNC)
 

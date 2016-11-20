@@ -7,13 +7,14 @@ import re
 from mongoengine import fields
 
 from noms.rendering import RenderableDocument
-from noms.user import User
+from noms.user import User, ANONYMOUS
 from noms import urlify
 
 
 def clean(string): 
     res = re.sub('\s+', ' ', string)
     return res.strip()
+
 
 class Recipe(RenderableDocument):
     """
@@ -64,8 +65,11 @@ class Recipe(RenderableDocument):
         """ 
         self = cls()
         self.name = clean(microdata.name)
-        self.author = clean(microdata.author.name) 
-        self.user = User.objects(email=userEmail).first()
+        if microdata.author:
+            self.author = clean(microdata.author.name)
+        else:
+            self.author = ANONYMOUS().givenName
+        self.user = User.objects.get(email=userEmail)
         self.urlKey = urlify(self.user.email, self.name)
         for i in microdata.props['ingredients']: 
             self.ingredients.append(clean(i))

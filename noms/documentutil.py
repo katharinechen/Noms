@@ -23,10 +23,10 @@ class NomsDocument(Document):
     """
     meta = {'abstract': True}
 
-    def save(self):
+    def save(self, *a, **kw):
         """
         Save, and call onSave()
         """
-        r = super(NomsDocument, self).save()
+        r = super(NomsDocument, self).save(*a, **kw)
         onSave(self)
         return r
