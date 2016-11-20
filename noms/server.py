@@ -26,8 +26,8 @@ RECIPE_SCHEMA = 'http://schema.org/Recipe'
 
 
 ResponseMsg = enum(
-        not_logged_in='User was not logged in.', 
-        no_recipe='There are no recipes on this page.', 
+        not_logged_in='User was not logged in.',
+        no_recipe='There are no recipes on this page.',
         blank=''
         )
 
@@ -170,7 +170,7 @@ class APIServer(object):
           'grant_type':    'authorization_code'
         }
         tokenInfo = yield treq.post(TOKEN_URL,
-                json.dumps(tokenPayload),
+                json.dumps(tokenPayload, sort_keys=True),
                 headers={'Content-Type': ['application/json']}
                 ).addCallback(treq.json_content)
 
@@ -199,40 +199,40 @@ class APIServer(object):
         return u
 
     @app.route("/bookmarklet")
-    @defer.inlineCallbacks 
-    def bookmarklet(self, request): 
+    @defer.inlineCallbacks
+    def bookmarklet(self, request):
         """
-        Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension 
+        Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension
         """
-        def returnResponse(status, recipes, message): 
+        def returnResponse(status, recipes, message):
             """
-            Return the appropriate data structure to the http response 
+            Return the appropriate data structure to the http response
             """
-            data = {'status': status, 
-                    'recipes': recipes, 
-                    'message': message} 
-            defer.returnValue(json.dumps(data)) 
+            data = {'status': status,
+                    'recipes': recipes,
+                    'message': message}
+            defer.returnValue(json.dumps(data, sort_keys=True))
 
         userEmail = self.user(request).email
-        if not userEmail: 
+        if not userEmail:
             returnResponse(status="error", recipes=[], message=ResponseMsg.not_logged_in)
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
-        
+ 
         items = microdata.get_items(pageSource)
         recipeSaved = []
 
-        for i in items: 
-            itemTypeArray = [x.string for x in i.itemtype] 
-            if RECIPE_SCHEMA in itemTypeArray: 
+        for i in items:
+            itemTypeArray = [x.string for x in i.itemtype]
+            if RECIPE_SCHEMA in itemTypeArray:
                 recipe = i
                 saveItem = Recipe.fromMicrodata(recipe, userEmail)
                 Recipe.saveOnlyOnce(saveItem)
-                recipeSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey}) 
-                break 
-        
+                recipeSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey})
+                break
+ 
         if len(recipeSaved) == 0:
-            returnResponse(status="error", recipes=[], message=ResponseMsg.no_recipe) 
+            returnResponse(status="error", recipes=[], message=ResponseMsg.no_recipe)
 
         returnResponse(status="ok", recipes=recipeSaved, message=ResponseMsg.blank)

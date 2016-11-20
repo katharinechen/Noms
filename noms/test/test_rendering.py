@@ -93,8 +93,10 @@ class RenderableQuerySetTest(unittest.TestCase):
         recipe.Recipe(name=u'delicious soup', author=author, urlKey=url, user=u).save()
 
         qs = recipe.Recipe.objects()
-        expected = ('[{"recipeYield": null, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory-", "user": {"roles": [], "givenName": null, "email": "dude@gmail.com", "familyName": null}}, ' 
-                     '{"recipeYield": null, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory-", "user": {"roles": [], "givenName": null, "email": "dude@gmail.com", "familyName": null}}]')
+        expected = [
+                {"recipeYield": None, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory-", "user": {"roles": [], "givenName": None, "email": "dude@gmail.com", "familyName": None}},
+                {"recipeYield": None, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory-", "user": {"roles": [], "givenName": None, "email": "dude@gmail.com", "familyName": None}}]
+        expected = json.dumps(expected, sort_keys=True)
         assert rendering.RenderableQuerySet(qs).render(None) == expected
 
 
@@ -118,7 +120,7 @@ class RenderableDocumentTest(unittest.TestCase):
 
         doc = Doc(safeValue='good', badValue='no', intValue=12)
         self.assertEqual(doc.render(None),
-                json.dumps({'safe': 'good', 'int': 12})
+                json.dumps({'safe': 'good', 'int': 12}, sort_keys=True)
                 )
 
 
