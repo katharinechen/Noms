@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html ng-app="noms">
-<head>
-  <title>NOM NOM NOM </title>
-  <% include "universal-header.html" %>
-  <script src="/static/js/app.js"></script>
-  <script src="/static/js/controllers/recipelist.js"></script>
-  <script src="/static/js/controllers/recipe.js"></script>
-  <script src="/static/js/controllers/recipenew.js"></script>
-  <script src="/static/js/controllers/navbar.js"></script>
-</head>
-<body>
 
-  <!-- navbar -->
-  <div ng-include="'/static/js/partials/navbar.html'"></div>
+  <head>
+    <title>NOM NOM NOM </title>
+    <% include "universal-header.html" %>
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/controllers/recipelist.js"></script>
+    <script src="/static/js/controllers/recipe.js"></script>
+    <script src="/static/js/controllers/recipenew.js"></script>
+    <script src="/static/js/controllers/navbar.js"></script>
+    <link rel="stylesheet" href="../static/css/base.css">
+  </head>
 
-  <!--   include partial -->
-  <div ng-include="'/static/js/partials/<< partial >>'"></div>
+  <body>
+    <!-- navbar -->
+    <div ng-include="'/static/js/partials/navbar.html'"></div>
 
-</body>
+    <!--   include partial -->
+    <div ng-include="'/static/js/partials/<< partial >>'"></div>
+  </body>
+
+
 </html>

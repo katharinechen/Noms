@@ -1,27 +1,13 @@
-// .container-form { 
-//   position: fixed; 
-//   width: 340px; 
-//   height: 280px; 
-//   top: 50%; 
-//   left: 50%; 
-//   margin-top: -140px;
-//   margin-left: 170px;
-// }
+// $hot-green: #00FF00; 
 
-// .special-form { 
-//   width: 80%; 
-//   height: 100%; 
-//   font-family: sans-serif; 
-//   color: #255; 
-//   -webkit-font-smoothing: antialiased; 
-//   background: #ffff00; //yellow 
+// .form { 
+//   background-color: $hot-green; 
 // }
-
 // label { 
 //   font-weight: bold; 
-//   background: #ffff00; //yellow 
+//   background: $hot-green;
 // }
 
 // input {
-//   background: #ffff00; //yellow 
+//   background: $hot-green; 
 // }

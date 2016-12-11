@@ -25,17 +25,16 @@ $light-pink: #FFB6C1;
 
 .three { 
   // display and size 
-  background-color: $light-pink; 
   display: block; 
   width: 100%;
   height: auto; 
 
   .section { 
-    background-color: $white; 
+    background-color: $light-pink; 
     display: inline-block; 
-    margin: 5px;
-    padding: 15px; 
-    width: 30%; 
+    margin: 20px;
+    padding: 20px; 
+    width: 28%; 
     height: 180px; 
   }
 }
