@@ -1,7 +1,6 @@
-.jumbo { 
-  // display and size
-  background-color: $black; 
-  // background-image: url("../images/cookie-monster.jpg");
+.jumbo {
+  background: url("../images/cookie-monster.jpg") no-repeat $black;
+  background-size: cover;
   display: block; 
   width: 100%; 
   height: 300px; 
@@ -19,18 +18,17 @@
   }
 }
 
-.three { 
-  // display and size 
-  display: block; 
-  width: 100%;
-  height: auto; 
 
-  .section { 
-    background-color: $light-pink; 
-    display: inline-block; 
-    margin: 20px;
-    padding: 20px; 
+.three-sections { 
+  // using css flexbox
+  display: flex;
+  flex-direction: row; 
+  justify-content: space-around;
+
+  height: auto; 
+  text-align: center;
+
+  section { 
     width: 28%; 
-    height: 180px; 
   }
 }
