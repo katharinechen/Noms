@@ -1,34 +1,33 @@
-$standard-font:   Arial, Helvetica, sans-serif; 
-
-// colors 
-$black: #000000;
-$white: #ffffff; 
-$hotpink: #FF69B4;  
-$dark-grey: #5c5c5c; 
-
-.navbar { 
-  background-color: $dark-grey; 
-  width: 100%;
-  margin: 20px 0px; 
-  margin: 0px 0px 0px 0px; 
-  padding: 0px 0px 0px 0px; 
-
-  ul { 
-    width: 100%; 
-    list-style: none; 
-    overflow: hidden; 
-    margin: 0; 
-    padding: 0; 
+.nav-list { // ul 
+    list-style-type: none;
+    padding: 10px;
+    margin: 0px; 
+    overflow: auto; 
 
     li { 
-      // width: 25%; 
+        float: left; 
+        margin-left: 10px; 
 
-      a { 
-        text-align: center; 
-        padding: 8px 0; 
-        display: block; 
-        width: 100%; 
-      }
+        &:first-child { 
+            margin-left: 0; 
+
+        }
+        &:last-child { 
+            float: right; 
+        }
     }
-  }
+}
+
+.link { 
+    text-decoration: none;
+    padding: 10px; 
+
+    &:hover { 
+        text-decoration: underline; 
+    }
+
+    // logo
+    &.logo {
+        font-size: 200%; 
+    }
 }

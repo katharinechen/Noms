@@ -1,11 +1,15 @@
-@import 'home';
-@import 'form';
-@import 'navbar';
+@import 'color-scheme'; 
 
-$standard-font:   Arial, Helvetica, sans-serif; 
+// variables 
+$standard-font: Arial, Helvetica, sans-serif; 
 $black: #000000;
 $white: #ffffff; 
 $dark-grey: #5c5c5c; 
+$hotpink: #FF69B4;  
+$white: #FFFFFF; 
+$black: #000000;
+$light-pink: #FFB6C1; 
+$hot-green: #00FF00; 
 
 body {
   color: $black;
@@ -31,3 +35,10 @@ p {
   font: 100% $standard-font; 
   color: $dark-grey; 
 }
+
+// imports 
+@import 'home';
+@import 'form';
+@import 'navbar';
+@import 'list'; 
+@import 'table';

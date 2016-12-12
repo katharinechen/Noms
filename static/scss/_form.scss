@@ -1,13 +1,19 @@
-// $hot-green: #00FF00; 
+.form {
+     padding: 32px;
+     width: 75%; 
+     background-color: $hot-green;
+}
 
-// .form { 
-//   background-color: $hot-green; 
-// }
-// label { 
-//   font-weight: bold; 
-//   background: $hot-green;
-// }
+.row { 
+    padding: 10px; 
+    background-color: $white; 
+}
 
-// input {
-//   background: $hot-green; 
-// }
+label { 
+    font-weight: bold; 
+    display: block; 
+}
+
+input {
+    display: block; 
+}
