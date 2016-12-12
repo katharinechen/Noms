@@ -1,12 +1,10 @@
 .form {
      padding: 32px;
      width: 75%; 
-     background-color: $hot-green;
 }
 
-.row { 
+.form-row { 
     padding: 10px; 
-    background-color: $white; 
 }
 
 label { 
@@ -14,6 +12,20 @@ label {
     display: block; 
 }
 
-input {
+// attribute selector 
+input[type="text"] { 
+    background: white; 
+    width: 80%; 
+    color: black; 
+    border-radius: 8px; 
+    font-size: 18px; 
+    box-shadow: none; 
+    border: 1px solid black; 
+    padding: 5px; 
+}
+
+
+textarea { 
     display: block; 
+    width: 80%;
 }

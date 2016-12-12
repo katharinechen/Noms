@@ -1,27 +1,27 @@
 <div class="form" ng-controller="NewRecipeCtrl">
     
     <!-- All the rows of the survey -->
-    <div class="row"> 
+    <div class="form-row"> 
         <label>Name</label>  
         <input type="text" ng-model="recipe.name" />
     </div> 
-    <div class="row"> 
+    <div class="form-row"> 
         <label>Author</label>
         <input type="text" ng-model="recipe.author" />
     </div> 
-    <div class="row"> 
+    <div class="form-row"> 
         <label>Ingredients</label>
         <textarea ng-model="recipe.ingredients"></textarea>
     </div> 
-    <div class="row"> 
+    <div class="form-row"> 
         <label>Instructions</label>
         <textarea ng-model="recipe.instructions"></textarea>
     </div> 
     <!-- button -->
-    <div class="row">
+    <div class="form-row">
        <input type="submit" ng-click="update(recipe)" value="Save" />
     </div> 
 
     <!-- ok message -->
-    <div class="row" ng-show="ok">{{ message }}</div> 
+    <div class="form-row" ng-show="ok">{{ message }}</div> 
 </div>
