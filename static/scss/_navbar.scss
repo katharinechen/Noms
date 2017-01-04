@@ -1,33 +1,37 @@
 .nav-list { // ul 
     list-style-type: none;
-    padding: 10px;
-    margin: 0px; 
     overflow: auto; 
+
+    &:first-child { 
+        padding: 10px 40px 10px 40px;
+        margin: 0px; 
+        background: $black; 
+        .link { 
+            color: $white; 
+        }
+        li {
+            float: right; 
+        }
+    }
 
     li { 
         float: left; 
-        margin-left: 10px; 
-
+        margin-left: 20px; 
         &:first-child { 
             margin-left: 0; 
-
-        }
-        &:last-child { 
-            float: right; 
         }
     }
 }
 
 .link { 
     text-decoration: none;
-    padding: 10px; 
-
     &:hover { 
         text-decoration: underline; 
     }
+}
 
-    // logo
-    &.logo {
-        font-size: 200%; 
-    }
+.logo { 
+    // font-size: 200%; 
+    color: $black; 
+    font-weight: 900; 
 }

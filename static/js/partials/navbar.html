@@ -1,17 +1,11 @@
 <!-- navbar -->
 <script src="https://cdn.auth0.com/js/lock-8.2.min.js"></script>
 
+
+
 <nav class="navbar" ng-controller="NavbarCtrl">
 
     <ul class="nav-list">
-        <li>
-            <a class="link logo" href="/">NomsBook</a>
-        </li>
-
-        <li><a class="link" href="/recipes">Recipe List</a></li>
-
-        <li><a class="link" href="/recipes/new">Create New Recipe</a></li>
-
         <li>
             <a class="link" ng-show="!user.email" ng-click="showLogin()" href="#">
                 <span class="fa fa-social fa-google"></span> 
@@ -25,5 +19,23 @@
             </a>
         </li>
     </ul>
+
+
+    <!-- second set  -->
+    <ul class="nav-list">
+        <li>
+            <a class="link logo" href="/">NomsBook</a>
+        </li>
+
+        <li><a class="link" href="/recipes">Recipe List</a></li>
+
+        <li><a class="link" href="/recipes/new">Create New Recipe</a></li>
+
+
+    </ul>
+
+
+
+
 </nav>
 
