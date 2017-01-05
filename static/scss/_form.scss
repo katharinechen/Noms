@@ -1,31 +1,45 @@
 .form {
-     padding: 32px;
      width: 75%; 
 }
 
 .form-row { 
     padding: 10px; 
+    padding-left: 0px; 
 }
 
 label { 
     font-weight: bold; 
     display: block; 
+    padding-bottom: 5px; 
 }
 
 // attribute selector 
 input[type="text"] { 
-    background: white; 
+    display: block; 
     width: 80%; 
-    color: black; 
-    border-radius: 8px; 
-    font-size: 18px; 
-    box-shadow: none; 
-    border: 1px solid black; 
+    color: $black; 
     padding: 5px; 
+    font: 100% $standard-font; 
+    background: $white; 
+    border: 1px solid $light-grey; 
 }
-
 
 textarea { 
     display: block; 
-    width: 80%;
+    width: 80%; 
+    color: $black; 
+    padding: 5px; 
+    font: 100% $standard-font; 
+    background: $white; 
+    border: 1px solid $light-grey; 
+}
+
+input[type='submit'] { 
+    display: block; 
+    font: 100% $standard-font; 
+}
+
+.alert-message { 
+    background: $hot-green; 
+    width: 80%; 
 }

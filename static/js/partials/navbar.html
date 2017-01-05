@@ -1,10 +1,8 @@
 <!-- navbar -->
 <script src="https://cdn.auth0.com/js/lock-8.2.min.js"></script>
 
-
-
 <nav class="navbar" ng-controller="NavbarCtrl">
-
+    <!-- first set of navbar: auth  --> 
     <ul class="nav-list">
         <li>
             <a class="link" ng-show="!user.email" ng-click="showLogin()" href="#">
@@ -12,7 +10,6 @@
                 Login
             </a>
         </li>
-
         <li>
             <a class="link" ng-show="user.email" href="#">
                 Welcome {{ user.givenName || user.email }}
@@ -20,22 +17,12 @@
         </li>
     </ul>
 
-
-    <!-- second set  -->
+    <!-- second set of navbar: menu items -->
     <ul class="nav-list">
         <li>
             <a class="link logo" href="/">NomsBook</a>
         </li>
-
         <li><a class="link" href="/recipes">Recipe List</a></li>
-
         <li><a class="link" href="/recipes/new">Create New Recipe</a></li>
-
-
     </ul>
-
-
-
-
 </nav>
-

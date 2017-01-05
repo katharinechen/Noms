@@ -1,35 +1,18 @@
-.jumbo {
-  // background: url("../images/cookie-monster.jpg") no-repeat $black;
-  background: $hotpink; 
-  display: block; 
-  height: 300px; 
-  margin: 0px 40px 0px 40px; 
-
-  // container inside the jumbotron 
-  .container { 
-    padding: 40px; 
-    h1 { 
-      color: $white; 
-    }
-    p { 
-      color: $white;
-    }
-  }
+.main-container {
+    display: block; 
+    background: $white; 
+    margin: 0px 40px 0px 40px; 
+    padding: 20px; 
 }
 
-
-.three-sections { 
-  // using css flexbox
-  display: flex;
-  flex-direction: row; 
-  justify-content: space-around;
-
-  height: auto; 
-  text-align: center;
-  margin: 0px 40px 0px 40px; 
-
-  section { 
-    background: $white; 
-    width: 28%; 
+.jumbo {
+  background: $hotpink; 
+  background: green; 
+  padding: 30px; 
+  h1 { 
+      color: $white; 
+  }
+  p { 
+      color: $white;
   }
 }
