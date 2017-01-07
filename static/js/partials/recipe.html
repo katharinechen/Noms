@@ -1,59 +1,56 @@
 <!--  individual recipe  -->
-<div ng-controller="Recipe" class="recipeOne">
-    <div>
+<div ng-controller="Recipe">
 
-    <!-- Header --> 
-    <div class="head-panel"> 
-        <span class="recipe-title">{{ recipe.name }}</span>
-    </div> 
-
-    <!-- Ingredients -->
-    <div class="row-container">
-        <span class="row-title">
-            Ingredients 
-        </span>
-        <div class="row-sections">
-            <div>
-                <span class="section-title">Recipe Yield</span>
-                <span class="section-text">{{ recipe.recipeYield }}</span>
+    <div class="recipe-header">
+        <div class="recipe-description"> 
+            <h2 class="recipe-name">{{ recipe.name }}</h2> 
+            <div class="row-section">
+                <div>
+                    <span class="section-title">Author</span>
+                    <span class="section-text">{{ recipe.author }}</span>
+                </div>
+                <div>
+                    <span class="section-title">User</span>
+                    <span class="section-text">{{ recipe.user.givenName }} {{ recipe.user.familyName }} ({{ recipe.user.email}})</span>
+                </div>
+                <div>
+                    <span class="section-title">Last Modified</span>
+                    <span class="section-text">{{ recipe.modified }}</span>
+                </div>
+                <div>
+                    <span class="section-title">Recipe Yield</span>
+                    <span class="section-text">{{ recipe.recipeYield }}</span>
+                </div>
+                <div>
+                    <span class="section-title">Tags</span>
+                    <ul class="section-text" ng-repeat="tag in recipe.tags">
+                        <li>{{ tag }}</li> 
+                    </ul>
+                </div>
             </div>
-            <div>
-                <span class="section-title">Tags</span>
-                <ul class="section-text" ng-repeat="tag in recipe.tags">
-                    <li>{{ tag }}</li> 
-                </ul>
-            </div>
-        </div>
-        <ul ng-repeat="ingredient in recipe.ingredients">
-            <li>{{ ingredient }}</li>
-        </ul>
-    </div>
-
-    <!-- Directions -->
-    <div class="row-container">
-        <span class="row-title">Directions</span>
-        <!-- Eventually we will have 3 sections: Prep, Cook, Ready In  -->
-        <ul ng-repeat="instruction in recipe.instructions">
-            <li>{{ instruction }}</li>
-        </ul>
-    </div>
-
-    <!-- Additional Information -->
-    <div class="row-container">
-        <span class="row-title">Additional Information</span>
-        <div class="row-section">
-            <div>
-                <span class="section-title">Author</span>
-                <span class="section-text">{{ recipe.author }}</span>
-            </div>
-            <div>
-                <span class="section-title">User</span>
-                <span class="section-text">{{ recipe.user.givenName }} {{ recipe.user.familyName }} ({{ recipe.user.email}})</span>
-            </div>
-            <div>
-                <span class="section-title">Last Modified</span>
-                <span class="section-text">{{ recipe.modified }}</span>
-            </div>
+        </div> 
+        <div class="picture-area">
+            <div class="recipe-image">
+                <img src="https://media.blueapron.com/recipes/622/c_main_dish_images/20160117-2058-3089-7566/R_011316_2_ChickenSagePotPie_20-_201354_splash_feature.jpg">
+            </div>​
         </div>
     </div>
+
+    <div class="recipe-section">
+        <!-- Ingredient sections  -->
+        <div class="ingredients">
+            <span class="row-title">INGREDIENTS</span>
+            <ul ng-repeat="ingredient in recipe.ingredients">
+                <li>{{ ingredient }}</li>
+            </ul>
+        </div>
+
+        <!-- Directions -->
+        <div class="directions">
+            <span class="row-title">DIRECTIONS</span>
+            <!-- Eventually we will have 3 sections: Prep, Cook, Ready In  -->
+            <ul ng-repeat="instruction in recipe.instructions">
+                <li>{{ instruction }}</li>
+            </ul>
+        </div>
 </div>

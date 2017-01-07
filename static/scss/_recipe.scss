@@ -1,0 +1,58 @@
+.recipe-header { 
+    background: $sea-green; 
+    padding: 20px; 
+    margin-bottom: 20px; 
+    overflow: hidden; // need to if you have aligned items 
+
+    // first section 
+    .recipe-description { 
+        width: 60%; 
+        float: left; 
+        .recipe-name { 
+            margin-top: 0px;
+            font: 150% $standard-font; 
+            text-align: center;
+        }
+    }
+    // second section 
+    .picture-area { 
+        float: right; 
+        background: $black; 
+        height: 160px;
+        width: 240px;
+    }
+    .section-title {
+        font: 80% $standard-font; 
+        font-weight: bold; 
+    }
+    .section-text { 
+        font: 80% $standard-font; 
+    }
+}
+
+.recipe-section { 
+    overflow: hidden; 
+    padding-left: 20px; 
+    padding-right: 20px; 
+
+    // ingredients 
+    .ingredients { 
+        width: 38%; 
+        float: left; 
+    }
+
+    // directions 
+    .directions { 
+        width: 60%; 
+        float: right; 
+    }
+}
+
+.row-title { 
+    font-weight: bold; 
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
