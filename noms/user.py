@@ -1,7 +1,6 @@
 """
 Authentication and users
 """
-
 from mongoengine import fields
 
 from codado import enum
@@ -50,4 +49,22 @@ class User(RenderableDocument):
                 )
 
 
-ANONYMOUS = User(email='', roles=[])
+_anonymous = User(
+        email='anonymous@example.com', 
+        roles=[Roles.user],
+        givenName='Anonymous',
+        )
+
+
+def ANONYMOUS():
+    """
+    Ensure that the ANONYMOUS user exists in the database
+    """
+    global _anonymous
+    if getattr(_anonymous, 'id', None):
+        return _anonymous
+    anon = User.objects(email=_anonymous.email).first()
+    if anon is None:
+        _anonymous.save(force_insert=True)
+    assert _anonymous.id
+    return _anonymous

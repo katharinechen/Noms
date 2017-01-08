@@ -1,3 +1,4 @@
+attrs
 characteristic
 codado>=0.2.3
 contextdecorator
@@ -11,6 +12,7 @@ mongomock
 pyflakes
 pytest-flakes
 pytest-cov
+pytest-twisted
 pytest>=3.0
 pyOpenSSL
 service_identity
