@@ -1,41 +1,18 @@
-$white: #FFFFFF; 
-$black: #000000;
-$light-pink: #FFB6C1; 
-
-.jumbo { 
-  // display and size
-  background-color: $black; 
-  // background-image: url("../images/cookie-monster.jpg");
-  display: block; 
-  width: 100%; 
-  height: 300px; 
-  margin: 0px; 
-
-  // container inside the jumbotron 
-  .container { 
-    padding: 40px; 
-    h1 { 
-      color: $white; 
-    }
-    p { 
-      color: $white;
-    }
-  }
+.main-container {
+    display: block; 
+    background: $white; 
+    margin: 0px 40px 0px 40px; 
+    padding: 20px; 
 }
 
-.three { 
-  // display and size 
-  background-color: $light-pink; 
-  display: block; 
-  width: 100%;
-  height: auto; 
-
-  .section { 
-    background-color: $white; 
-    display: inline-block; 
-    margin: 5px;
-    padding: 15px; 
-    width: 30%; 
-    height: 180px; 
+.jumbo {
+  background: $sea-green; 
+  padding: 30px; 
+  margin-bottom: 20px; 
+  h1 { 
+      color: $white; 
+  }
+  p { 
+      color: $white;
   }
 }

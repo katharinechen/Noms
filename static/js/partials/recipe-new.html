@@ -1,28 +1,32 @@
-<div class="container-form" ng-controller="NewRecipeCtrl">
+<div class="jumbo">
+    <h1>New Recipe</h1>
+</div>
 
-  <form class="special-form">
-    <!--     All the rows of the survey  -->
-    <div class="row"> 
-      <label>Name:</label>  
-      <input type="text" ng-model="recipe.name" />
-    </div> 
-    <div class="row"> 
-      <label>Author:</label>
-      <input type="text" ng-model="recipe.author" />
-    </div> 
-    <div> 
-      <label>Ingredients:</label>
-      <textarea ng-model="recipe.ingredients"></textarea>
-    </div> 
-    <div> 
-      <label>Instructions:</label>
-      <textarea ng-model="recipe.instructions"></textarea>
-    </div> 
+<div class="form" ng-controller="NewRecipeCtrl">
     
-    <!--     Button  -->
-    <input type="submit" ng-click="update(recipe)" value="Save" />
-  
-  </form>
+    <!-- All the rows of the survey -->
+    <div class="form-row"> 
+        <label>Name</label>  
+        <input type="text" ng-model="recipe.name" />
+    </div> 
+    <div class="form-row"> 
+        <label>Author</label>
+        <input type="text" ng-model="recipe.author" />
+    </div> 
+    <div class="form-row"> 
+        <label>Ingredients</label>
+        <textarea ng-model="recipe.ingredients"></textarea>
+    </div> 
+    <div class="form-row"> 
+        <label>Instructions</label>
+        <textarea ng-model="recipe.instructions"></textarea>
+    </div> 
 
-  <div ng-show="ok">{{ message }}</div> 
+    <!-- button -->
+    <div class="form-row">
+       <input type="submit" ng-click="update(recipe)" value="Save" />
+    </div> 
+
+    <!-- ok message -->
+    <div class="alert-message" ng-show="ok">{{ message }}</div> 
 </div>

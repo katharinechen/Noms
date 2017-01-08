@@ -1,48 +1,28 @@
 <!-- navbar -->
 <script src="https://cdn.auth0.com/js/lock-8.2.min.js"></script>
 
-<div class="navbar">
-  <!-- site name -->
-  <div>
-    <a href="/">NomsBook</a>
-  </div>
-
-  <!-- nav links-->
-  <div>
+<nav class="navbar" ng-controller="NavbarCtrl">
+    <!-- first set of navbar: auth  --> 
     <ul class="nav-list">
-      <li><a href="/recipes">Recipe List</a></li>
-
-      <li class="dropdown">
-        <a href="#" data-toggle="dropdown">Create Recipes and Ingredients
-          <span class="caret"></span>
-        </a>
-        <ul role="menu">
-          <li><a href="/recipes/new">Create New Recipe</a></li>
-          <li><a href="/ingredients/new">Create New Ingredients</a></li>
-        </ul>
-      </li>
-
-      <li class="dropdown">
-        <a href="#" data-toggle="dropdown">Queries
-          <span class="caret"></span>
-        </a>
-        <ul role="menu">
-          <li><a href="/ingredients">Find by Ingredient</a></li>
-        </ul>
-      </li>
+        <li>
+            <a class="link" ng-show="!user.email" ng-click="showLogin()" href="#">
+                <span class="fa fa-social fa-google"></span> 
+                Login
+            </a>
+        </li>
+        <li>
+            <a class="link" ng-show="user.email" href="#">
+                Welcome {{ user.givenName || user.email }}
+            </a>
+        </li>
     </ul>
 
-    <ul>
-      <li><a ng-show="!user.email || user.email == 'anonymous@example.com'" ng-click="showLogin()" href="#">
-        <span class="fa fa-social fa-google">
-        </span> Login</a>
-      </li>
-      <li>
-        <a ng-show="user.email && user.email != 'anonymous@example.com'" href="#">Welcome {{ user.givenName || user.email }}</a>
-      </li>
+    <!-- second set of navbar: menu items -->
+    <ul class="nav-list">
+        <li>
+            <a class="link logo" href="/">NomsBook</a>
+        </li>
+        <li><a class="link" href="/recipes">Recipe List</a></li>
+        <li><a class="link" href="/recipes/new">Create New Recipe</a></li>
     </ul>
-  </div>
-
-
-</div><!-- /.container-fluid -->
-
+</nav>
