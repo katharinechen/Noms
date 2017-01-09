@@ -6,26 +6,26 @@
             <h2 class="recipe-name">{{ recipe.name }}</h2> 
             <div class="row-section">
                 <div>
-                    <span class="section-title">Author</span>
+                    <span class="section-title">Author:</span>
                     <span class="section-text">{{ recipe.author }}</span>
                 </div>
                 <div>
-                    <span class="section-title">User</span>
+                    <span class="section-title">User:</span>
                     <span class="section-text">{{ recipe.user.givenName }} {{ recipe.user.familyName }} ({{ recipe.user.email}})</span>
                 </div>
                 <div>
-                    <span class="section-title">Last Modified</span>
+                    <span class="section-title">Last Modified:</span>
                     <span class="section-text">{{ recipe.modified }}</span>
                 </div>
                 <div>
-                    <span class="section-title">Recipe Yield</span>
+                    <span class="section-title">Recipe Yield:</span>
                     <span class="section-text">{{ recipe.recipeYield }}</span>
                 </div>
                 <div>
-                    <span class="section-title">Tags</span>
-                    <ul class="section-text" ng-repeat="tag in recipe.tags">
-                        <li>{{ tag }}</li> 
-                    </ul>
+                    <span class="section-title">Tags:</span>
+                    <div class="section-text" ng-repeat="tag in recipe.tags">
+                        <div class="tag">{{ tag }}</div> 
+                    </div>
                 </div>
             </div>
         </div> 
