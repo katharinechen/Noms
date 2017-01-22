@@ -1,6 +1,10 @@
 """
 Command-line interface for noms
 """
+import subprocess
+import os
+import shlex
+
 from twisted.web import tap
 
 from mongoengine import connect
@@ -10,6 +14,8 @@ from noms import CONFIG, DBAlias, DBHost, user
 
 
 MAIN_FUNC = 'noms.cli.main'
+
+STATIC_FILE_PATTERNS = '*.js;*.css;*.html;*.json;*.gif;*.png;*.eot;*.woff;*.otf;*.svg;*.ttf'
 
 
 class NomsOptions(tap.Options):
@@ -32,6 +38,15 @@ class NomsOptions(tap.Options):
         # now we know CONFIG exists
         CONFIG.cliOptions = dict(self.items())
         CONFIG.save()
+
+        # watch for changes to static files (cache busting)
+        watchCommand = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
+        watchCommand = watchCommand.format(
+            pat=STATIC_FILE_PATTERNS,
+            cmd='digester static/',
+            where='%s/static' % os.getcwd()
+            )
+        subprocess.Popen(shlex.split(watchCommand), stdout=subprocess.PIPE)
 
         # ensure that at least the anonymous user exists
         user.ANONYMOUS()

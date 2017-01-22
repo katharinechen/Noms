@@ -90,6 +90,8 @@ class Server(object):
         """
         request.setHeader('content-type', 'application/json')
         request.setHeader('expires', "-1")
+        request.setHeader("cache-control", "private, max-age=0, no-cache, no-store, must-revalidate")
+        request.setHeader("pragma", "no-cache")
         if self._api is None:
             self._api = APIServer().app.resource()
         return self._api
@@ -157,6 +159,11 @@ class APIServer(object):
 
         recipe.save()
         return OK()
+
+    @app.route("/newhash/<string:hash>")
+    # FIXME - need signed request, use itsdangerous?
+    def newHash(self, request, hash):
+        print '!!! new hash = %r' % hash
 
     @app.route("/recipe/<string:urlKey>")
     def getRecipe(self, request, urlKey):
