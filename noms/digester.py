@@ -1,7 +1,7 @@
 """
 Generate an md5 hash for a directory of files
 """
-import sys, os
+import os
 import hashlib
 
 from humanhash import humanize

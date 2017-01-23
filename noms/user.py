@@ -145,7 +145,7 @@ def USER():
     """
     for _U in _USERS.values():
         if getattr(_U, 'id', None):
-            return _U
+            continue
         u = User.objects(email=_U.email).first()
         if u is None:
             _U.save(force_insert=True)

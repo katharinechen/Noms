@@ -3,8 +3,6 @@ Produce a valid usertoken from a local user's email address
 """
 from mongoengine import connect
 
-from twisted.python import usage
-
 from codado.tx import Main
 
 from noms import user, DBHost
