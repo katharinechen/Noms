@@ -15,7 +15,7 @@ from noms.digester import digest
 
 
 MAIN_FUNC = 'noms.cli.main'
-
+FIXME_URL = 'http://localhost:8080'
 STATIC_FILE_PATTERNS = '*.js;*.css;*.html;*.json;*.gif;*.png;*.eot;*.woff;*.otf;*.svg;*.ttf'
 
 
@@ -46,7 +46,7 @@ class NomsOptions(tap.Options):
         watchCommand = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
         watchCommand = watchCommand.format(
             pat=STATIC_FILE_PATTERNS,
-            cmd='digester %s' % staticPath,
+            cmd='digester -U %s/api/sethash/ %s' % (FIXME_URL, staticPath),
             where=staticPath,
             )
         subprocess.Popen(shlex.split(watchCommand), stdout=subprocess.PIPE)

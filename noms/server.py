@@ -40,6 +40,25 @@ ResponseMsg = enum(
         )
 
 
+def roles(allowed, forbidAction=Forbidden):
+    """
+    Request must belong to a user with the needed roles, or => 403
+    """
+    def wrapper(fn):
+        @wraps(fn)
+        def roleCheck(self, request, *a, **kw):
+            u = ICurrentUser(request)
+            for role in allowed:
+                if role in u.roles:
+                    return fn(self, request, *a, **kw)
+            if forbidAction is Forbidden:
+                raise Forbidden()
+            else:
+                return forbidAction()
+        return roleCheck
+    return wrapper
+
+
 class Server(object):
     """
     The web server for html and miscell.
@@ -86,9 +105,6 @@ class Server(object):
         """
         Endpoints under here are served as application/json with no caching allowed.
 
-        TODO: In the future, these will be REST APIs, so they can be requested
-        using API keys instead of cookies.
-
         We memoize APIServer().app.resource() so we only have to create one.
         """
         request.setHeader('content-type', 'application/json')
@@ -109,25 +125,6 @@ def querySet(fn):
         r = fn(request, *a, **kw)
         return rendering.RenderableQuerySet(r).render(request)
     return deco
-
-
-def roles(allowed, forbidAction=Forbidden):
-    """
-    Request must belong to a user with the needed roles, or => 403
-    """
-    def wrapper(fn):
-        @wraps(fn)
-        def roleCheck(self, request, *a, **kw):
-            u = ICurrentUser(request)
-            for role in allowed:
-                if role in u.roles:
-                    return fn(self, request, *a, **kw)
-            if forbidAction is Forbidden:
-                raise Forbidden()
-            else:
-                return forbidAction()
-        return roleCheck
-    return wrapper
 
 
 class APIServer(object):
@@ -175,7 +172,7 @@ class APIServer(object):
     def setHash(self, request, hash):
         CONFIG.staticHash = hash
         CONFIG.save()
-        print 'new hash = %r' % CONFIG.staticHash
+        print 'New hash=%r' % CONFIG.staticHash
         return OK(message='hash=%r' % CONFIG.staticHash)
 
     @app.route("/recipe/<string:urlKey>")
