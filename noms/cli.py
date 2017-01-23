@@ -11,6 +11,7 @@ from mongoengine import connect
 
 from noms.server import Server
 from noms import CONFIG, DBAlias, DBHost, user, secret
+from noms.digester import digest
 
 
 MAIN_FUNC = 'noms.cli.main'
@@ -37,14 +38,16 @@ class NomsOptions(tap.Options):
         
         # now we know CONFIG exists
         CONFIG.cliOptions = dict(self.items())
+        staticPath = '%s/static' % os.getcwd()
+        CONFIG.staticHash = digest(staticPath)
         CONFIG.save()
 
         # watch for changes to static files (cache busting)
         watchCommand = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
         watchCommand = watchCommand.format(
             pat=STATIC_FILE_PATTERNS,
-            cmd='digester static/',
-            where='%s/static' % os.getcwd()
+            cmd='digester %s' % staticPath,
+            where=staticPath,
             )
         subprocess.Popen(shlex.split(watchCommand), stdout=subprocess.PIPE)
 
