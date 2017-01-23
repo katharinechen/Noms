@@ -3,6 +3,10 @@ Authentication and users
 """
 from mongoengine import fields
 
+from itsdangerous import (
+        TimedJSONWebSignatureSerializer as Serializer
+        )
+
 from codado import enum
 
 from noms.rendering import RenderableDocument
@@ -24,6 +28,14 @@ class User(RenderableDocument):
     meta = {'indexes': [
         'email',
         ]}
+
+    def asToken(self):
+        """
+        Create a JSON token for this user
+        """
+        _, sec = secret.get('localapi')
+        s = Serializer(sec, expires_in=secret.SECRET_EXPIRATION)
+        return s.dumps({'email': self.email})
 
     @classmethod
     def fromSSO(cls, ssoData):
