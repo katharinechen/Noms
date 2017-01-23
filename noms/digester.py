@@ -8,13 +8,12 @@ from humanhash import humanize
 
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.task import react
-from twisted.python import util
 
 import treq
 
 from codado.tx import Main
 
-from noms import usertoken, user
+from noms import usertoken
 
 
 LOCALAPI_EMAIL = 'localapi@example.com'
