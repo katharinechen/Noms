@@ -111,7 +111,7 @@ def querySet(fn):
     return deco
 
 
-def roles(allowed):
+def roles(allowed, forbidAction=Forbidden):
     """
     Request must belong to a user with the needed roles, or => 403
     """
@@ -122,7 +122,10 @@ def roles(allowed):
             for role in allowed:
                 if role in u.roles:
                     return fn(self, request, *a, **kw)
-            raise Forbidden()
+            if forbidAction is Forbidden:
+                raise Forbidden()
+            else:
+                return forbidAction()
         return roleCheck
     return wrapper
 
@@ -153,7 +156,7 @@ class APIServer(object):
         data = {k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
-        recipe.user = self.user(request)
+        recipe.user = ICurrentUser(request)
         recipe.urlKey = urlify(recipe.user.email, recipe.name)
         if Recipe.objects(urlKey=recipe.urlKey).first():
             return ERROR(message=ResponseMsg.renameRecipe)
@@ -231,17 +234,23 @@ class APIServer(object):
         """
         return ICurrentUser(request)
 
+    @staticmethod
+    def clipError(**kw):
+        defer.returnValue(ClipResponse(status=RS.error, **kw))
+
+    @staticmethod
+    def clipOK(**kw):
+        defer.returnValue(ClipResponse(status=RS.ok, **kw))
+
     @app.route("/bookmarklet")
-    @roles([Roles.user])
+    @roles([Roles.user],
+            forbidAction=lambda: APIServer.clipError(message=ResponseMsg.notLoggedIn))
     @defer.inlineCallbacks
     def bookmarklet(self, request):
         """
         Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension
         """
-        error = lambda **kw: defer.returnValue(ClipResponse(status=RS.error, **kw))
-        ok = lambda **kw: defer.returnValue(ClipResponse(status=RS.ok, **kw))
-
-        u = self.user(request)
+        u = ICurrentUser(request)
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
@@ -259,9 +268,9 @@ class APIServer(object):
                 break 
         
         if len(recipesSaved) == 0:
-            error(message=ResponseMsg.noRecipe) 
+            self.clipError(message=ResponseMsg.noRecipe) 
 
-        ok(recipes=recipesSaved)
+        self.clipOK(recipes=recipesSaved)
 
 
 @attr.s
