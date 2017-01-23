@@ -6,7 +6,6 @@ import hashlib
 
 from humanhash import humanize
 
-from twisted.internet.defer import inlineCallbacks
 from twisted.internet.task import react
 from twisted.python import util
 
