@@ -3,6 +3,8 @@ characteristic
 codado>=0.2.3
 contextdecorator
 coverage
+humanhash
+itsdangerous
 jinja2
 klein 
 microdata
