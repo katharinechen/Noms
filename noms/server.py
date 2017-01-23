@@ -173,8 +173,10 @@ class APIServer(object):
     @app.route("/sethash/<string:hash>")
     @roles([Roles.localapi])
     def setHash(self, request, hash):
-        print '!!! new hash = %r' % hash
-        return OK(message='hash=%r' % hash)
+        CONFIG.staticHash = hash
+        CONFIG.save()
+        print 'new hash = %r' % CONFIG.staticHash
+        return OK(message='hash=%r' % CONFIG.staticHash)
 
     @app.route("/recipe/<string:urlKey>")
     def getRecipe(self, request, urlKey):

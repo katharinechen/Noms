@@ -20,6 +20,8 @@ class Config(RenderableDocument):
 
     cliOptions = fields.DictField() # options from NomsOptions, the cli parser class
 
+    staticHash = fields.StringField()
+
     @property
     def appID(self):
         """
