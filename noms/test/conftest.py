@@ -136,12 +136,12 @@ def mockConfig(mockDatabase):
 
 
 @fixture
-def anonymous():
+def specialUsers():
     """
-    Preload the anonymous user
+    Preload the special users
     """
     from noms import user
-    user.ANONYMOUS()
+    user.USER()
 
 
 @fixture

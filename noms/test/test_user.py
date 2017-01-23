@@ -38,6 +38,6 @@ def test_anonymousAlreadyExists():
     """
     Do we return the already-existing anonymous user if it already exists?
     """
-    anon = user.ANONYMOUS()
-    new1 = user.ANONYMOUS()
+    anon = user.USER().anonymous
+    new1 = user.USER().anonymous
     assert anon.id == new1.id

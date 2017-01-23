@@ -11,6 +11,8 @@ from twisted.internet import defer
 
 import treq
 
+from werkzeug.exceptions import Forbidden
+
 from klein.app import KleinRequest, KleinResource
 from klein.interfaces import IKleinRequest
 
@@ -18,9 +20,11 @@ import attr
 
 from mock import patch, ANY
 
-from pytest import fixture, inlineCallbacks
+from pytest import fixture, inlineCallbacks, raises
 
 from noms import server, fromNoms, config, recipe, urlify, CONFIG
+from noms.interface import ICurrentUser
+from noms.user import User
 from noms.rendering import ResponseStatus as RS, OK, ERROR
 
 
@@ -30,6 +34,7 @@ from noms.rendering import ResponseStatus as RS, OK, ERROR
 # adapter -- now we can use DummyRequest wherever a Klein() object appears in
 # our code
 registerAdapter(KleinRequest, DummyRequest, IKleinRequest)
+registerAdapter(User.fromRequest, DummyRequest, ICurrentUser)
 
 
 def test_querySet(mockConfig):
@@ -346,7 +351,7 @@ def test_noRecipeToBookmark(mockConfig, weirdo, apiServer):
 
 
 @inlineCallbacks
-def test_bookmarklet(mockConfig, apiServer, anonymous, weirdo, recipePageHTML):
+def test_bookmarklet(mockConfig, apiServer, specialUsers, weirdo, recipePageHTML):
     """
     Does api/bookmarklet fetch, save, and return a response for the recipe?
     """
@@ -404,5 +409,5 @@ def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
     assert resp == ERROR(message=server.ResponseMsg.renameRecipe)
 
     anonJS = requestJSON([])
-    resp = yield apiServer.handler('createRecipeSave', anonJS)
-    assert resp == ERROR(message=server.ResponseMsg.notLoggedIn)
+    with raises(Forbidden):
+        yield apiServer.handler('createRecipeSave', anonJS)
