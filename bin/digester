@@ -1,3 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-python noms/digester.py "$@"
+from sys import exit
+
+from noms.digester import Options
+
+exit(Options.main())

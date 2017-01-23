@@ -6,11 +6,12 @@ import hashlib
 
 from humanhash import humanize
 
-from twisted.python import usage
+from codado.tx import Main
 
 
-class Options(usage.Options):
-    synopsis = " <directory>"
+
+class Options(Main):
+    synopsis = "digester <directory>"
 
     def parseArgs(self, directory):
         self['directory'] = directory
@@ -25,21 +26,3 @@ class Options(usage.Options):
 
         print humanize(result.hexdigest(), words=3)
 
-def run(argv=None):
-    if argv is None:
-        argv = sys.argv
-    o = Options()
-    try:
-        o.parseOptions(argv[1:])
-    except usage.UsageError, e:
-        if hasattr(o, 'subOptions'):
-            print str(o.subOptions)
-        else:
-            print str(o)
-        print str(e)
-        return 1
-
-    return 0
-
-
-if __name__ == '__main__': sys.exit(run())
