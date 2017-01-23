@@ -1,7 +1,11 @@
 """
 Test the command-line interface
 """
+import subprocess
+
 from noms import cli
+
+from mock import patch
 
 
 def test_main(mockConfig):
@@ -18,5 +22,9 @@ def test_postOptions(mockConfig):
     """
     opts = cli.NomsOptions()
     opts['hax'] = 'haxor'
-    opts.postOptions()
+    pPopen = patch.object(subprocess, 'Popen', autospec=True)
+    with pPopen as mPopen:
+        opts.postOptions()
+        args = mPopen.call_args_list[0]
+        assert args[0][0][0] == 'watchmedo'
     assert mockConfig.cliOptions.get('hax') == 'haxor'
