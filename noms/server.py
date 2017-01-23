@@ -15,12 +15,15 @@ from twisted.internet import defer
 
 import treq
 
+from werkzeug.exceptions import Forbidden
+
 from klein import Klein
 
 from noms import urlify, secret, CONFIG
-from noms.user import User, ANONYMOUS
+from noms.user import User, USER, Roles
 from noms.recipe import Recipe
 from noms import rendering 
+from noms.interface import ICurrentUser
 from noms.rendering import ResponseStatus as RS, OK, ERROR
 
 
@@ -108,6 +111,22 @@ def querySet(fn):
     return deco
 
 
+def roles(allowed):
+    """
+    Request must belong to a user with the needed roles, or => 403
+    """
+    def wrapper(fn):
+        @wraps(fn)
+        def roleCheck(self, request, *a, **kw):
+            u = ICurrentUser(request)
+            for role in allowed:
+                if role in u.roles:
+                    return fn(self, request, *a, **kw)
+            raise Forbidden()
+        return roleCheck
+    return wrapper
+
+
 class APIServer(object):
     """
     The web server for JSON API
@@ -124,24 +143,12 @@ class APIServer(object):
         """
         return Recipe.objects()
 
-    def isAnonymous(self, request):
-        """
-        => True, if request is not made by a logged-in user
-        """
-        ## FIXME!! add logged-in-or-403 permission decorators
-        u = self.user(request)
-        if not u or u.email == ANONYMOUS().email:
-            return True
-        return False
-
     @app.route("/recipe/create")
+    @roles([Roles.user])
     def createRecipeSave(self, request):
         """
         Save recipes
         """
-        if self.isAnonymous(request):
-            return ERROR(message=ResponseMsg.notLoggedIn)
-
         data = json.load(request.content)
         data = {k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
@@ -151,7 +158,7 @@ class APIServer(object):
         if Recipe.objects(urlKey=recipe.urlKey).first():
             return ERROR(message=ResponseMsg.renameRecipe)
 
-        recipe.author = data.get('author', ANONYMOUS().givenName)
+        recipe.author = data.get('author', USER().anonymous.givenName)
         for i in data['ingredients']:
             recipe.ingredients.append(i)
         for i in data['instructions']:
@@ -160,10 +167,11 @@ class APIServer(object):
         recipe.save()
         return OK()
 
-    @app.route("/newhash/<string:hash>")
-    # FIXME - need signed request, use itsdangerous?
-    def newHash(self, request, hash):
+    @app.route("/sethash/<string:hash>")
+    @roles([Roles.localapi])
+    def setHash(self, request, hash):
         print '!!! new hash = %r' % hash
+        return OK(message='hash=%r' % hash)
 
     @app.route("/recipe/<string:urlKey>")
     def getRecipe(self, request, urlKey):
@@ -221,10 +229,10 @@ class APIServer(object):
         """
         The current user as data
         """
-        u = getattr(request.getSession(), 'user', ANONYMOUS())
-        return u
+        return ICurrentUser(request)
 
     @app.route("/bookmarklet")
+    @roles([Roles.user])
     @defer.inlineCallbacks
     def bookmarklet(self, request):
         """
@@ -232,9 +240,6 @@ class APIServer(object):
         """
         error = lambda **kw: defer.returnValue(ClipResponse(status=RS.error, **kw))
         ok = lambda **kw: defer.returnValue(ClipResponse(status=RS.ok, **kw))
-
-        if self.isAnonymous(request):
-            error(message=ResponseMsg.notLoggedIn)
 
         u = self.user(request)
 

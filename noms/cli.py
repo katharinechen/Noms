@@ -54,6 +54,9 @@ class NomsOptions(tap.Options):
             secret.put('localapi', 'localapi', password)
             print "Stored new localapi password"
 
+        # ensure that at least the special users exist
+        user.USER()
+
         self.opt_class(MAIN_FUNC)
 
         return tap.Options.postOptions(self)
