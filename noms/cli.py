@@ -10,7 +10,7 @@ from twisted.web import tap
 from mongoengine import connect
 
 from noms.server import Server
-from noms import CONFIG, DBAlias, DBHost, user
+from noms import CONFIG, DBAlias, DBHost, user, secret
 
 
 MAIN_FUNC = 'noms.cli.main'
@@ -48,8 +48,11 @@ class NomsOptions(tap.Options):
             )
         subprocess.Popen(shlex.split(watchCommand), stdout=subprocess.PIPE)
 
-        # ensure that at least the anonymous user exists
-        user.ANONYMOUS()
+        # store an internally-shared secret
+        if not secret.get('localapi', None):
+            password = secret.randomPassword()
+            secret.put('localapi', 'localapi', password)
+            print "Stored new localapi password"
 
         self.opt_class(MAIN_FUNC)
 
