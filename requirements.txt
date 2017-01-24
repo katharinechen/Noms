@@ -20,3 +20,4 @@ pyOpenSSL
 service_identity
 treq
 twisted
+watchdog

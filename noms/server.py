@@ -55,6 +55,9 @@ def roles(allowed, forbidAction=Forbidden):
                 raise Forbidden()
             else:
                 return forbidAction()
+        # XXX adding an attribute to allow external tools to document what's
+        # going on in the API
+        roleCheck._roles = allowed
         return roleCheck
     return wrapper
 
