@@ -1,6 +1,8 @@
 """
 URLtool - tool for documenting http API and building API clients
 """
+import re
+
 from codado.tx import Main
 
 from noms.server import Server, APIServer
@@ -9,8 +11,17 @@ import yaml
 
 
 class Options(Main):
-    synopsis = "urltool"
+    """
+    Dump all urls in noms
+
+    Apply optional <filter> as a regular expression searching within urls. For
+    example, to match all urls beginning with api, you might use '^/api'
+    """
+    synopsis = "urltool [filter]"
     ## optParameters = [[long, short, default, help], ...]
+
+    def parseArgs(self, filt=None):
+        self['filt'] = re.compile(filt or '.*')
 
     def postOptions(self):
         ## """Recommended if there are subcommands:"""
@@ -21,9 +32,10 @@ class Options(Main):
         for service, prefix in services:
             rules = []
             for rule in service.app.url_map.iter_rules():
-                rules.append(dumpRule(service, rule, prefix))
-            print yaml.dump(sorted(rules))
-            print '---'
+                rtop = dumpRule(service, rule, prefix)
+                if self['filt'].search(rtop.keys()[0]):
+                    rules.append(rtop)
+            print yaml.dump(sorted(rules)) + '---'
 
 
 def dumpRule(serviceCls, rule, prefix):
