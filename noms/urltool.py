@@ -19,22 +19,23 @@ class Options(Main):
         ##     raise usage.UsageError("** Please specify a subcommand (see \"Commands\").")
         services = [(Server, ''), (APIServer, '/api')]
         for service, prefix in services:
+            rules = []
             for rule in service.app.url_map.iter_rules():
-                displayRule(service, rule, prefix)
+                rules.append(dumpRule(service, rule, prefix))
+            print yaml.dump(sorted(rules))
             print '---'
 
 
-def displayRule(serviceCls, rule, prefix):
+def dumpRule(serviceCls, rule, prefix):
     """
-    Create a formatted display of the rule
+    Create a dict representation of the rule
     """
-    data = {}
+    rtop = {prefix + rule.rule: {}}
+    data = rtop.values()[0]
     endpoint = rule.endpoint
-    branch = False
     if rule.endpoint.endswith('_branch'):
         endpoint = rule.endpoint[:-7]
         data['branch'] = True
-    data['rule'] = prefix + rule.rule
     data['endpoint'] = '%s.%s' % (serviceCls.__name__, endpoint)
     meth = getattr(serviceCls, endpoint)
 
@@ -42,4 +43,4 @@ def displayRule(serviceCls, rule, prefix):
         data['roles'] = meth._roles
     if hasattr(meth, '_json'):
         data['json'] = meth._json
-    print yaml.dump(data, default_flow_style=False)
+    return rtop
