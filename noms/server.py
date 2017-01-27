@@ -73,6 +73,8 @@ class Server(object):
         # remove the hash
         if request.postpath and request.postpath[0].startswith('HASH-'):
             del request.postpath[0]
+        else:
+            print "WARNING: request under /static/ with no HASH- cache busting"
         return static.File("./static")
 
     @app.route("/")
