@@ -159,12 +159,21 @@ def reqJS():
 
 
 @inlineCallbacks
-def test_static(mockConfig, rootServer):
+def test_static(mockConfig, rootServer, capsys):
     """
     Does /static/ return a FilePath?
     """
     with fromNoms:
-        r = yield rootServer.handler('static', postpath=['js', 'app.js'])
+        # first try without the hash
+        r = yield rootServer.handler('static', postpath=[
+            'js', 'app.js'])
+        assert 'app.js' in r.child('js').listdir()
+        out, err = capsys.readouterr()
+        assert out.startswith('WARNING:')
+
+        # now try with the hash, should get the same result
+        r = yield rootServer.handler('static', postpath=[
+            'HASH-hello-my-dolly', 'js', 'app.js'])
         assert 'app.js' in r.child('js').listdir()
 
 
