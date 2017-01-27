@@ -3,19 +3,19 @@
 <head>
   <title>NOM NOM NOM </title>
   <% include "universal-header.html" %>
-  <script src="/static/js/app.js"></script>
-  <script src="/static/js/controllers/recipelist.js"></script>
-  <script src="/static/js/controllers/recipe.js"></script>
-  <script src="/static/js/controllers/recipenew.js"></script>
-  <script src="/static/js/controllers/navbar.js"></script>
+  <script src="/static/HASH-<< preload.staticHash >>/js/app.js"></script>
+  <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipelist.js"></script>
+  <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipe.js"></script>
+  <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipenew.js"></script>
+  <script src="/static/HASH-<< preload.staticHash >>/js/controllers/navbar.js"></script>
 </head>
 <body>
 
   <!-- navbar -->
-  <div ng-include="'/static/js/partials/navbar.html'"></div>
+  <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/navbar.html'"></div>
 
   <!--   include partial -->
-  <div ng-include="'/static/js/partials/<< partial >>'"></div>
+  <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/<< partial >>'"></div>
 
 </body>
 </html>

@@ -70,6 +70,9 @@ class Server(object):
 
     @app.route("/static/", branch=True)
     def static(self, request):
+        # remove the hash
+        if request.postpath and request.postpath[0].startswith('HASH-'):
+            del request.postpath[0]
         return static.File("./static")
 
     @app.route("/")

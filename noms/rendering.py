@@ -77,7 +77,10 @@ class HumanReadable(object):
             self.template = env.get_template(templateOrFilename)
         else: # pragma: no cover
             assert 0, "Got %r; needed a template or a template file" % templateOrFilename
-        kwargs.setdefault('preload', {}).update({'apparentURL': CONFIG.apparentURL})
+        kwargs.setdefault('preload', {}).update(
+                {'apparentURL': CONFIG.apparentURL,
+                 'staticHash': CONFIG.staticHash,
+                })
         kwargs['preload']['auth0Public'] = secret.get('auth0')[0]
         self.renderContext = kwargs
 
