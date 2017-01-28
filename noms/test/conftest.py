@@ -3,7 +3,7 @@ Fixtures and common options for pytest tests
 """
 from pytest import fixture
 
-from mongoengine import connect
+from mongoengine import connect, Document
 
 from codado import fromdir
 
@@ -25,13 +25,22 @@ def useTheTestDatabase():
         _client = connect(**DBHost[DBAlias.nomsTest])
 
 
+class _MongoEngineHack(Document):
+    """
+    Document class solely for the purpose of getting access to the db object.
+
+    This is the easiest way to find the db, since get_default_database is
+    broken.
+    """
+
+
 @fixture
 def mockDatabase():
     """
     Mongomock-based interface to a "database"
     """
     try:
-        db = _client.get_default_database()
+        db = _MongoEngineHack._get_db()
         _scrubMongoEngineBecauseMongoEngineIsSoStupid(_client, db)
         yield db
     finally:
