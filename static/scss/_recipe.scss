@@ -1,5 +1,5 @@
 .recipe-header { 
-    background: $sea-green; 
+    background: $color4; 
     padding: 20px; 
     margin-bottom: 20px; 
     overflow: hidden; // need to if you have aligned items 
@@ -17,7 +17,7 @@
     // second section 
     .picture-area { 
         float: right; 
-        background: $black; 
+        background: $color5; 
         height: 160px;
         width: 240px;
     }

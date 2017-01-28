@@ -2,31 +2,38 @@
 @import 'color-scheme'; 
 
 body {
-  color: $black;
   font-family: $standard-font; 
-  background: $light-grey; 
+  background: $color3; 
   margin: 0px; 
   padding: 0px; 
 }
 
 h1 { 
   font: 300% $standard-font; 
-  color: $light-pink; 
 }
 
 h2 { 
   font: 200% $standard-font; 
-  color: $black; 
+  color: $color5; 
 }
 
 p { 
   font: 100% $standard-font; 
-  color: $black; 
+  color: $color5; 
+}
+
+a {
+    text-decoration: none;
+    &:visited, &:link, &:active {
+        color: $color5; 
+    } 
+    &:hover,  { 
+        color: $color4; 
+    }
 }
 
 // imports 
 @import 'home';
 @import 'form';
 @import 'navbar';
-@import 'list'; 
 @import 'recipe';

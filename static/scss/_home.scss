@@ -1,18 +1,18 @@
 .main-container {
     display: block; 
-    background: $white; 
+    background: $color1; 
     margin: 0px 40px 0px 40px; 
     padding: 20px; 
 }
 
 .jumbo {
-  background: $sea-green; 
+  background: $color4; 
   padding: 30px; 
   margin-bottom: 20px; 
   h1 { 
-      color: $white; 
+      color: $color1; 
   }
   p { 
-      color: $white;
+      color: $color1;
   }
 }
