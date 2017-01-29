@@ -61,13 +61,12 @@ def ANONYMOUS():
     Ensure that the ANONYMOUS user exists in the database
     """
     global _anonymous
-    if getattr(_anonymous, 'id', None):
-        return _anonymous
+
     anon = User.objects(email=_anonymous.email).first()
+    if getattr(anon, 'id', None):
+        return anon
     if anon is None:
         _anonymous.save(force_insert=True)
-    else: # WHY IS THIS NEEDED?? removing it, the app fails to start up, but
-          # only in noms-23 branch
-        _anonymous = anon
+
     assert _anonymous.id
     return _anonymous
