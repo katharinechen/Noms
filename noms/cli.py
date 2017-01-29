@@ -37,7 +37,7 @@ class NomsOptions(tap.Options):
 
         # run Sass
         bashCommand = "sass --watch static/scss/base.scss:static/css/base.css --trace"
-        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+        subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 
         # ensure that at least the anonymous user exists
         user.ANONYMOUS()
