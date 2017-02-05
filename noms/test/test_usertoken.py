@@ -14,7 +14,7 @@ def test_get(weirdo, mockConfig):
     When I call get, do I get a token?
     """
     weirdo.save()
-    ret = usertoken.get(weirdo.email, 'noms') 
+    ret = usertoken.get(weirdo.email)
     # we can't predict much about the token besides that it'll be mostly
     # base64 charset, with some dots, and be about yay long. 
     assert TOKEN_RX.match(ret)

@@ -43,7 +43,7 @@ class Options(Main):
         Make an HTTP GET to update-url with the new digest
         """
         url = self['update-url'] + self._digest
-        token = usertoken.get(LOCALAPI_EMAIL, self['alias'])
+        token = usertoken.get(LOCALAPI_EMAIL, connectAlias=self['alias'])
         res = yield treq.get(url, headers={'x-token': token})
         response = yield res.content()
 

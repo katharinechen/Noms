@@ -18,10 +18,11 @@ class Options(Main):
         self['email'] = email
 
     def postOptions(self):
-        print get(self['email'], alias=self['alias'])
+        print get(self['email'], connectAlias=self['alias'])
 
 
-def get(email, alias):
-    connect(**DBHost[alias])
+def get(email, connectAlias=None):
+    if connectAlias:
+        connect(**DBHost[connectAlias])
     u = user.User.objects.get(email=email)
     return u.asToken()

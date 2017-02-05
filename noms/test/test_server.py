@@ -22,9 +22,13 @@ from mock import patch, ANY
 
 from pytest import fixture, inlineCallbacks, raises
 
-from noms import server, fromNoms, config, recipe, urlify, CONFIG
+from noms import (
+        server, fromNoms, config, 
+        recipe, urlify, CONFIG, 
+        usertoken
+        )
 from noms.interface import ICurrentUser
-from noms.user import User
+from noms.user import User, USER
 from noms.rendering import ResponseStatus as RS, OK, ERROR
 
 
@@ -77,8 +81,11 @@ def request(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwar
 
 def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
     """
-    As ServerTest.request, but force content-type header, and coerce
-    kwargs['content'] to the right thing
+    As ServerTest.request, but force content-type header and look for other
+    convenience args:
+
+    - coerce kwargs['content'] to the right thing
+    - if kwargs['user'] is a user object, use it to set the auth token
     """
     content = kwargs.pop('content', None)
     if isinstance(content, dict):
@@ -87,6 +94,12 @@ def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **
         kwargs['content'] = StringIO(str(content))
     else:
         kwargs['content'] = None
+
+    # create a user token from the user arg if seen
+    user = kwargs.pop('user', None)
+    if user:
+        tok = usertoken.get(user.email)
+        requestHeaders = requestHeaders + (('x-token', [tok]),)
 
     responseHeaders = responseHeaders + (('content-type', ['application/json']),)
     req = request(postpath, requestHeaders, responseHeaders, **kwargs)
@@ -102,7 +115,6 @@ class EZServer(object):
     """
     cls = attr.ib()
     inst = attr.ib(default=None)
-
 
     def __init__(self, cls):
         self.cls = cls
@@ -395,6 +407,15 @@ def weirdSoupPOST():
             instructions=['mix together ingredients', 'heat through'],
             )
 
+
+@inlineCallbacks
+def test_setHash(mockConfig, apiServer):
+    localapi = USER().localapi
+    localapi.save()
+    import pdb; pdb.set_trace()
+    rq = requestJSON(postpath=['orangebanana'], user=localapi)
+    resp = yield apiServer.handler('setHash', rq)
+    assert resp == 'k'
 
 @inlineCallbacks
 def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
