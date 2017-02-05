@@ -122,6 +122,7 @@ def mockConfig(mockDatabase):
 
         from noms import secret
         secret.put('auth0', 'abc123', 'ABC!@#')
+        secret.put('localapi', 'localapi', '!@#ABC')
 
         CONFIG.load()
         yield CONFIG
@@ -145,9 +146,13 @@ def specialUsers():
 
 
 @fixture
-def weirdo():
+def weirdo(mockConfig):
     """
     Preload the weirdo user
+
+    The mockConfig fixture here is required so that the User object has a
+    collection pointing to the mock database, otherwise it wouldn't be
+    possible to save it in the mock database.
     """
     from noms import user
     return user.User(
