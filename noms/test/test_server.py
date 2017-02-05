@@ -76,10 +76,11 @@ class EZServer(object):
             postpath = kw.pop('postpath', [])
             req = request(postpath)
 
-        return defer.maybeDeferred(
+        d = defer.maybeDeferred(
                 self.inst.app.execute_endpoint,
                 handlerName, req, *a, **kw
                 )
+        return d
 
 
 @fixture

@@ -7,7 +7,7 @@ import hashlib
 from humanhash import humanize
 
 from twisted.internet.defer import inlineCallbacks
-from twisted.internet.task import react
+from twisted.internet import task
 
 import treq
 
@@ -35,7 +35,7 @@ class Options(Main):
         self._digest = dig
         print dig
         if self['update-url']:
-            react(self.doUpdate)
+            return task.react(self.doUpdate)
 
     @inlineCallbacks
     def doUpdate(self, reactor):
@@ -57,10 +57,13 @@ def digest(path):
     Produce a human-readable hash of a directory of files
     """
     result = hashlib.md5()
+    last = None
     for dir, dirnames, pathnames in os.walk(path):
-        for pn in pathnames:
-            current = '%s/%s' % (dir, pn)
+        for last in pathnames:
+            current = '%s/%s' % (dir, last)
             data = open(current).read()
             result.update(data)
+
+    assert last, "Did not find any files to digest at %r" % path
 
     return humanize(result.hexdigest(), words=3)

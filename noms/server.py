@@ -243,17 +243,9 @@ class APIServer(object):
         """
         return ICurrentUser(request)
 
-    @staticmethod
-    def clipError(**kw):
-        defer.returnValue(ClipResponse(status=RS.error, **kw))
-
-    @staticmethod
-    def clipOK(**kw):
-        defer.returnValue(ClipResponse(status=RS.ok, **kw))
-
     @app.route("/bookmarklet")
     @roles([Roles.user],
-            forbidAction=lambda: APIServer.clipError(message=ResponseMsg.notLoggedIn))
+            forbidAction=lambda: ClipResponse(status=RS.error, message=ResponseMsg.notLoggedIn))
     @defer.inlineCallbacks
     def bookmarklet(self, request):
         """
@@ -277,9 +269,11 @@ class APIServer(object):
                 break 
         
         if len(recipesSaved) == 0:
-            self.clipError(message=ResponseMsg.noRecipe) 
+            defer.returnValue(
+                    ClipResponse(status=RS.error, message=ResponseMsg.noRecipe)) 
 
-        self.clipOK(recipes=recipesSaved)
+        defer.returnValue(
+                ClipResponse(status=RS.ok, recipes=recipesSaved))
 
 
 @attr.s
