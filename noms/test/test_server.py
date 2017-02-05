@@ -3,7 +3,6 @@ Tests of noms.server, mostly handlers
 """
 import json
 import re
-from cStringIO import StringIO
 
 from twisted.web.test.requesthelper import DummyRequest
 from twisted.python.components import registerAdapter
@@ -25,11 +24,11 @@ from pytest import fixture, inlineCallbacks, raises
 from noms import (
         server, fromNoms, config, 
         recipe, urlify, CONFIG, 
-        usertoken
         )
 from noms.interface import ICurrentUser
-from noms.user import Roles, User
+from noms.user import User
 from noms.rendering import ResponseStatus as RS, OK, ERROR
+from noms.test.conftest import request, requestJSON
 
 
 # klein adapts Request to KleinRequest internally when the Klein() object
@@ -50,61 +49,6 @@ def test_querySet(mockConfig):
 
     configsFn = server.querySet(_configs)
     assert configsFn(None) == '[{"apparentURL": "https://app.nomsbook.com"}]'
-
-
-DEFAULT_HEADERS = (
-    ('user-agent', ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0)']),
-    ('cookie', ['']),
-    )
-
-
-def request(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
-    """
-    Build a fake request for tests
-    """
-    req = DummyRequest(postpath)
-    for hdr, val in requestHeaders:
-        req.requestHeaders.setRawHeaders(hdr, val)
-
-    for hdr, val in responseHeaders:
-        req.setHeader(hdr, val)
-
-    for k, v in kwargs.items():
-        if k.startswith('session_'):
-            ses = req.getSession()
-            setattr(ses, k[8:], v)
-        else:
-            setattr(req, k, v)
-
-    return req
-
-
-def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
-    """
-    As ServerTest.request, but force content-type header and look for other
-    convenience args:
-
-    - coerce kwargs['content'] to the right thing
-    - if kwargs['user'] is a user object, use it to set the auth token
-    """
-    content = kwargs.pop('content', None)
-    if isinstance(content, dict):
-        kwargs['content'] = StringIO(json.dumps(content))
-    elif content: # pragma: nocover
-        kwargs['content'] = StringIO(str(content))
-    else:
-        kwargs['content'] = None
-
-    # create a user token from the user arg if seen
-    user = kwargs.pop('user', None)
-    if user:
-        tok = usertoken.get(user.email)
-        requestHeaders = requestHeaders + (('x-token', [tok]),)
-
-    responseHeaders = responseHeaders + (('content-type', ['application/json']),)
-    req = request(postpath, requestHeaders, responseHeaders, **kwargs)
-
-    return req
 
 
 
@@ -408,20 +352,6 @@ def weirdSoupPOST():
             )
 
 
-@fixture
-def localapi(mockConfig):
-    """
-    Save a copy of localapi in the mock db
-    """
-    localapi = User(
-        email='localapi@example.com',
-        roles=[Roles.localapi],
-        givenName='Local API',
-        )
-    localapi.save()
-    return localapi
-
-
 @inlineCallbacks
 def test_setHash(mockConfig, apiServer, localapi):
     """
@@ -434,6 +364,7 @@ def test_setHash(mockConfig, apiServer, localapi):
     rq = requestJSON([], user=localapi)
     resp = yield apiServer.handler('setHash', rq, hash='orange-banana-peach')
     assert resp == OK(message="hash='orange-banana-peach'")
+
 
 @inlineCallbacks
 def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):

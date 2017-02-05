@@ -143,14 +143,17 @@ def USER():
     
     => enum of those users
     """
-    for _U in _USERS.values():
+    for k, _U in _USERS.items():
         if getattr(_U, 'id', None):
+            "Already created and saved these users"
             continue
         u = User.objects(email=_U.email).first()
         if u is None:
+            "Never saved before"
             _U.save(force_insert=True)
-        else:
-            _U = u
+        else: # pragma: nocover
+            "Swapping in-mem user object with one we found on disk"
+            _USERS[k] = _U = u
         assert _U.id
 
     return _USERS

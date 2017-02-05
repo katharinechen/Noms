@@ -2,6 +2,7 @@
 Test the User object
 """
 from noms import user
+from noms.test.conftest import requestJSON
 
 
 def test_fromSSO(mockDatabase):
@@ -41,3 +42,18 @@ def test_anonymousAlreadyExists():
     anon = user.USER().anonymous
     new1 = user.USER().anonymous
     assert anon.id == new1.id
+
+
+def test_fromToken(mockDatabase, localapi):
+    """
+    Can I construct an auth token from user that returns that same user?
+    """
+    rq = requestJSON([], user=localapi)
+    u = user.User.fromRequest(rq)
+    assert u.id == localapi.id
+
+    # Create a deliberately incorrect token and see if it fails to auth
+    # (failure == anonymous user)
+    rq2 = requestJSON([], requestHeaders=[('x-token', ['asdfasdf'])])
+    u2 = user.User.fromRequest(rq2)
+    assert u2 is user.USER().anonymous
