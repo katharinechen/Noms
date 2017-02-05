@@ -1,6 +1,6 @@
 attrs
 characteristic
-codado>=0.2.3
+codado>=0.3.0
 contextdecorator
 coverage
 humanhash

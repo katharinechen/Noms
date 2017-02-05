@@ -13,7 +13,7 @@ import treq
 
 from werkzeug.exceptions import Forbidden
 
-from klein.app import KleinRequest, KleinResource
+from klein.app import KleinRequest
 from klein.interfaces import IKleinRequest
 
 import attr
@@ -228,17 +228,10 @@ def test_showRecipe(mockConfig, rootServer, req):
 @inlineCallbacks
 def test_api(mockConfig, rootServer, req):
     """
-    Does the /api/ URL hand off to the right resource?
+    Do I get the /api/ subtree when I access a URL?
     """
-    # does it create the _api object when needed?
-    assert rootServer.inst._api is None
-    r1 = yield rootServer.handler('api', req)
-    assert r1 is rootServer.inst._api
-    assert isinstance(r1, KleinResource)
-
-    # does it return the same _api object when requested again?
-    r2 = yield rootServer.handler('api', req)
-    assert r1 is r2
+    res = yield rootServer.handler("api")
+    assert 'recipeList' in res._app.endpoints
 
 
 @fixture

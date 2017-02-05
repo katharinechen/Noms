@@ -7,6 +7,7 @@ from functools import wraps
 import attr
 
 from codado import enum
+from codado.kleinish.tree import enter
 
 import microdata
 
@@ -107,9 +108,9 @@ class Server(object):
         return rendering.HumanReadable("application.html",
                 partial="ingredient-new.html")
 
-    _api = None
     @app.route("/api/", branch=True)
-    def api(self, request):
+    @enter('noms.server.APIServer')
+    def api(self, request, subKlein):
         """
         Endpoints under here are served as application/json with no caching allowed.
 
@@ -119,9 +120,7 @@ class Server(object):
         request.setHeader('expires', "-1")
         request.setHeader("cache-control", "private, max-age=0, no-cache, no-store, must-revalidate")
         request.setHeader("pragma", "no-cache")
-        if self._api is None:
-            self._api = APIServer().app.resource()
-        return self._api
+        return subKlein
 
 
 def querySet(fn):
