@@ -1,6 +1,8 @@
 """
 Tests of the secret data
 """
+import re
+
 from pytest import raises
 
 from noms import secret
@@ -33,3 +35,16 @@ def test_put(mockDatabase):
     """
     secret.put('grover', 'best', 'muppet')
     assert secret.SecretPair.objects.get(name='grover').secret == 'muppet'
+
+
+def test_randomPassword():
+    """
+    Is it random enough?
+    """
+    s1 = secret.randomPassword()
+    s2 = secret.randomPassword()
+    assert re.match('[0-9abcdef]{64}', s1)
+    assert re.match('[0-9abcdef]{64}', s2)
+    assert s1 != s2
+    s3 = secret.randomPassword(10)
+    assert re.match('[0-9abcdef]{20}', s3)

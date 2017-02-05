@@ -49,4 +49,4 @@ def randomPassword(n=32):
     """
     Produce a string n*2 bytes long, of hex digits
     """
-    return ''.join('%x' % ord(c) for c in os.urandom(n))
+    return ''.join('%02x' % ord(c) for c in os.urandom(n))
