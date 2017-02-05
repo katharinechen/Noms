@@ -177,6 +177,9 @@ class APIServer(object):
     @app.route("/sethash/<string:hash>")
     @roles([Roles.localapi])
     def setHash(self, request, hash):
+        """
+        Put a new static hash in the database for cache-busting
+        """
         CONFIG.staticHash = hash
         CONFIG.save()
         print 'New hash=%r' % CONFIG.staticHash

@@ -28,7 +28,7 @@ from noms import (
         usertoken
         )
 from noms.interface import ICurrentUser
-from noms.user import User, USER
+from noms.user import Roles, User
 from noms.rendering import ResponseStatus as RS, OK, ERROR
 
 
@@ -408,14 +408,32 @@ def weirdSoupPOST():
             )
 
 
-@inlineCallbacks
-def test_setHash(mockConfig, apiServer):
-    localapi = USER().localapi
+@fixture
+def localapi(mockConfig):
+    """
+    Save a copy of localapi in the mock db
+    """
+    localapi = User(
+        email='localapi@example.com',
+        roles=[Roles.localapi],
+        givenName='Local API',
+        )
     localapi.save()
-    import pdb; pdb.set_trace()
-    rq = requestJSON(postpath=['orangebanana'], user=localapi)
-    resp = yield apiServer.handler('setHash', rq)
-    assert resp == 'k'
+    return localapi
+
+
+@inlineCallbacks
+def test_setHash(mockConfig, apiServer, localapi):
+    """
+    Do I update the static hash setting via the API?
+
+    Am I able to access the API with token-based auth?
+    - using requestJSON(...user=)
+
+    """
+    rq = requestJSON([], user=localapi)
+    resp = yield apiServer.handler('setHash', rq, hash='orange-banana-peach')
+    assert resp == OK(message="hash='orange-banana-peach'")
 
 @inlineCallbacks
 def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
