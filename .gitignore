@@ -25,3 +25,5 @@ secret_pair.json
 .coverage
 htmlcov/
 .cache
+.sass-cache/
+static/css/

@@ -1,6 +1,8 @@
 """
 Command-line interface for noms
 """
+import subprocess 
+
 from twisted.web import tap
 
 from mongoengine import connect
@@ -32,6 +34,10 @@ class NomsOptions(tap.Options):
         # now we know CONFIG exists
         CONFIG.cliOptions = dict(self.items())
         CONFIG.save()
+
+        # run Sass
+        bashCommand = "sass --watch static/scss/base.scss:static/css/base.css --trace"
+        subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 
         # ensure that at least the anonymous user exists
         user.ANONYMOUS()
