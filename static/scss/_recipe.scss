@@ -5,6 +5,7 @@
     padding: 20px; 
     margin-bottom: 20px; 
     overflow: hidden; // need to if you have aligned items 
+    color: $color2; 
 
     // first section 
     .recipe-description { 
@@ -14,6 +15,8 @@
             margin-top: 0px;
             font: 150% $standard-font; 
             text-align: center;
+            color: $color1; 
+            text-shadow: 1px 1px $color5; 
         }
     }
     // second section 
