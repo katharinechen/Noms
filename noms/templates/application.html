@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html ng-app="noms">
-<head>
-  <title>NOM NOM NOM </title>
-  <% include "universal-header.html" %>
-  <script src="/static/HASH-<< preload.staticHash >>/js/app.js"></script>
-  <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipelist.js"></script>
-  <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipe.js"></script>
-  <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipenew.js"></script>
-  <script src="/static/HASH-<< preload.staticHash >>/js/controllers/navbar.js"></script>
-</head>
-<body>
 
-  <!-- navbar -->
-  <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/navbar.html'"></div>
+  <head>
+    <title>NOM NOM NOM </title>
+    <% include "universal-header.html" %>
+    <script src="/static/HASH-<< preload.staticHash >>/js/app.js"></script>
+    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipelist.js"></script>
+    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipe.js"></script>
+    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipenew.js"></script>
+    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/navbar.js"></script>
+    <link rel="stylesheet" href="../static/css/base.css">
+  </head>
+  <body>
+    <!-- navbar -->
+    <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/navbar.html'"></div>
 
-  <!--   include partial -->
-  <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/<< partial >>'"></div>
+    <!--   include partial -->
+    <div class='main-container'> 
+      <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/<< partial >>'"></div>
+    </div>
 
-</body>
+  </body>
 </html>

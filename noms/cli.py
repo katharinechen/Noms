@@ -42,6 +42,15 @@ class NomsOptions(tap.Options):
         CONFIG.staticHash = digest(staticPath)
         CONFIG.save()
 
+        # store an internally-shared secret
+        if not secret.get('localapi', None):
+            password = secret.randomPassword()
+            secret.put('localapi', 'localapi', password)
+            print "Stored new localapi password"
+
+        # ensure that at least the special users exist
+        user.USER()
+
         # watch for changes to static files (cache busting)
         watchCommand = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
         watchCommand = watchCommand.format(
@@ -51,14 +60,9 @@ class NomsOptions(tap.Options):
             )
         subprocess.Popen(shlex.split(watchCommand), stdout=subprocess.PIPE)
 
-        # store an internally-shared secret
-        if not secret.get('localapi', None):
-            password = secret.randomPassword()
-            secret.put('localapi', 'localapi', password)
-            print "Stored new localapi password"
-
-        # ensure that at least the special users exist
-        user.USER()
+        # run Sass
+        bashCommand = "sass --watch static/scss/base.scss:static/css/base.css --trace"
+        subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 
         self.opt_class(MAIN_FUNC)
 

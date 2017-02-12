@@ -1,0 +1,47 @@
+// should be imported by every CRUD form
+
+.form {
+     width: 75%; 
+}
+
+.form-row { 
+    padding: 10px; 
+    padding-left: 0px; 
+}
+
+label { 
+    font-weight: bold; 
+    display: block; 
+    padding-bottom: 5px; 
+}
+
+// attribute selector 
+input[type="text"] { 
+    display: block; 
+    width: 80%; 
+    color: $color5; 
+    padding: 5px; 
+    font: 100% $standard-font; 
+    background: $color1; 
+    border: 1px solid $color3; 
+}
+
+textarea { 
+    display: block; 
+    width: 80%; 
+    color: $color5; 
+    padding: 5px; 
+    font: 100% $standard-font; 
+    background: $color1; 
+    border: 1px solid $color3; 
+}
+
+input[type='submit'] { 
+    display: block; 
+    font: 100% $standard-font; 
+}
+
+.alert-message { 
+    background: $color2; 
+    width: 80%; 
+}

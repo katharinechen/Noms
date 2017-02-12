@@ -3,9 +3,9 @@ Test the command-line interface
 """
 import subprocess
 
-from noms import cli, secret
-
 from mock import patch
+
+from noms import cli, secret
 
 
 def test_main(mockConfig):
@@ -14,7 +14,6 @@ def test_main(mockConfig):
     """
     res = cli.main()
     assert hasattr(res, 'render')
-
 
 def test_postOptions(mockConfig):
     """
@@ -27,10 +26,13 @@ def test_postOptions(mockConfig):
     opts = cli.NomsOptions()
     opts['hax'] = 'haxor'
     pPopen = patch.object(subprocess, 'Popen', autospec=True)
+
     with pPopen as mPopen:
         opts.postOptions()
-        args = mPopen.call_args_list[0]
-        assert args[0][0][0] == 'watchmedo'
+
+    calls = mPopen.call_args_list
+    assert calls[0][0][0][0] == 'watchmedo'
+    assert calls[1][0][0][0] == 'sass'
     assert mockConfig.cliOptions.get('hax') == 'haxor'
 
     # did postOptions recreate the localapi secret?
