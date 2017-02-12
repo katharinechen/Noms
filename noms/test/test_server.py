@@ -3,7 +3,6 @@ Tests of noms.server, mostly handlers
 """
 import json
 import re
-from cStringIO import StringIO
 
 from twisted.web.test.requesthelper import DummyRequest
 from twisted.python.components import registerAdapter
@@ -11,17 +10,25 @@ from twisted.internet import defer
 
 import treq
 
-from klein.app import KleinRequest, KleinResource
+from werkzeug.exceptions import Forbidden
+
+from klein.app import KleinRequest
 from klein.interfaces import IKleinRequest
 
 import attr
 
 from mock import patch, ANY
 
-from pytest import fixture, inlineCallbacks
+from pytest import fixture, inlineCallbacks, raises
 
-from noms import server, fromNoms, config, recipe, urlify, CONFIG
+from noms import (
+        server, fromNoms, config, 
+        recipe, urlify, CONFIG, 
+        )
+from noms.interface import ICurrentUser
+from noms.user import User
 from noms.rendering import ResponseStatus as RS, OK, ERROR
+from noms.test.conftest import request, requestJSON
 
 
 # klein adapts Request to KleinRequest internally when the Klein() object
@@ -30,6 +37,7 @@ from noms.rendering import ResponseStatus as RS, OK, ERROR
 # adapter -- now we can use DummyRequest wherever a Klein() object appears in
 # our code
 registerAdapter(KleinRequest, DummyRequest, IKleinRequest)
+registerAdapter(User.fromRequest, DummyRequest, ICurrentUser)
 
 
 def test_querySet(mockConfig):
@@ -43,52 +51,6 @@ def test_querySet(mockConfig):
     assert configsFn(None) == '[{"apparentURL": "https://app.nomsbook.com"}]'
 
 
-DEFAULT_HEADERS = (
-    ('user-agent', ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0)']),
-    ('cookie', ['']),
-    )
-
-
-def request(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
-    """
-    Build a fake request for tests
-    """
-    req = DummyRequest(postpath)
-    for hdr, val in requestHeaders:
-        req.requestHeaders.setRawHeaders(hdr, val)
-
-    for hdr, val in responseHeaders:
-        req.setHeader(hdr, val)
-
-    for k, v in kwargs.items():
-        if k.startswith('session_'):
-            ses = req.getSession()
-            setattr(ses, k[8:], v)
-        else:
-            setattr(req, k, v)
-
-    return req
-
-
-def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
-    """
-    As ServerTest.request, but force content-type header, and coerce
-    kwargs['content'] to the right thing
-    """
-    content = kwargs.pop('content', None)
-    if isinstance(content, dict):
-        kwargs['content'] = StringIO(json.dumps(content))
-    elif content: # pragma: nocover
-        kwargs['content'] = StringIO(str(content))
-    else:
-        kwargs['content'] = None
-
-    responseHeaders = responseHeaders + (('content-type', ['application/json']),)
-    req = request(postpath, requestHeaders, responseHeaders, **kwargs)
-
-    return req
-
-
 
 @attr.s(init=False)
 class EZServer(object):
@@ -97,7 +59,6 @@ class EZServer(object):
     """
     cls = attr.ib()
     inst = attr.ib(default=None)
-
 
     def __init__(self, cls):
         self.cls = cls
@@ -115,10 +76,11 @@ class EZServer(object):
             postpath = kw.pop('postpath', [])
             req = request(postpath)
 
-        return defer.maybeDeferred(
+        d = defer.maybeDeferred(
                 self.inst.app.execute_endpoint,
                 handlerName, req, *a, **kw
                 )
+        return d
 
 
 @fixture
@@ -154,12 +116,21 @@ def reqJS():
 
 
 @inlineCallbacks
-def test_static(mockConfig, rootServer):
+def test_static(mockConfig, rootServer, capsys):
     """
     Does /static/ return a FilePath?
     """
     with fromNoms:
-        r = yield rootServer.handler('static', postpath=['js', 'app.js'])
+        # first try without the hash
+        r = yield rootServer.handler('static', postpath=[
+            'js', 'app.js'])
+        assert 'app.js' in r.child('js').listdir()
+        out, err = capsys.readouterr()
+        assert out.startswith('WARNING:')
+
+        # now try with the hash, should get the same result
+        r = yield rootServer.handler('static', postpath=[
+            'HASH-hello-my-dolly', 'js', 'app.js'])
         assert 'app.js' in r.child('js').listdir()
 
 
@@ -214,17 +185,10 @@ def test_showRecipe(mockConfig, rootServer, req):
 @inlineCallbacks
 def test_api(mockConfig, rootServer, req):
     """
-    Does the /api/ URL hand off to the right resource?
+    Do I get the /api/ subtree when I access a URL?
     """
-    # does it create the _api object when needed?
-    assert rootServer.inst._api is None
-    r1 = yield rootServer.handler('api', req)
-    assert r1 is rootServer.inst._api
-    assert isinstance(r1, KleinResource)
-
-    # does it return the same _api object when requested again?
-    r2 = yield rootServer.handler('api', req)
-    assert r1 is r2
+    res = yield rootServer.handler("api")
+    assert 'recipeList' in res._app.endpoints
 
 
 @fixture
@@ -346,7 +310,7 @@ def test_noRecipeToBookmark(mockConfig, weirdo, apiServer):
 
 
 @inlineCallbacks
-def test_bookmarklet(mockConfig, apiServer, anonymous, weirdo, recipePageHTML):
+def test_bookmarklet(mockConfig, apiServer, specialUsers, weirdo, recipePageHTML):
     """
     Does api/bookmarklet fetch, save, and return a response for the recipe?
     """
@@ -390,6 +354,20 @@ def weirdSoupPOST():
 
 
 @inlineCallbacks
+def test_setHash(mockConfig, apiServer, localapi):
+    """
+    Do I update the static hash setting via the API?
+
+    Am I able to access the API with token-based auth?
+    - using requestJSON(...user=)
+
+    """
+    rq = requestJSON([], user=localapi)
+    resp = yield apiServer.handler('setHash', rq, hash='orange-banana-peach')
+    assert resp == OK(message="hash='orange-banana-peach'")
+
+
+@inlineCallbacks
 def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
     """
     Do we save data from the create form successfully?
@@ -404,5 +382,5 @@ def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
     assert resp == ERROR(message=server.ResponseMsg.renameRecipe)
 
     anonJS = requestJSON([])
-    resp = yield apiServer.handler('createRecipeSave', anonJS)
-    assert resp == ERROR(message=server.ResponseMsg.notLoggedIn)
+    with raises(Forbidden):
+        yield apiServer.handler('createRecipeSave', anonJS)

@@ -69,4 +69,4 @@ def test_fromMicrodata(mockDatabase, recipeMicrodata, weirdo):
     # again, but blank the author
     del recipeMicrodata.props['author']
     ret = recipe.Recipe.fromMicrodata(recipeMicrodata, u'weirdo@gmail.com')
-    assert ret.author == user.ANONYMOUS().givenName
+    assert ret.author == user.USER().anonymous.givenName

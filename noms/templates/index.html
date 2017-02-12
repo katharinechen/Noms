@@ -4,19 +4,18 @@
   <head>
     <title>NOM NOM NOM</title>
     <% include "universal-header.html" %> 
-    <script src="/static/js/app.js"></script>
-    <script src="/static/js/controllers/navbar.js"></script>
+    <script src="/static/HASH-<< preload.staticHash >>/js/app.js"></script>
+    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/navbar.js"></script>
     <link rel="stylesheet" href="../static/css/base.css">
   </head>
-
   <body ng-app="noms">
 
     <!-- navbar -->
-    <div ng-include="'/static/js/partials/navbar.html'"></div>
+    <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/navbar.html'"></div>
 
     <!--   home page  -->
     <div class='main-container'> 
-      <div ng-include="'/static/js/partials/home.html'"></div>
+      <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/home.html'"></div>
     </div> 
   </body>
 </html>

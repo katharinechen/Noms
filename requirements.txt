@@ -1,8 +1,10 @@
 attrs
 characteristic
-codado>=0.2.3
+codado>=0.3.0
 contextdecorator
 coverage
+humanhash
+itsdangerous
 jinja2
 klein 
 microdata
@@ -18,3 +20,4 @@ pyOpenSSL
 service_identity
 treq
 twisted
+watchdog

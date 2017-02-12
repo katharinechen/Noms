@@ -1,11 +1,11 @@
 """
 Test the command-line interface
 """
-import subprocess  
+import subprocess
 
 from mock import patch
 
-from noms import cli
+from noms import cli, secret
 
 
 def test_main(mockConfig):
@@ -19,12 +19,21 @@ def test_postOptions(mockConfig):
     """
     Does postOptions create the config and return options?
     """
-    pSubprocess = patch.object(subprocess, 'Popen', return_value="called!")
-    bashCommand = "sass --watch static/scss/base.scss:static/css/base.css --trace".split()
+    # remove the localapi secret that mockConfig creates, so we can be sure
+    # postOptions will recreate it.
+    secret.SecretPair.objects.get(name='localapi').delete()
 
-    with pSubprocess as mSubprocess: 
-        opts = cli.NomsOptions()
-        opts['hax'] = 'haxor'
+    opts = cli.NomsOptions()
+    opts['hax'] = 'haxor'
+    pPopen = patch.object(subprocess, 'Popen', autospec=True)
+
+    with pPopen as mPopen:
         opts.postOptions()
-        mSubprocess.assert_called_once_with(bashCommand, stdout=-1)
-        assert mockConfig.cliOptions.get('hax') == 'haxor'
+
+    calls = mPopen.call_args_list
+    assert calls[0][0][0][0] == 'watchmedo'
+    assert calls[1][0][0][0] == 'sass'
+    assert mockConfig.cliOptions.get('hax') == 'haxor'
+
+    # did postOptions recreate the localapi secret?
+    assert secret.get('localapi')[0] == 'localapi'

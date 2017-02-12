@@ -7,7 +7,7 @@ import re
 from mongoengine import fields
 
 from noms.rendering import RenderableDocument
-from noms.user import User, ANONYMOUS
+from noms.user import User, USER
 from noms import urlify
 
 
@@ -68,7 +68,7 @@ class Recipe(RenderableDocument):
         if microdata.author:
             self.author = clean(microdata.author.name)
         else:
-            self.author = ANONYMOUS().givenName
+            self.author = USER().anonymous.givenName
         self.user = User.objects.get(email=userEmail)
         self.urlKey = urlify(self.user.email, self.name)
         for i in microdata.props['ingredients']: 

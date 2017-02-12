@@ -1,14 +1,19 @@
 """
 Fixtures and common options for pytest tests
 """
+from cStringIO import StringIO
+import json
+
 from pytest import fixture
+
+from twisted.web.test.requesthelper import DummyRequest
 
 from mongoengine import connect, Document
 
 from codado import fromdir
 
 from noms import DBAlias, DBHost
-from noms import documentutil
+from noms import documentutil, user
 
 
 _client = None
@@ -122,6 +127,7 @@ def mockConfig(mockDatabase):
 
         from noms import secret
         secret.put('auth0', 'abc123', 'ABC!@#')
+        secret.put('localapi', 'localapi', '!@#ABC')
 
         CONFIG.load()
         yield CONFIG
@@ -136,18 +142,22 @@ def mockConfig(mockDatabase):
 
 
 @fixture
-def anonymous():
+def specialUsers():
     """
-    Preload the anonymous user
+    Preload the special users
     """
     from noms import user
-    user.ANONYMOUS()
+    user.USER()
 
 
 @fixture
-def weirdo():
+def weirdo(mockConfig):
     """
     Preload the weirdo user
+
+    The mockConfig fixture here is required so that the User object has a
+    collection pointing to the mock database, otherwise it wouldn't be
+    possible to save it in the mock database.
     """
     from noms import user
     return user.User(
@@ -158,6 +168,74 @@ def weirdo():
 
 
 @fixture
+def localapi(mockConfig):
+    """
+    Save a copy of localapi in the mock db
+    """
+    localapi = user.User(
+        email='localapi@example.com',
+        roles=[user.Roles.localapi],
+        givenName='Local API',
+        )
+    localapi.save()
+    return localapi
+
+
+@fixture
 def recipePageHTML():
     return open(fromdir(__file__)('recipe_page_source.html')).read()
 
+
+DEFAULT_HEADERS = (
+    ('user-agent', ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0)']),
+    ('cookie', ['']),
+    )
+
+
+def request(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
+    """
+    Build a fake request for tests
+    """
+    req = DummyRequest(postpath)
+    for hdr, val in requestHeaders:
+        req.requestHeaders.setRawHeaders(hdr, val)
+
+    for hdr, val in responseHeaders:
+        req.setHeader(hdr, val)
+
+    for k, v in kwargs.items():
+        if k.startswith('session_'):
+            ses = req.getSession()
+            setattr(ses, k[8:], v)
+        else:
+            setattr(req, k, v)
+
+    return req
+
+
+def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
+    """
+    As ServerTest.request, but force content-type header and look for other
+    convenience args:
+
+    - coerce kwargs['content'] to set the post body (can be a str or dict)
+    - if kwargs['user'] is a user object, use it to set the auth token
+    """
+    content = kwargs.pop('content', None)
+    if isinstance(content, dict):
+        kwargs['content'] = StringIO(json.dumps(content))
+    elif content: # pragma: nocover
+        kwargs['content'] = StringIO(str(content))
+    else:
+        kwargs['content'] = None
+
+    # create a user token from the user arg if seen
+    user = kwargs.pop('user', None)
+    if user:
+        tok = user.asToken()
+        requestHeaders = requestHeaders + (('x-token', [tok]),)
+
+    responseHeaders = responseHeaders + (('content-type', ['application/json']),)
+    req = request(postpath, requestHeaders, responseHeaders, **kwargs)
+
+    return req

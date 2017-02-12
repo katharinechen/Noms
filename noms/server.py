@@ -7,6 +7,7 @@ from functools import wraps
 import attr
 
 from codado import enum
+from codado.kleinish.tree import enter
 
 import microdata
 
@@ -15,12 +16,15 @@ from twisted.internet import defer
 
 import treq
 
+from werkzeug.exceptions import Forbidden
+
 from klein import Klein
 
 from noms import urlify, secret, CONFIG
-from noms.user import User, ANONYMOUS
+from noms.user import User, USER, Roles
 from noms.recipe import Recipe
 from noms import rendering 
+from noms.interface import ICurrentUser
 from noms.rendering import ResponseStatus as RS, OK, ERROR
 
 
@@ -37,6 +41,28 @@ ResponseMsg = enum(
         )
 
 
+def roles(allowed, forbidAction=Forbidden):
+    """
+    Request must belong to a user with the needed roles, or => 403
+    """
+    def wrapper(fn):
+        @wraps(fn)
+        def roleCheck(self, request, *a, **kw):
+            u = ICurrentUser(request)
+            for role in allowed:
+                if role in u.roles:
+                    return fn(self, request, *a, **kw)
+            if forbidAction is Forbidden:
+                raise Forbidden()
+            else:
+                return forbidAction()
+        # XXX adding an attribute to allow external tools to document what's
+        # going on in the API
+        roleCheck._roles = allowed
+        return roleCheck
+    return wrapper
+
+
 class Server(object):
     """
     The web server for html and miscell.
@@ -45,6 +71,11 @@ class Server(object):
 
     @app.route("/static/", branch=True)
     def static(self, request):
+        # remove the hash
+        if request.postpath and request.postpath[0].startswith('HASH-'):
+            del request.postpath[0]
+        else:
+            print "WARNING: request under /static/ with no HASH- cache busting"
         return static.File("./static")
 
     @app.route("/")
@@ -77,22 +108,19 @@ class Server(object):
         return rendering.HumanReadable("application.html",
                 partial="ingredient-new.html")
 
-    _api = None
     @app.route("/api/", branch=True)
-    def api(self, request):
+    @enter('noms.server.APIServer')
+    def api(self, request, subKlein):
         """
         Endpoints under here are served as application/json with no caching allowed.
-
-        TODO: In the future, these will be REST APIs, so they can be requested
-        using API keys instead of cookies.
 
         We memoize APIServer().app.resource() so we only have to create one.
         """
         request.setHeader('content-type', 'application/json')
         request.setHeader('expires', "-1")
-        if self._api is None:
-            self._api = APIServer().app.resource()
-        return self._api
+        request.setHeader("cache-control", "private, max-age=0, no-cache, no-store, must-revalidate")
+        request.setHeader("pragma", "no-cache")
+        return subKlein
 
 
 def querySet(fn):
@@ -122,34 +150,22 @@ class APIServer(object):
         """
         return Recipe.objects()
 
-    def isAnonymous(self, request):
-        """
-        => True, if request is not made by a logged-in user
-        """
-        ## FIXME!! add logged-in-or-403 permission decorators
-        u = self.user(request)
-        if not u or u.email == ANONYMOUS().email:
-            return True
-        return False
-
     @app.route("/recipe/create")
+    @roles([Roles.user])
     def createRecipeSave(self, request):
         """
         Save recipes
         """
-        if self.isAnonymous(request):
-            return ERROR(message=ResponseMsg.notLoggedIn)
-
         data = json.load(request.content)
         data = {k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
-        recipe.user = self.user(request)
+        recipe.user = ICurrentUser(request)
         recipe.urlKey = urlify(recipe.user.email, recipe.name)
         if Recipe.objects(urlKey=recipe.urlKey).first():
             return ERROR(message=ResponseMsg.renameRecipe)
 
-        recipe.author = data.get('author', ANONYMOUS().givenName)
+        recipe.author = data.get('author', USER().anonymous.givenName)
         for i in data['ingredients']:
             recipe.ingredients.append(i)
         for i in data['instructions']:
@@ -157,6 +173,17 @@ class APIServer(object):
 
         recipe.save()
         return OK()
+
+    @app.route("/sethash/<string:hash>")
+    @roles([Roles.localapi])
+    def setHash(self, request, hash):
+        """
+        Put a new static hash in the database for cache-busting
+        """
+        CONFIG.staticHash = hash
+        CONFIG.save()
+        print 'New hash=%r' % CONFIG.staticHash
+        return OK(message='hash=%r' % CONFIG.staticHash)
 
     @app.route("/recipe/<string:urlKey>")
     def getRecipe(self, request, urlKey):
@@ -214,22 +241,17 @@ class APIServer(object):
         """
         The current user as data
         """
-        u = getattr(request.getSession(), 'user', ANONYMOUS())
-        return u
+        return ICurrentUser(request)
 
     @app.route("/bookmarklet")
+    @roles([Roles.user],
+            forbidAction=lambda: ClipResponse(status=RS.error, message=ResponseMsg.notLoggedIn))
     @defer.inlineCallbacks
     def bookmarklet(self, request):
         """
         Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension
         """
-        error = lambda **kw: defer.returnValue(ClipResponse(status=RS.error, **kw))
-        ok = lambda **kw: defer.returnValue(ClipResponse(status=RS.ok, **kw))
-
-        if self.isAnonymous(request):
-            error(message=ResponseMsg.notLoggedIn)
-
-        u = self.user(request)
+        u = ICurrentUser(request)
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
@@ -247,9 +269,11 @@ class APIServer(object):
                 break 
         
         if len(recipesSaved) == 0:
-            error(message=ResponseMsg.noRecipe) 
+            defer.returnValue(
+                    ClipResponse(status=RS.error, message=ResponseMsg.noRecipe)) 
 
-        ok(recipes=recipesSaved)
+        defer.returnValue(
+                ClipResponse(status=RS.ok, recipes=recipesSaved))
 
 
 @attr.s
