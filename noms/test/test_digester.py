@@ -14,7 +14,7 @@ from codado import fromdir
 from noms import digester
 
 
-TESTDIR_HASH = 'massachusetts-minnesota-five'
+TESTDIR_HASH = 'oregon-avocado-north'
 
 
 @fixture
@@ -62,4 +62,3 @@ def test_postOptionsWithUpdate(localapi, testdir, capsys, opt):
         mGet.assert_called_once_with(
                 'https://nomsbook.com/sethash/' + TESTDIR_HASH,
                 headers={'x-token': ANY})
-        assert 0, "want to see what the test prints out"
