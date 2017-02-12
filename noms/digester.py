@@ -57,12 +57,15 @@ def digest(path):
     Produce a human-readable hash of a directory of files
     """
     result = hashlib.md5()
+    print result.hexdigest()
     last = None
     for dir, dirnames, pathnames in os.walk(path):
         for last in sorted(pathnames):
             current = '%s/%s' % (dir, last)
             data = open(current, 'rb').read()
+            print last, hashlib.md5(data).hexdigest(),
             result.update(data)
+            print result.hexdigest()
 
     assert last, "Did not find any files to digest at %r" % path
 
