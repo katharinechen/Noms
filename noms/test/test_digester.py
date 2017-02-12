@@ -14,7 +14,7 @@ from codado import fromdir
 from noms import digester
 
 
-TESTDIR_HASH = 'oregon-avocado-north'
+TESTDIR_HASH = 'massachusetts-minnesota-five'
 
 
 @fixture

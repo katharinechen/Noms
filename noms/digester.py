@@ -59,9 +59,9 @@ def digest(path):
     result = hashlib.md5()
     last = None
     for dir, dirnames, pathnames in os.walk(path):
-        for last in pathnames:
+        for last in sorted(pathnames):
             current = '%s/%s' % (dir, last)
-            data = open(current).read()
+            data = open(current, 'rb').read()
             result.update(data)
 
     assert last, "Did not find any files to digest at %r" % path
