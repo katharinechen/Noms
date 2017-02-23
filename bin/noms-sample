@@ -6,6 +6,7 @@ else
     host=""
 fi
 
-mongoimport $host --drop -d noms -c config sample/config.json
+mongoimport $host --drop -d noms -c config config.json
+mongoimport $host --drop -d noms -c user sample/user.json
 mongoimport $host --drop -d noms -c recipe sample/recipe.json
-mongoimport $host --drop -d noms -c secret_pair sample/secret_pair.json
+mongoimport $host --drop -d noms -c secret_pair secret_pair.json

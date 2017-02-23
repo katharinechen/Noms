@@ -4,8 +4,10 @@ Object publishing
 - Render templates
 - Conversions for various types into string
 """
-
 import json
+from functools import partial
+
+import attr
 
 from jinja2 import Template, Environment, PackageLoader
 
@@ -13,8 +15,10 @@ from zope.interface import implements
 
 from twisted.web import resource
 
+from codado import enum
+
 from noms import CONFIG, secret
-from noms.documentutil import ReverseableDocument
+from noms.documentutil import NomsDocument
 
 
 #Jinja template context
@@ -28,13 +32,7 @@ env = Environment(
         loader=PackageLoader('noms', 'templates')
     )
 
-env.filters['json'] = json.dumps
-
-
-class EmptyQuery(Exception):
-    """
-    Returned empty query
-    """
+env.filters['json'] = lambda x: json.dumps(x, cls=ResourceEncoder, sort_keys=True)
 
 
 class RenderableQuerySet(object):
@@ -51,9 +49,17 @@ class RenderableQuerySet(object):
         Just wraps an array around the results
         """
         rr = list(self.qs)
-        if not rr:
-            raise EmptyQuery("Returned empty query")
-        return json.dumps([o.safe() for o in rr]).encode('utf-8')
+        return json.dumps([o.safe() for o in rr], cls=ResourceEncoder, sort_keys=True).encode('utf-8')
+
+
+class ResourceEncoder(json.JSONEncoder): 
+    """
+    Replacement for default JSONEncoder that will render all RenderableDocuments as json 
+    """
+    def default(self, obj):
+        if hasattr(obj, 'safe'): 
+            return obj.safe()
+        return json.JSONEncoder.default(self, obj)
 
 
 class HumanReadable(object):
@@ -71,7 +77,10 @@ class HumanReadable(object):
             self.template = env.get_template(templateOrFilename)
         else: # pragma: no cover
             assert 0, "Got %r; needed a template or a template file" % templateOrFilename
-        kwargs.setdefault('preload', {}).update({'apparentURL': CONFIG.apparentURL})
+        kwargs.setdefault('preload', {}).update(
+                {'apparentURL': CONFIG.apparentURL,
+                 'staticHash': CONFIG.staticHash,
+                })
         kwargs['preload']['auth0Public'] = secret.get('auth0')[0]
         self.renderContext = kwargs
 
@@ -82,7 +91,7 @@ class HumanReadable(object):
         return self.template.render(**self.renderContext).encode('utf-8')
 
 
-class RenderableDocument(ReverseableDocument):
+class RenderableDocument(NomsDocument):
     """
     A mongoengine Document that can be rendered as json
 
@@ -95,10 +104,34 @@ class RenderableDocument(ReverseableDocument):
         """
         => JSON-encoded representation of this object's safe properties
         """
-        return json.dumps(self.safe()).encode('utf-8')
+        return json.dumps(self.safe(), cls=ResourceEncoder, sort_keys=True).encode('utf-8')
 
     def safe(self):
         """
         => dict of document's fields, safe for presentation to the browser
         """
         raise NotImplementedError("implement safe in a subclass")
+
+
+ResponseStatus = enum(ok='ok', error='error')
+
+
+@attr.s
+class ResponseData(object):
+    """
+    Generic container for an API response
+    """
+    implements(resource.IResource)
+
+    status = attr.ib()
+    message = attr.ib(default='')
+
+    def render(self, request):
+        """
+        => JSON-encoded representation of this object's safe properties
+        """
+        return json.dumps(attr.asdict(self), cls=ResourceEncoder).encode('utf-8')
+
+
+OK = partial(ResponseData, status=ResponseStatus.ok)
+ERROR = partial(ResponseData, status=ResponseStatus.error)

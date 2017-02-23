@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Nom Clips</title>
+    <script src="scripts/3p/angular.min.js"></script>
+    <script src="scripts/noms/clipper.js"></script>
+  </head>
+  <body ng-app="clipper">
+    <div ng-controller="Clipper"> 
+      <h1>Noms Clipper</h1>
+
+      <div ng-if="message == 'statusError'"> 
+        <p>{{ responseError }}</p>
+      </div> 
+
+      <div ng-if="message == 'error'"> 
+        <p>We are not able to save your recipe at this time. For the time being, you have to login to Noms before clipping a recipe!</p>
+      </div> 
+
+      <ul ng-show="saved" ng-repeat="r in recipes">
+        <p>We saved the following recipes:</p>
+        <li>
+          <a target="noms" ng-href="{{ domainURL }}/recipes/{{ r.urlKey }}">{{ r.name }}</a>
+        </li>
+      </ul> 
+      <button ng-show="showButton" ng-click="saveme()" id="checkPage">Clip this recipe!</button>
+    </div>
+  </body>
+</html>

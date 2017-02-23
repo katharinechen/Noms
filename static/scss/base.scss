@@ -1,0 +1,39 @@
+// top-level SASS
+@import 'color-scheme'; 
+
+body {
+  font-family: $standard-font; 
+  background: $color3; 
+  margin: 0px; 
+  padding: 0px; 
+}
+
+h1 { 
+  font: 300% $standard-font; 
+}
+
+h2 { 
+  font: 200% $standard-font; 
+  color: $color5; 
+}
+
+p { 
+  font: 100% $standard-font; 
+  color: $color5; 
+}
+
+a {
+    text-decoration: none;
+    &:visited, &:link, &:active {
+        color: $color5; 
+    } 
+    &:hover,  { 
+        color: $color4; 
+    }
+}
+
+// imports 
+@import 'home';
+@import 'form';
+@import 'navbar';
+@import 'recipe';

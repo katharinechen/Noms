@@ -1,15 +1,16 @@
-<!-- recipe list -->
-<div class="container" ng-controller="RecipeListCtrl">
-  <div ng-show="recipes.length === 0">
-    <p>There are currently no recipes! Help grow the list by submitting one!</p>
-  </div> 
-  <div ng-hide="recipes.length === 0">
-    <p>Here is a list of all of the recipes: </p> 
-    <ul ng-repeat="recipe in recipes">
-      <li>
-        <a ng-href="/recipes/{{ recipe.urlKey }}">{{ recipe.name}} </a>
-      </li>
-    </ul>  
-  </div> 
+<div class="jumbo">
+    <h1>Recipes</h1>
+</div> 
+
+<div class="list" ng-controller="RecipeListCtrl">
+    <div ng-show="recipes.length === 0">
+        <p>There are currently no recipes! Help grow the list by submitting one!</p>
+    </div> 
+    <div ng-hide="recipes.length === 0">
+        <p>Here is a list of all of the recipes: </p> 
+        <ul ng-repeat="recipe in recipes">
+            <li><a ng-href="/recipes/{{ recipe.urlKey }}">{{ recipe.name }}</a></li>
+        </ul>  
+    </div> 
 </div>
-<!-- end recipe list  -->
+

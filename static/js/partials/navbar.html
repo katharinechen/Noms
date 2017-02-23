@@ -1,49 +1,29 @@
 <!-- navbar -->
 <script src="https://cdn.auth0.com/js/lock-8.2.min.js"></script>
 
-<nav class="navbar navbar-default" role="navigation" ng-controller="NavbarCtrl">
-  <div class="container-fluid">
-
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/">NomsBook</a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-
-        <li><a href="/recipes">Recipe List</a></li>
-
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Create Recipes and Ingredients<span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="/recipes/new">Create New Recipe</a></li>
-            <li><a href="/ingredients/new">Create New Ingredients</a></li>
-          </ul>
+<nav class="navbar" ng-controller="NavbarCtrl">
+    <!-- first set of navbar: auth  --> 
+    <ul class="nav-list">
+        <li>
+            <a class="link" ng-show="!user.email || user.email == 'anonymous@example.com'" ng-click="showLogin()" href="#">
+                <span class="fa fa-social fa-google"></span> 
+                Login
+            </a>
         </li>
-
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Queries <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="/ingredients">Find by Ingredient</a></li>
-          </ul>
+        <li>
+            <a ng-show="user.email && user.email != 'anonymous@example.com'" class="link" href="#">
+                Welcome {{ user.givenName || user.email }}
+            </a>
         </li>
-      </ul>
+    </ul>
 
-      <ul class="nav navbar-nav navbar-right">
-        <li><a ng-show="!user.email" ng-click="showLogin()" href="#"><span class="fa fa-social fa-google"></span> Login</a></li>
-        <li><a ng-show="user.email" href="#">Welcome {{ user.givenName || user.email }}</a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-
-
-  </div><!-- /.container-fluid -->
+    <!-- second set of navbar: menu items -->
+    <ul class="nav-list">
+        <li>
+            <a class="link logo" href="/">NomsBook</a>
+        </li>
+        <li><a class="link" href="/recipes">Recipe List</a></li>
+        <li><a class="link" href="/recipes/new">Create New Recipe</a></li>
+    </ul>
 </nav>
-<!-- end navbar -->
+
