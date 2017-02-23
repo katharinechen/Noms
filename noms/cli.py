@@ -79,7 +79,6 @@ def main():
     """
     Return a resource to start our application
     """
-    print 'NOMS STARTUP', '=' * 40
     resource = Server().app.resource
     alias = CONFIG.cliOptions['alias']
     connect(**DBHost[alias])

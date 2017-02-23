@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ ! -e config.json ]; then
+    cp sample/config.json .
+fi
+
 if [ -n "$1" ]; then
     host="-h $1"
 else
