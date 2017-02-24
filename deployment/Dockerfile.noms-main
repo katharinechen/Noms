@@ -4,10 +4,13 @@ RUN apt-get update && apt-get install -y \
     python python-dev python-pip \
     libffi-dev libssl-dev \
     mongodb-clients \
-    netcat
+    netcat \
+    ruby-bundler
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
+COPY ./Gemfile /Gemfile
+RUN bundle update
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r "/requirements.txt"
 

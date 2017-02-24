@@ -52,17 +52,17 @@ class NomsOptions(tap.Options):
         user.USER()
 
         # watch for changes to static files (cache busting)
-        watchCommand = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
-        watchCommand = watchCommand.format(
+        watchCL = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
+        watchCL = watchCL.format(
             pat=STATIC_FILE_PATTERNS,
             cmd='digester -U %s/api/sethash/ %s' % (FIXME_URL, staticPath),
             where=staticPath,
             )
-        subprocess.Popen(shlex.split(watchCommand), stdout=subprocess.PIPE)
+        subprocess.Popen(shlex.split(watchCL), stdout=subprocess.PIPE)
 
         # run Sass
-        bashCommand = "sass --watch static/scss/base.scss:static/css/base.css --trace"
-        subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+        sassCL = "bundle exec sass --watch static/scss/base.scss:static/css/base.css --trace"
+        subprocess.Popen(shlex.split(sassCL), stdout=subprocess.PIPE)
 
         self.opt_class(MAIN_FUNC)
 
