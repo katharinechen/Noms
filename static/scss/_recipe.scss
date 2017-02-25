@@ -13,7 +13,7 @@
         float: left; 
         .recipe-name { 
             margin-top: 0px;
-            font: 150% $standard-font; 
+            font-size: 150%; 
             text-align: center;
             color: $color1; 
             text-shadow: 1px 1px $color5; 
@@ -27,11 +27,11 @@
         width: 240px;
     }
     .section-title {
-        font: 80% $standard-font; 
+        font-size: 80%; 
         font-weight: bold; 
     }
     .section-text { 
-        font: 80% $standard-font; 
+        font-size: 80%; 
     }
 }
 

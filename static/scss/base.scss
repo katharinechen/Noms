@@ -3,8 +3,11 @@
 @import 'color-scheme'; 
 
 body {
-  font-family: $standard-font; 
+  // typical font things 
+  font-family: $old-standard-tt; 
   font-size: $standard-font-size;
+
+
   background-color: #FCF8F2; 
 
   // https://www.transparenttextures.com/ (We need to host this)
@@ -14,8 +17,8 @@ body {
 }
 
 h1 { 
-  font: 3*$standard-font-size $standard-font; 
-  font-family: $chewy-font; 
+  font-size: 3*$standard-font-size; 
+  font-family: $glory; 
 
   @include media-xxs {
     font-size: 12px;
@@ -23,12 +26,12 @@ h1 {
 }
 
 h2 { 
-  font: 2*$standard-font-size $standard-font; 
+  font-size: 2*$standard-font-size; 
   color: $color5; 
 }
 
 p { 
-  font: $standard-font-size $standard-font; 
+  font-size: $standard-font-size; 
   color: $color5; 
 }
 

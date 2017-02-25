@@ -21,7 +21,6 @@ input[type="text"] {
     width: 80%; 
     color: $color5; 
     padding: 5px; 
-    font: 100% $standard-font; 
     background: $color1; 
     border: 1px solid $color3; 
 }
@@ -31,14 +30,12 @@ textarea {
     width: 80%; 
     color: $color5; 
     padding: 5px; 
-    font: 100% $standard-font; 
     background: $color1; 
     border: 1px solid $color3; 
 }
 
 input[type='submit'] { 
     display: block; 
-    font: 100% $standard-font; 
 }
 
 .alert-message { 
