@@ -1,24 +1,55 @@
 // top-level SASS
+@import 'mediaquery';
 @import 'color-scheme'; 
 
 body {
   font-family: $standard-font; 
-  background: $color3; 
+  font-size: $standard-font-size;
+  // background: $color3; 
+  // background-color: #F5EAD9; // awesome yellow color 
+  background-color: #FCF8F2; 
+  background-image: url("https://www.transparenttextures.com/patterns/purty-wood.png");
   margin: 0px; 
   padding: 0px; 
+
+  // media queries
+  // @include media-xxs {
+  //   // background-color: yellow; 
+  // }
+
+  // @include media-xs {
+  //   // background: green; 
+  // }
+
+  // @include media-sm {
+  //   // background: blue; 
+  // }
+
+  // @include media-md {
+  //   // background: orange; 
+  // }
+
+  // @include media-lg {
+  //   // background: pink; 
+  // }
 }
 
 h1 { 
-  font: 300% $standard-font; 
+  font: 3*$standard-font-size $standard-font; 
+  font-family: $chewy-font; 
+
+  @include media-xxs {
+    font-size: 12px;
+  }
 }
 
 h2 { 
-  font: 200% $standard-font; 
+  font: 2*$standard-font-size $standard-font; 
   color: $color5; 
 }
 
 p { 
-  font: 100% $standard-font; 
+  font: $standard-font-size $standard-font; 
   color: $color5; 
 }
 

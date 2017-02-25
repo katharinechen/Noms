@@ -43,14 +43,30 @@
     // ingredients 
     .ingredients { 
         width: 38%; 
-        float: left; 
+        float: left;
+
+        @include media-xxs { 
+            width: 100%; 
+        }
+        @include media-xs {
+            width: 100%; 
+        }
     }
 
     // directions 
     .directions { 
         width: 60%; 
         float: right; 
+
+        @include media-xxs { 
+            width: 100%; 
+        }
+        @include media-xs {
+            width: 100%;  
+        }
     }
+
+
 }
 
 .row-title { 

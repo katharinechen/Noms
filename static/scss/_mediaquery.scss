@@ -1,0 +1,68 @@
+/* ------------------------------------------------------------------- */
+/* media queries (min, max)                                            */
+/* ------------------------------------------------------------------- */
+
+// extra extra small
+// e.g., iphone
+$xxs-min: 320px;
+$xxs-max: 479px;
+
+// extra small
+// e.g., android
+$xs-min: 480px;
+$xs-max: 767px;
+
+// small
+// e.g., ipad (portrait)
+$sm-min: 768px;
+$sm-max: 991px;
+
+// medium
+// e.g., ipad (landscape)
+$md-min: 992px;
+$md-max: 1279px;
+
+// large
+// e.g., desktop
+$lg-min: 1280px;
+
+/* ------------------------------------------------------------------- */
+/* media queries                                                       */
+/* ------------------------------------------------------------------- */
+
+// extra extra small
+@mixin media-xxs {
+  @media (min-width: #{$xxs-min}) and (max-width: #{$xxs-max}) {
+    @content;
+  }
+}
+
+//// extra small
+@mixin media-xs {
+  @media (min-width: #{$xs-min}) and (max-width: #{$xs-max}) {
+    @content;
+  }
+}
+
+//// small
+@mixin media-sm {
+  @media (min-width: #{$sm-min}) and (max-width: #{$sm-max}) {
+    @content;
+  }
+}
+
+//// medium
+@mixin media-md {
+  @media (min-width: #{$md-min}) and (max-width: #{$md-max}) {
+    @content;
+  }
+}
+
+//// large
+@mixin media-lg {
+  @media (min-width: #{$lg-min}) {
+    @content;
+  }
+}
+
+
