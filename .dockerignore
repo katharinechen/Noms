@@ -1,0 +1,21 @@
+# Ignore large files that are not useful in a docker build.
+
+# It's tempting to mirror .gitignore here, but don't do that:
+#
+# .dockerignore's purpose is to shrink the size of the context. Some of the
+# files the context includes are NOT versioned files, so they need to be
+# included by docker but excluded by git.
+
+.DS_Store
+*.pyc
+__pycache__
+*.log*
+*.bson
+*~
+*.idx
+.git
+.cache
+_pytest_temp
+.coverage
+coverage
+.sass-cache

@@ -2,8 +2,8 @@ version: '2'
 services:
     noms-main:
         build:
-            context: .
-            dockerfile: Dockerfile.noms-main
+            context: ..
+            dockerfile: deployment/Dockerfile.noms-main
         image: corydodt/noms-main
         command: "noms"
         ports:
@@ -22,8 +22,7 @@ services:
 
     noms-src:
         build:
-            context: .
-            dockerfile: Dockerfile.noms-src
+            context: ..
+            dockerfile: deployment/Dockerfile.noms-src
         image: "corydodt/noms-src:${NOMS_VERSION}"
         command: /bin/bash
-        tty: true

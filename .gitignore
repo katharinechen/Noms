@@ -9,4 +9,4 @@ htmlcov/
 .cache
 .sass-cache/
 static/css/
-deployment/env
+/env

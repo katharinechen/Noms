@@ -8,12 +8,18 @@ Noms is a recipe app.
 
 ## Maintaining noms
 
-- Run noms with noms-docker
+  1. Install `docker-apt-cacher-ng` (see below)
 
-- If you want to rebuild the docker images, you should do both of the
-   following:
+  2. Run noms with `noms-docker up`
 
-  1. Install https://github.com/sameersbn/docker-apt-cacher-ng
+  3. If you want to rebuild the docker images, run: `noms-docker up --build`
+
+### Docker apt-cacher-ng
+
+This service greatly speeds up repeated builds of noms, and is required to
+build noms.
+
+From https://github.com/sameersbn/docker-apt-cacher-ng:
 
 ```
   docker pull sameersbn/apt-cacher-ng:latest 
@@ -23,10 +29,3 @@ Noms is a recipe app.
     sameersbn/apt-cacher-ng:latest
 ```
 
-  Note that `apt-cacher-ng` is now a requirement to building the
-  corydodt/noms-main image, which contains this implied dependency on
-  apt-cacher-ng:
-
-```
-  RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy
-```

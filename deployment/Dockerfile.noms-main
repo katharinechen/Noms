@@ -9,11 +9,14 @@ RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";' >> /etc/apt/apt.conf.d
     netcat \
     ruby-bundler ruby-dev \
     && rm -rf /var/lib/apt/lists/*
+
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
+
 COPY ./Gemfile /Gemfile
 RUN bundle update
+
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r "/requirements.txt"
 
