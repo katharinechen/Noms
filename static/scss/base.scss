@@ -5,33 +5,12 @@
 body {
   font-family: $standard-font; 
   font-size: $standard-font-size;
-  // background: $color3; 
-  // background-color: #F5EAD9; // awesome yellow color 
   background-color: #FCF8F2; 
+
+  // https://www.transparenttextures.com/ (We need to host this)
   background-image: url("https://www.transparenttextures.com/patterns/purty-wood.png");
   margin: 0px; 
   padding: 0px; 
-
-  // media queries
-  // @include media-xxs {
-  //   // background-color: yellow; 
-  // }
-
-  // @include media-xs {
-  //   // background: green; 
-  // }
-
-  // @include media-sm {
-  //   // background: blue; 
-  // }
-
-  // @include media-md {
-  //   // background: orange; 
-  // }
-
-  // @include media-lg {
-  //   // background: pink; 
-  // }
 }
 
 h1 { 
