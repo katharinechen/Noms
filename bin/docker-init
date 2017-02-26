@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Do database initialization if config collection doesn't have data yet
+
+set -e
+
+. $noms/env
+export NOMS_DB_HOST
+export NOMS_VERSION
+
+rest="$@"
+
+while ! nc -z "$NOMS_DB_HOST" 27017; do sleep 1.5; done
+
+if [ ! -e '/.docker-init' ]; then
+    echo "First-time run: Installing fresh config and secret_pair"
+    noms-sample "$NOMS_DB_HOST" && touch /.docker-init
+fi
+
+if [ -n "$rest" ]; then
+    echo $rest
+    exec $rest
+fi
+

@@ -2,6 +2,7 @@
 Noms Python library - web application
 """
 import re
+import os
 
 from codado import fromdir, enum
 
@@ -11,8 +12,11 @@ from pymongo.uri_parser import parse_uri
 fromNoms = fromdir(__file__, '..')
 
 
+NOMS_DB_HOST = os.environ.get('NOMS_DB_HOST', 'localhost')
+
+
 DBHost = enum(
-        noms={'host': 'mongodb://localhost/noms'},
+        noms={'host': 'mongodb://%s/noms' % NOMS_DB_HOST},
         nomsTest={'host': 'mongomock://localhost/noms-test'},
         )
 

@@ -1,0 +1,10 @@
+
+FROM corydodt/gitonly
+
+ENV noms /opt/Noms
+
+WORKDIR $noms
+COPY . .
+VOLUME $noms
+
+CMD ["/bin/bash"]

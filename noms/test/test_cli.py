@@ -32,7 +32,7 @@ def test_postOptions(mockConfig):
 
     calls = mPopen.call_args_list
     assert calls[0][0][0][0] == 'watchmedo'
-    assert calls[1][0][0][0] == 'sass'
+    assert calls[1][0][0][:3] == ['bundle', 'exec', 'sass']
     assert mockConfig.cliOptions.get('hax') == 'haxor'
 
     # did postOptions recreate the localapi secret?

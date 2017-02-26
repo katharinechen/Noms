@@ -9,3 +9,5 @@ htmlcov/
 .cache
 .sass-cache/
 static/css/
+/env
+Gemfile.lock
