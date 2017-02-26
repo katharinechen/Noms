@@ -1,0 +1,34 @@
+version: '3'
+services:
+    noms-main:
+        build:
+            context: ..
+            dockerfile: deployment/Dockerfile.noms-main
+        image: corydodt/noms-main
+        command: "noms"
+        ports:
+            - 8080:8080
+        links:
+            - mongo
+            - noms-src
+        depends_on:
+            - mongo
+            - noms-src
+        volumes:
+            - noms-src:/opt/Noms
+
+    mongo:
+        image: mongo
+
+    noms-src:
+        build:
+            context: ..
+            dockerfile: deployment/Dockerfile.noms-src
+        image: "corydodt/noms-src:${NOMS_VERSION}"
+        command: /bin/bash
+        volumes:
+            - noms-src:/opt/Noms
+
+
+volumes:
+    noms-src: {}

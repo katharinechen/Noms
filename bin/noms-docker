@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export NOMS_VERSION=$(git describe --all | grep heads | head -1 | cut -d/ -f2-)
+export NOMS_DB_HOST=mongo
+
+echo NOMS_VERSION="$NOMS_VERSION" | tee -a ./env
+echo NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a ./env
+
+docker-compose -f deployment/docker-compose.yml "$@"

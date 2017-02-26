@@ -3,7 +3,14 @@
 if [ ! -e config.json ]; then
     cp sample/config.json .
 fi
-mongoimport --drop -d noms -c config config.json
-mongoimport --drop -d noms -c user sample/user.json
-mongoimport --drop -d noms -c recipe sample/recipe.json
-mongoimport --drop -d noms -c secret_pair secret_pair.json
+
+if [ -n "$1" ]; then
+    host="-h $1"
+else
+    host=""
+fi
+
+mongoimport $host --drop -d noms -c config config.json
+mongoimport $host --drop -d noms -c user sample/user.json
+mongoimport $host --drop -d noms -c recipe sample/recipe.json
+mongoimport $host --drop -d noms -c secret_pair secret_pair.json
