@@ -8,6 +8,8 @@ RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";' >> /etc/apt/apt.conf.d
     mongodb-clients \
     netcat \
     ruby-bundler ruby-dev \
+    vim \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 ENV noms /opt/Noms

@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
     noms-main:
         build:
@@ -14,8 +14,8 @@ services:
         depends_on:
             - mongo
             - noms-src
-        volumes_from:
-            - noms-src
+        volumes:
+            - noms-src:/opt/Noms
 
     mongo:
         image: mongo
@@ -26,3 +26,9 @@ services:
             dockerfile: deployment/Dockerfile.noms-src
         image: "corydodt/noms-src:${NOMS_VERSION}"
         command: /bin/bash
+        volumes:
+            - noms-src:/opt/Noms
+
+
+volumes:
+    noms-src: {}
