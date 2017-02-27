@@ -1,6 +1,16 @@
 #!/bin/bash
 
-export NOMS_VERSION=$(git describe --all | egrep ^'(heads/|tags/)' | head -1 | cut -d/ -f2-)
+set -e
+
+export NOMS_VERSION=$(git describe --all | cut -d/ -f2-)
+if echo $NOMS_VERSION | grep / > /dev/null; then
+    echo "** Invalid NOMS_VERSION=$NOMS_VERSION" 1>&2
+    echo "** You should build from either the HEAD of this branch or a tagged revision" 1>&2
+    if echo $NOMS_VERSION | grep origin > /dev/null; then
+        echo "** (You appear to be on an old commit that doesn't have a tag)" 1>&2
+    fi
+    exit 1
+fi
 export NOMS_DB_HOST=mongo
 
 echo NOMS_VERSION="$NOMS_VERSION" | tee -a ./env
