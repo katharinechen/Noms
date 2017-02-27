@@ -20,7 +20,7 @@ COPY ./Gemfile /Gemfile
 RUN bundle update
 
 COPY ./requirements.txt /requirements.txt
-RUN pip install -r "/requirements.txt"
+RUN pip install -U -r "/requirements.txt"
 
 EXPOSE 8080
 

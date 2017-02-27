@@ -11,6 +11,7 @@ microdata
 mock
 mongoengine
 mongomock
+pip
 pytest-flakes
 pytest-cov
 pytest-twisted
