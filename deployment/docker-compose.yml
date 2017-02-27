@@ -4,7 +4,7 @@ services:
         build:
             context: ..
             dockerfile: deployment/Dockerfile.noms-main
-        image: corydodt/noms-main
+        image: "corydodt/noms-main:${NOMS_VERSION}"
         command: "noms"
         ports:
             - 8080:8080
@@ -25,7 +25,7 @@ services:
             context: ..
             dockerfile: deployment/Dockerfile.noms-src
         image: "corydodt/noms-src:${NOMS_VERSION}"
-        command: /bin/bash
+        command: "/bin/bash"
         volumes:
             - noms-src:/opt/Noms
 
