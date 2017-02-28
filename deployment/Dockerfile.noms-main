@@ -1,8 +1,8 @@
 FROM ubuntu:16.04
 
-RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";' >> /etc/apt/apt.conf.d/01proxy \
-    && echo 'Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy && \
-    apt-get update && apt-get install -y \
+RUN ln -sf /bin/bash /bin/sh
+RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy && \
+    apt update && apt install -y \
     python python-dev python-pip \
     libffi-dev libssl-dev \
     mongodb-clients \
@@ -20,7 +20,7 @@ COPY ./Gemfile /Gemfile
 RUN bundle update
 
 COPY ./requirements.txt /requirements.txt
-RUN pip install -U -r "/requirements.txt"
+RUN pip install -U -r /requirements.txt
 
 EXPOSE 8080
 

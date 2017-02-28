@@ -1,0 +1,25 @@
+FROM nginx:1.11.10
+
+RUN ln -sf /bin/bash /bin/sh
+RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy && \
+    apt update && apt install -y \
+    build-essential \
+    net-tools links \
+    python python-dev \
+    libffi-dev libssl-dev \
+    cron at \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV nb deployment/nomsbook
+
+# debian's bullshit pip package won't let us upgrade pip, so we install it
+# manually then upgrade it.
+COPY $nb/requirements.txt $nb/get-pip.py /
+RUN python /get-pip.py && pip install -U pip && pip install -U -r /requirements.txt
+
+COPY $nb/certbot-nomsbook.sh /
+COPY $nb/nomsbook.conf $nb/nomsbook.conf.ssl /etc/nginx/conf.d/
+
+ENTRYPOINT ["bash", "/certbot-nomsbook.sh", "first"]
+CMD ["nginx", "-g", "daemon off;"]
