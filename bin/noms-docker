@@ -11,9 +11,14 @@ if echo $NOMS_VERSION | grep / > /dev/null; then
     fi
     exit 1
 fi
-export NOMS_DB_HOST=mongo
 
-echo NOMS_VERSION="$NOMS_VERSION" | tee -a ./env
-echo NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a ./env
+export NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
+export NOMS_HOSTNAME=${NOMS_HOSTNAME:-dev.nomsbook.com}
+export NOMS_CERTBOT_FLAGS=${NOMS_CERTBOT_FLAGS:---staging}
+
+echo export NOMS_VERSION="$NOMS_VERSION" | tee -a ./env
+echo export NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a ./env
+echo export NOMS_HOSTNAME="$NOMS_HOSTNAME" | tee -a ./env
+echo export NOMS_CERTBOT_FLAGS="$NOMS_CERTBOT_FLAGS" | tee -a ./env
 
 docker-compose -f deployment/docker-compose.yml "$@"

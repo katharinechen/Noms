@@ -5,8 +5,6 @@
 set -e
 
 . $noms/env
-export NOMS_DB_HOST
-export NOMS_VERSION
 
 rest="$@"
 

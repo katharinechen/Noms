@@ -1,5 +1,6 @@
 server {
-    server_name nomsbook.com;
+    include /hostname.conf;
+
     listen 80;
     listen 443 ssl;
 
@@ -12,8 +13,6 @@ server {
         proxy_pass http://localhost:8080;
     }
 
-    ssl_certificate /etc/letsencrypt/live/nomsbook.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/nomsbook.com/privkey.pem;
     ssl_session_cache shared:le_nginx_SSL:1m;
     ssl_session_timeout 1440m;
 
