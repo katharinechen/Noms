@@ -16,9 +16,12 @@ export NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
 export NOMS_HOSTNAME=${NOMS_HOSTNAME:-dev.nomsbook.com}
 export NOMS_CERTBOT_FLAGS=${NOMS_CERTBOT_FLAGS:---staging}
 
-echo export NOMS_VERSION="$NOMS_VERSION" | tee -a ./env
-echo export NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a ./env
-echo export NOMS_HOSTNAME="$NOMS_HOSTNAME" | tee -a ./env
-echo export NOMS_CERTBOT_FLAGS="$NOMS_CERTBOT_FLAGS" | tee -a ./env
+buildd=./build/$NOMS_VERSION
+rm -rf $buildd
+mkdir -p $buildd
+echo export NOMS_VERSION="$NOMS_VERSION" | tee -a $buildd/env
+echo export NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a $buildd/env
+echo export NOMS_HOSTNAME="$NOMS_HOSTNAME" | tee -a $buildd/env
+echo export NOMS_CERTBOT_FLAGS="$NOMS_CERTBOT_FLAGS" | tee -a $buildd/env
 
 docker-compose -f deployment/docker-compose.yml "$@"

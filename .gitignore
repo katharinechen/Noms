@@ -9,5 +9,8 @@ htmlcov/
 .cache
 .sass-cache/
 static/css/
-/env
 Gemfile.lock
+/build
+/ruby
+/vendor
+/.bundle

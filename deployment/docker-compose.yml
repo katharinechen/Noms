@@ -29,6 +29,12 @@ services:
         volumes:
             - noms-src:/opt/Noms
 
+    noms-nginx-front:
+        build:
+            context: ..
+            dockerfile: deployment/Dockerfile.noms-nginx-front
+        image: "corydodt/noms-nginx-front:${NOMS_VERSION}"
+
 
 volumes:
     noms-src: {}

@@ -8,6 +8,9 @@ set -e
 first () {
     # schedule certbot to run, and exec off to nginx
 
+    conf="server_name $NOMS_HOSTNAME;"
+    echo $conf > /hostname.conf
+
     cron
     atd
     echo 'bash /certbot-nomsbook.sh second' | at now + 1min
@@ -24,14 +27,12 @@ second () {
         --preferred-challenges http-01 \
         -d $NOMS_HOSTNAME | grep Congratulations
 
-echo > /hostname.conf << EOF
-    server_name $NOMS_HOSTNAME;
-    ssl_certificate /etc/letsencrypt/live/$NOMS_HOSTNAME/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/$NOMS_HOSTNAME/privkey.pem;
-EOF
-
-    mv /etc/nginx/conf.d/nomsbook.conf.ssl /etc/nginx/conf.d/nomsbook.conf
+    conf2="ssl_certificate /etc/letsencrypt/live/$NOMS_HOSTNAME/fullchain.pem; 
+           ssl_certificate_key /etc/letsencrypt/live/$NOMS_HOSTNAME/privkey.pem;
+           listen 443 ssl;"
+    echo $conf2 >> /hostname.conf
     kill -HUP 1; nginx -T
+
     echo '1,13 * * * *  . $noms/env && certbot $NOMS_CERTBOT_FLAGS renew' > /etc/cron.d/01certbot
 }
 

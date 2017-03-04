@@ -28,3 +28,4 @@ ENTRYPOINT ["docker-init"]
 CMD ["/bin/bash"]
 
 WORKDIR $noms
+COPY ./env /env
