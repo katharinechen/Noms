@@ -29,7 +29,9 @@ second () {
 
     conf2="ssl_certificate /etc/letsencrypt/live/$NOMS_HOSTNAME/fullchain.pem; 
            ssl_certificate_key /etc/letsencrypt/live/$NOMS_HOSTNAME/privkey.pem;
-           listen 443 ssl;"
+           if (\$scheme != "https") { return 301 https://\$host\$request_uri; }
+           listen 443 ssl;
+           "
     echo $conf2 >> /hostname.conf
     kill -HUP 1; nginx -T
 

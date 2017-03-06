@@ -18,10 +18,13 @@ ENV nb deployment/nomsbook
 COPY $nb/requirements.txt $nb/get-pip.py /
 RUN python /get-pip.py && pip install -U pip && pip install -U -r /requirements.txt
 
+## FIXME - when i have a usable docker-squash solution, also do this:
+# RUN apt remove -y --purge build-essential python-dev libffi-dev libssl-dev
+
 COPY $nb/certbot-nomsbook.sh /
 COPY $nb/nomsbook.conf /etc/nginx/conf.d/
 
 ENTRYPOINT ["bash", "/certbot-nomsbook.sh", "first"]
 CMD ["nginx", "-g", "daemon off;"]
 
-COPY ./env /env
+COPY ./build/env /env

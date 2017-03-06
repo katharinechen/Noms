@@ -22,10 +22,13 @@ RUN bundle update
 COPY ./requirements.txt /requirements.txt
 RUN pip install -U -r /requirements.txt
 
+## FIXME - when docker-squash works, also do this:
+# RUN apt remove --purge python-dev libffi-dev libssl-dev ruby-bundler ruby-dev
+
 EXPOSE 8080
 
 ENTRYPOINT ["docker-init"]
-CMD ["/bin/bash"]
+CMD ["noms"]
 
 WORKDIR $noms
-COPY ./env /env
+COPY ./build/env /env

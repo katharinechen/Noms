@@ -16,7 +16,7 @@ export NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
 export NOMS_HOSTNAME=${NOMS_HOSTNAME:-dev.nomsbook.com}
 export NOMS_CERTBOT_FLAGS=${NOMS_CERTBOT_FLAGS:---staging}
 
-buildd=./build/$NOMS_VERSION
+buildd=./build
 rm -rf $buildd
 mkdir -p $buildd
 echo export NOMS_VERSION="$NOMS_VERSION" | tee -a $buildd/env

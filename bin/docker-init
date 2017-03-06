@@ -4,7 +4,7 @@
 
 set -e
 
-. $noms/env
+. /env
 
 rest="$@"
 
