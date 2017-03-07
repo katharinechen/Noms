@@ -3,31 +3,30 @@ FROM ubuntu:16.04
 RUN ln -sf /bin/bash /bin/sh
 RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy && \
     apt update && apt install -y \
-    python python-dev python-pip \
-    libffi-dev libssl-dev \
+    python \
     mongodb-clients \
     netcat \
-    ruby-bundler ruby-dev \
-    vim \
-    gosu \
+    ruby-bundler \
     && rm -rf /var/lib/apt/lists/*
 
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
 
-COPY ./Gemfile /Gemfile
-RUN bundle update
+COPY ./Gemfile ./Gemfile.lock /
+COPY ./vendor/ /vendor/
+RUN bundle install --local --path /vendor/bundle/
 
-COPY ./requirements.txt /requirements.txt
-RUN pip install -U -r /requirements.txt
-
-## FIXME - when docker-squash works, also do this:
-# RUN apt remove --purge python-dev libffi-dev libssl-dev ruby-bundler ruby-dev
+# Install our own pip, to avoid install python-pip, which loads a bunch of
+# wasteful compiler dependencies.
+COPY ./deployment/get-pip.py ./requirements.txt /
+COPY ./wheels/ /wheels/
+RUN python /get-pip.py && pip install --no-cache-dir -U pip && pip install -U --no-cache-dir --no-index --find-links=file:///wheels -r /requirements.txt
 
 EXPOSE 8080
 
-ENTRYPOINT ["docker-init"]
+COPY ./bin/docker-init /docker-init
+ENTRYPOINT ["/docker-init"]
 CMD ["noms"]
 
 WORKDIR $noms

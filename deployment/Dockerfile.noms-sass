@@ -1,0 +1,5 @@
+FROM ruby:2.4-alpine
+
+COPY Gemfile /
+
+RUN apk update && apk add libffi-dev ruby-dev g++ make && bundle package && apk del g++ make

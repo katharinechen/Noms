@@ -12,6 +12,18 @@ if echo $NOMS_VERSION | grep / > /dev/null; then
     exit 1
 fi
 
+# create local directories of packages to shrink the images (build outside the
+# images, not inside the images; removes the requirement for build tools in
+# the images)
+if [[ ./wheels -ot ./requirements.txt ]] || [[ ./wheels -ot deployment/nomsbook/requirements.txt ]]; then
+    pip wheel --wheel-dir ./wheels -r requirements.txt -r deployment/nomsbook/requirements.txt
+    touch ./wheels
+fi
+if [[ ./vendor -ot ./Gemfile ]]; then
+    bundle package --all --all-platforms
+    touch ./vendor
+fi
+
 export NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
 export NOMS_HOSTNAME=${NOMS_HOSTNAME:-dev.nomsbook.com}
 export NOMS_CERTBOT_FLAGS=${NOMS_CERTBOT_FLAGS:---staging}
