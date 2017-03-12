@@ -8,9 +8,7 @@ body {
   font-size: $standard-font-size;
 
   background-color: #FCF8F2; 
-
-  // https://www.transparenttextures.com/ (We need to host this)
-  background-image: url("https://www.transparenttextures.com/patterns/purty-wood.png");
+  background-image: url('../images/purty-wood.png'); 
   margin: 0px; 
   padding: 0px; 
 }
