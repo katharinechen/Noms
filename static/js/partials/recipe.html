@@ -42,7 +42,7 @@
             <span class="row-title">INGREDIENTS</span>
             <ul ng-repeat="ingredient in recipe.ingredients">
                 <li>
-                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                    <i class="fa fa-check" aria-hidden="true"></i>
                     {{ ingredient }}
                 </li>
             </ul>
@@ -53,7 +53,10 @@
             <span class="row-title">DIRECTIONS</span>
             <!-- Eventually we will have 3 sections: Prep, Cook, Ready In  -->
             <ul ng-repeat="instruction in recipe.instructions">
-                <li>{{ instruction }}</li>
+                <li>
+                    <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                    {{ instruction }}
+                </li>
             </ul>
         </div>
 </div>
