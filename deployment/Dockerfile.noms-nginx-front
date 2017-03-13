@@ -1,21 +1,31 @@
 FROM nginx:1.11.10
 
-RUN ln -sf /bin/bash /bin/sh
-RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy && \
-    apt update && apt install -y \
-    net-tools \
-    python \
-    cron at \
-    && rm -rf /var/lib/apt/lists/*
-
 ENV nb deployment/nomsbook
 
-# Install our own pip, to avoid install python-pip, which loads a bunch of
-# wasteful compiler dependencies.
+RUN ln -sf /bin/bash /bin/sh
 COPY $nb/requirements.txt deployment/get-pip.py /
-COPY ./wheels/ /wheels/
-# install certbot from requirements.txt
-RUN python /get-pip.py && pip install --no-cache-dir -U pip && pip install -U --no-cache-dir --no-index --find-links=file:///wheels -r /requirements.txt
+
+RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy \
+    && apt update \
+    && apt install -y \
+        at \
+        cron \
+        libffi-dev \
+        libssl-dev \
+        net-tools \
+        python \
+        python-dev \
+        build-essential \
+    && python /get-pip.py \
+    && pip install --no-cache-dir -U pip \
+    && pip install -U --no-cache-dir -r /requirements.txt \
+    && apt remove -y \
+        build-essential \
+        libffi-dev \
+        libssl-dev \
+        python-dev \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY $nb/certbot-nomsbook.sh /
 COPY $nb/nomsbook.conf /etc/nginx/conf.d/

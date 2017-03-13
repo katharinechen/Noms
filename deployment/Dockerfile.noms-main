@@ -1,27 +1,38 @@
 FROM ubuntu:16.04
 
-RUN ln -sf /bin/bash /bin/sh
-RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy && \
-    apt update && apt install -y \
-    python \
-    mongodb-clients \
-    netcat \
-    ruby-bundler \
-    && rm -rf /var/lib/apt/lists/*
-
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
 
+RUN ln -sf /bin/bash /bin/sh
 COPY ./Gemfile ./Gemfile.lock /
-COPY ./vendor/ /vendor/
-RUN bundle install --local --path /vendor/bundle/
-
-# Install our own pip, to avoid install python-pip, which loads a bunch of
-# wasteful compiler dependencies.
 COPY ./deployment/get-pip.py ./requirements.txt /
-COPY ./wheels/ /wheels/
-RUN python /get-pip.py && pip install --no-cache-dir -U pip && pip install -U --no-cache-dir --no-index --find-links=file:///wheels -r /requirements.txt
+
+RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy \
+    && apt update && apt install -y \
+        build-essential \
+        libffi-dev \
+        libssl-dev \
+        mongodb-clients \
+        netcat \
+        python \
+        python-dev \
+        ruby-bundler \
+        ruby-dev \
+    && bundle install --path /vendor/bundle/ \
+    && python /get-pip.py \
+    && pip install --no-cache-dir -U pip \
+    && pip install -U --no-cache-dir -r /requirements.txt \
+    && apt remove -y \
+        build-essential \
+        g++ \
+        libffi-dev \
+        libssl-dev \
+        make \
+        python-dev \
+        ruby-dev \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 8080
 
