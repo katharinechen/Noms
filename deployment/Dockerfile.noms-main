@@ -1,38 +1,35 @@
-FROM ubuntu:16.04
+FROM alpine:3.5
 
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
 
-RUN ln -sf /bin/bash /bin/sh
 COPY ./Gemfile ./Gemfile.lock /
 COPY ./deployment/get-pip.py ./requirements.txt /
 
-RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy \
-    && apt update && apt install -y \
-        build-essential \
+RUN echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories \
+    && apk update \
+    && apk add --no-cache --virtual build-dependencies \
+        g++ \
         libffi-dev \
-        libssl-dev \
-        mongodb-clients \
-        netcat \
-        python \
-        python-dev \
-        ruby-bundler \
+        make \
+        openssl-dev \
         ruby-dev \
+        python-dev \
+    && apk add --no-cache \
+        bash \
+        ca-certificates \
+        mongodb-tools \
+        netcat-openbsd \
+        python \
+        ruby \
+        ruby-bundler \
     && bundle install --path /vendor/bundle/ \
     && python /get-pip.py \
     && pip install --no-cache-dir -U pip \
     && pip install -U --no-cache-dir -r /requirements.txt \
-    && apt remove -y \
-        build-essential \
-        g++ \
-        libffi-dev \
-        libssl-dev \
-        make \
-        python-dev \
-        ruby-dev \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+    && rm /get-pip.py \
+    && apk del build-dependencies
 
 EXPOSE 8080
 

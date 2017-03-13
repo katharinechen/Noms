@@ -11,7 +11,6 @@ first () {
     conf="server_name $NOMS_HOSTNAME;"
     echo $conf > /hostname.conf
 
-    cron
     atd
     echo 'bash /certbot-nomsbook.sh second' | at now + 1min
     exec nginx -g "daemon off;"

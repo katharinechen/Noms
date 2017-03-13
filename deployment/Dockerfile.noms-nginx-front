@@ -1,32 +1,28 @@
-FROM nginx:1.11.10
+FROM alpine:3.5
 
 ENV nb deployment/nomsbook
 
-RUN ln -sf /bin/bash /bin/sh
-COPY $nb/requirements.txt deployment/get-pip.py /
+COPY ./deployment/get-pip.py $nb/requirements.txt /
 
-RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";'$'\n''Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy \
-    && apt update \
-    && apt install -y \
-        at \
-        cron \
+RUN apk update \
+    && apk add --no-cache --virtual build-dependencies \
+        g++ \
         libffi-dev \
-        libssl-dev \
-        net-tools \
-        python \
+        openssl-dev \
         python-dev \
-        build-essential \
+    && apk add --no-cache \
+        at \
+        bash \
+        ca-certificates \
+        net-tools \
+        nginx \
+        python \
     && python /get-pip.py \
     && pip install --no-cache-dir -U pip \
     && pip install -U --no-cache-dir -r /requirements.txt \
-    && apt remove -y \
-        build-essential \
-        libffi-dev \
-        libssl-dev \
-        python-dev \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
-
+    && rm /get-pip.py \
+    && apk del build-dependencies
+        
 COPY $nb/certbot-nomsbook.sh /
 COPY $nb/nomsbook.conf /etc/nginx/conf.d/
 

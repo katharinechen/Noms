@@ -25,7 +25,6 @@ services:
             context: ..
             dockerfile: deployment/Dockerfile.noms-src
         image: "corydodt/noms-src:${NOMS_VERSION}"
-        command: "/bin/bash"
         volumes:
             - noms-src:/opt/Noms
 
@@ -34,6 +33,7 @@ services:
             context: ..
             dockerfile: deployment/Dockerfile.noms-nginx-front
         image: "corydodt/noms-nginx-front:${NOMS_VERSION}"
+        entrypoint: "/bin/true"
 
 
 volumes:
