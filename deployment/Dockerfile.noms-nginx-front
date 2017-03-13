@@ -1,3 +1,4 @@
+# vim:set ft=dockerfile:
 FROM alpine:3.5
 
 ENV nb deployment/nomsbook
@@ -22,7 +23,7 @@ RUN apk update \
     && pip install -U --no-cache-dir -r /requirements.txt \
     && rm /get-pip.py \
     && apk del build-dependencies
-        
+
 COPY $nb/certbot-nomsbook.sh /
 COPY $nb/nomsbook.conf /etc/nginx/conf.d/
 
