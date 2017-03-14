@@ -28,13 +28,13 @@ services:
         volumes:
             - noms-src:/opt/Noms
 
-    noms-nginx-front:
+    nginx-letsencrypt-s3:
         build:
             context: ..
-            dockerfile: deployment/Dockerfile.noms-nginx-front
-        image: "corydodt/noms-nginx-front:${NOMS_VERSION}"
-        entrypoint: "/bin/true"
-
+            dockerfile: deployment/Dockerfile.nginx-letsencrypt-s3
+        image: "corydodt/nginx-letsencrypt-s3:${NOMS_VERSION}"
+        command: "sleep 600"
+        env_file: ../build/env
 
 volumes:
     noms-src: {}

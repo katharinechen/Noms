@@ -26,5 +26,3 @@ RUN apk update \
 COPY $wd/boot.sh $wd/j2.py $wd/http.conf.in /
 
 CMD ["bash", "/boot.sh"]
-
-COPY ./build/env /env

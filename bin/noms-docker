@@ -13,15 +13,21 @@ if echo $NOMS_VERSION | grep / > /dev/null; then
 fi
 
 export NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
-export NOMS_HOSTNAME=${NOMS_HOSTNAME:-dev.nomsbook.com}
-export NOMS_CERTBOT_FLAGS=${NOMS_CERTBOT_FLAGS:---staging}
+
+# flags used by nginx-letsencrypt-s3
+export certbot_flags=${certbot_flags:---staging}
+export public_hostname=${public_hostname:-dev.nomsbook.com}
+export proxy_hostname=${proxy_hostname:-noms-main}
+export proxy_port=${proxy_port:-8080}
 
 buildd=./build
 rm -rf $buildd
 mkdir -p $buildd
-echo export NOMS_VERSION="$NOMS_VERSION" | tee -a $buildd/env
-echo export NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a $buildd/env
-echo export NOMS_HOSTNAME="$NOMS_HOSTNAME" | tee -a $buildd/env
-echo export NOMS_CERTBOT_FLAGS="$NOMS_CERTBOT_FLAGS" | tee -a $buildd/env
+echo NOMS_VERSION="$NOMS_VERSION" | tee -a $buildd/env
+echo NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a $buildd/env
+echo certbot_flags="$certbot_flags" | tee -a $buildd/env
+echo public_hostname="$public_hostname" | tee -a $buildd/env
+echo proxy_hostname="$proxy_hostname" | tee -a $buildd/env
+echo proxy_port="$proxy_port" | tee -a $buildd/env
 
 docker-compose -f deployment/docker-compose.yml "$@"
