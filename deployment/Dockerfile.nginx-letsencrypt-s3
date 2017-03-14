@@ -3,7 +3,7 @@ FROM alpine:3.5
 
 ENV nb deployment/nomsbook
 
-COPY ./deployment/get-pip.py $nb/requirements.txt /
+COPY ./deployment/get-pip.py $nb/requirements-certbot.txt /
 
 RUN apk update \
     && apk add --no-cache --virtual build-dependencies \
@@ -12,7 +12,6 @@ RUN apk update \
         openssl-dev \
         python-dev \
     && apk add --no-cache \
-        at \
         bash \
         ca-certificates \
         net-tools \
@@ -20,14 +19,12 @@ RUN apk update \
         python \
     && python /get-pip.py \
     && pip install --no-cache-dir -U pip \
-    && pip install -U --no-cache-dir -r /requirements.txt \
+    && pip install -U --no-cache-dir -r /requirements-certbot.txt \
     && rm /get-pip.py \
     && apk del build-dependencies
 
-COPY $nb/certbot-nomsbook.sh /
-COPY $nb/nomsbook.conf /etc/nginx/conf.d/
+COPY $nb/boot.sh $nb/j2.py $nb/http.conf.in /
 
-ENTRYPOINT ["bash", "/certbot-nomsbook.sh", "first"]
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["bash", "/boot.sh"]
 
 COPY ./build/env /env
