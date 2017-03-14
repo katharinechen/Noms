@@ -1,9 +1,9 @@
 # vim:set ft=dockerfile:
 FROM alpine:3.5
 
-ENV nb deployment/nomsbook
+ENV wd deployment/nginx-letsencrypt-s3
 
-COPY ./deployment/get-pip.py $nb/requirements-certbot.txt /
+COPY ./deployment/get-pip.py $wd/requirements-certbot.txt /
 
 RUN apk update \
     && apk add --no-cache --virtual build-dependencies \
@@ -23,7 +23,7 @@ RUN apk update \
     && rm /get-pip.py \
     && apk del build-dependencies
 
-COPY $nb/boot.sh $nb/j2.py $nb/http.conf.in /
+COPY $wd/boot.sh $wd/j2.py $wd/http.conf.in /
 
 CMD ["bash", "/boot.sh"]
 
