@@ -2,8 +2,6 @@
 
 set -e 
 
-. $noms/env
-
 bucket=s3://letsencrypt.$public_hostname
 
 bucketExists() {
@@ -20,7 +18,7 @@ execNginx() {
     python /j2.py /http.conf.in > /$public_hostname.conf
 
     # install certbot cron job
-    echo '1,13 * * * *  . $noms/env && certbot $NOMS_CERTBOT_FLAGS renew' > /etc/cron.d/01certbot
+    echo '1,13 * * * *  certbot $certbot_flags renew' > /etc/cron.d/01certbot
 
     # exec nginx
     nginx -T
