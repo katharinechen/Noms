@@ -59,12 +59,17 @@ if ! bucketExists; then
     aws s3 mb $bucket
 fi
 
+# list bucket
 pems=`aws s3 ls $bucket/letsencrypt/live/$public_hostname/`
 
+# has cert?
 if ! pemExists; then
     runCertbotAndPushCert
 else
+    # copy pems from s3
     fetchCert
 fi
 
 execNginx
+
+# RUNNING.
