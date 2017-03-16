@@ -18,7 +18,7 @@ execNginx() {
     python /j2.py /http.conf.in > /$public_hostname.conf
 
     # install certbot cron job
-    echo '1,13 * * * *  certbot $certbot_flags renew' > /etc/cron.d/01certbot
+    echo '4 1,13 * * *  certbot $certbot_flags renew --quiet' > /etc/cron.d/01certbot
 
     # exec nginx
     nginx -T
