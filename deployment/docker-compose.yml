@@ -6,6 +6,7 @@ services:
             dockerfile: deployment/Dockerfile.noms-main
         image: "corydodt/noms-main:${NOMS_VERSION}"
         command: "noms"
+        env_file: ../build/env
         ports:
             - 8080:8080
         links:

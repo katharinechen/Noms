@@ -39,4 +39,3 @@ ENTRYPOINT ["/docker-init"]
 CMD ["noms"]
 
 WORKDIR $noms
-COPY ./build/env /env
