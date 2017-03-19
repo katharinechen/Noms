@@ -26,6 +26,6 @@ RUN apk update \
     && rm /get-pip.py \
     && apk del build-dependencies
 
-COPY $wd/boot.sh $wd/j2.py $wd/http.conf.in /
+COPY $wd/debug.sh $wd/boot.sh $wd/j2.py $wd/http.conf.in /
 
 CMD ["bash", "/boot.sh"]
