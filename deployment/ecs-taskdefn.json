@@ -1,5 +1,6 @@
 {
     "family": "noms",
+    "taskRoleArn": "arn:aws:iam::337712362153:role/ecsTaskS3Everything",
     "containerDefinitions": [
         {
             "name": "noms-src",
