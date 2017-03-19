@@ -62,13 +62,17 @@
                 }
             ],
             "environment": [
-                { "name": "certbot_email", "value": "corydodt@gmail.com" },
-                { "name": "certbot_flags", "value": "--staging" },
-                { "name": "NOMS_DB_HOST", "value": "mongo" },
-                { "name": "NOMS_VERSION", "value": "noms-21-nomsbook" },
-                { "name": "proxy_hostname", "value": "noms-main" },
-                { "name": "proxy_port", "value": "8080" },
-                { "name": "public_hostname", "value": "dev.nomsbook.com" }
+                {% macro evar(name) -%}
+                { "name": "{{ name }}", "value": "{{ __environ__[name] }}" }
+                {%- endmacro -%}
+
+                {{ evar('NOMS_VERSION') }},
+                {{ evar('NOMS_DB_HOST') }},
+                {{ evar('certbot_flags') }},
+                {{ evar('certbot_email') }},
+                {{ evar('public_hostname') }},
+                {{ evar('proxy_hostname') }},
+                {{ evar('proxy_port') }}
             ],
             "links": [ "noms-main" ]
         }

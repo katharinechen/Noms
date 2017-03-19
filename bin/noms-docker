@@ -2,7 +2,10 @@
 
 set -e
 
-export NOMS_VERSION=$(git describe --all | cut -d/ -f2-)
+# aws.env contains AWS credentials, but it is optional
+if [ ! -e aws.env ]; then touch aws.env; fi
+
+NOMS_VERSION=$(git describe --all | cut -d/ -f2-)
 if echo $NOMS_VERSION | grep / > /dev/null; then
     echo "** Invalid NOMS_VERSION=$NOMS_VERSION" 1>&2
     echo "** You should build from either the HEAD of this branch or a tagged revision" 1>&2
@@ -12,19 +15,23 @@ if echo $NOMS_VERSION | grep / > /dev/null; then
     exit 1
 fi
 
-# aws.env contains AWS credentials, but it is optional
-if [ ! -e aws.env ]; then touch aws.env; fi
-
-export NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
-
-# flags used by nginx-letsencrypt-s3
-export certbot_flags=${certbot_flags:---staging}
-export certbot_email=$(git config user.email)
-export public_hostname=${public_hostname:-dev.nomsbook.com}
-export proxy_hostname=${proxy_hostname:-noms-main}
-export proxy_port=${proxy_port:-8080}
-
+# load environment from build/env if it exists
 buildd=./build
+if [ -e $buildd/env ]; then
+    . $buildd/env
+fi
+
+NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
+# flags used by nginx-letsencrypt-s3
+certbot_flags=${certbot_flags}
+certbot_email=${certbot_email:-$(git config user.email)}
+public_hostname=${public_hostname:-dev.nomsbook.com}
+proxy_hostname=${proxy_hostname:-noms-main}
+proxy_port=${proxy_port:-8080}
+
+export NOMS_VERSION NOMS_DB_HOST certbot_flags certbot_email public_hostname proxy_hostname proxy_port
+
+
 rm -rf $buildd
 mkdir -p $buildd
 echo NOMS_VERSION="$NOMS_VERSION" | tee -a $buildd/env
@@ -36,3 +43,4 @@ echo proxy_port="$proxy_port" | tee -a $buildd/env
 echo certbot_email="$certbot_email" | tee -a $buildd/env
 
 docker-compose -f deployment/docker-compose.yml "$@"
+jentemplate deployment/ecs.json.in > ecs.json

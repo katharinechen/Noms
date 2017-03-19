@@ -8,7 +8,7 @@ server {
     }
 {% if https_conf %}
     location ~ /.* {
-        proxy_pass http://{{ proxy_host }}:{{ proxy_port }};
+        proxy_pass http://{{ proxy_hostname }}:{{ proxy_port }};
     }
 
     listen 443 ssl;
