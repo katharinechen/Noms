@@ -3,6 +3,8 @@ FROM alpine:3.5
 
 ENV wd deployment/nginx-letsencrypt-s3
 
+RUN mkdir -p /usr/share/nginx/html /run/nginx
+
 COPY ./deployment/get-pip.py $wd/requirements-certbot.txt /
 
 RUN apk update \
@@ -16,6 +18,7 @@ RUN apk update \
         ca-certificates \
         net-tools \
         nginx \
+        openssl \
         python \
     && python /get-pip.py \
     && pip install --no-cache-dir -U pip \

@@ -4,8 +4,6 @@
 
 set -e
 
-. /env
-
 rest="$@"
 
 while ! nc -z "$NOMS_DB_HOST" 27017; do sleep 1.5; done

@@ -35,7 +35,9 @@ services:
             dockerfile: deployment/Dockerfile.nginx-letsencrypt-s3
         image: "corydodt/nginx-letsencrypt-s3:${NOMS_VERSION}"
         command: "sleep 600"
-        env_file: ../build/env
+        env_file: 
+            - ../build/env
+            - ../aws.env
 
 volumes:
     noms-src: {}

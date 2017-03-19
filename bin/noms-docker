@@ -12,10 +12,14 @@ if echo $NOMS_VERSION | grep / > /dev/null; then
     exit 1
 fi
 
+# aws.env contains AWS credentials, but it is optional
+if [ ! -e aws.env ]; then touch aws.env; fi
+
 export NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
 
 # flags used by nginx-letsencrypt-s3
 export certbot_flags=${certbot_flags:---staging}
+export certbot_email=$(git config user.email)
 export public_hostname=${public_hostname:-dev.nomsbook.com}
 export proxy_hostname=${proxy_hostname:-noms-main}
 export proxy_port=${proxy_port:-8080}
@@ -29,5 +33,6 @@ echo certbot_flags="$certbot_flags" | tee -a $buildd/env
 echo public_hostname="$public_hostname" | tee -a $buildd/env
 echo proxy_hostname="$proxy_hostname" | tee -a $buildd/env
 echo proxy_port="$proxy_port" | tee -a $buildd/env
+echo certbot_email="$certbot_email" | tee -a $buildd/env
 
 docker-compose -f deployment/docker-compose.yml "$@"

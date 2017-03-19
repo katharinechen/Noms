@@ -2,14 +2,16 @@
 
 set -e 
 
+nginx_pidfile=/run/nginx/nginx.pid
+
 bucket=s3://letsencrypt.$public_hostname
 
-bucketExists() {
-    aws s3 ls $bucket
+bucketMissing() {
+    ! aws s3 ls $bucket
 }
 
-pemExists() {
-    echo $pems | grep cert.pem
+pemMissing() {
+    ! echo $pems | grep cert.pem
 }
 
 execNginx() {
@@ -18,7 +20,8 @@ execNginx() {
     python /j2.py /http.conf.in > /$public_hostname.conf
 
     # install certbot cron job
-    echo '4 1,13 * * *  certbot $certbot_flags renew --quiet' > /etc/cron.d/01certbot
+    echo '4 1,13 * * *  certbot $certbot_flags renew --quiet' | crontab -u root -
+    crond -l 2
 
     # exec nginx
     nginx -T
@@ -26,7 +29,7 @@ execNginx() {
 }
 
 fetchCert() {
-    aws s3 cp $bucket/letsencrypt /etc/ --recursive
+    aws s3 cp $bucket/letsencrypt /etc/letsencrypt --recursive
 }
 
 runCertbotAndPushCert() {
@@ -36,34 +39,32 @@ runCertbotAndPushCert() {
 
     # run nginx in the background
     nginx
-    nginx_pid=$?
 
     # wait for nginx start
     sleep 8
 
     # run certbot
     certbot $certbot_flags certonly --webroot -w /usr/share/nginx/html \
-        -n --agree-tos -m corydodt@gmail.com \
+        -n --agree-tos -m $certbot_email \
         --preferred-challenges http-01 \
         -d $public_hostname | grep Congratulations
 
     # copy certs to s3
-    aws s3 cp /etc/letsencrypt $bucket/ --recursive
+    aws s3 cp /etc/letsencrypt $bucket/letsencrypt --recursive
 
     # kill nginx
-    kill $nginx_pid
-
+    kill $(cat $nginx_pidfile)
 }
 
-if ! bucketExists; then
+if bucketMissing; then
     aws s3 mb $bucket
 fi
 
 # list bucket
-pems=`aws s3 ls $bucket/letsencrypt/live/$public_hostname/`
+pems=`aws s3 ls $bucket/letsencrypt/live/$public_hostname/ || true`
 
 # has cert?
-if ! pemExists; then
+if pemMissing; then
     runCertbotAndPushCert
 else
     # copy pems from s3
