@@ -4,7 +4,7 @@ set -e
 
 nginx_pidfile=/run/nginx/nginx.pid
 
-bucket=s3://letsencrypt.$public_hostname
+bucket=s3://cert.$public_hostname
 
 bucketMissing() {
     ! aws s3 ls $bucket

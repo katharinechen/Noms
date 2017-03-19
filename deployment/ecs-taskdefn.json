@@ -6,7 +6,7 @@
             "name": "noms-src",
             "image": "corydodt/noms-src:noms-21-nomsbook",
 
-            "memory": 10,
+            "memory": 1,
             "essential": false,
             "cpu": 0
         },
@@ -47,7 +47,7 @@
             "name": "nginx-letsencrypt-s3",
             "image": "corydodt/nginx-letsencrypt-s3:noms-21-nomsbook",
 
-            "memory": "20",
+            "memory": "100",
             "essential": true,
             "portMappings": [
                 {
