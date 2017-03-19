@@ -1,5 +1,13 @@
 version: '3'
 services:
+    noms-src:
+        build:
+            context: ..
+            dockerfile: deployment/Dockerfile.noms-src
+        image: "corydodt/noms-src:${NOMS_VERSION}"
+        volumes:
+            - noms-src:/opt/Noms
+
     noms-main:
         build:
             context: ..
@@ -20,14 +28,6 @@ services:
 
     mongo:
         image: mongo
-
-    noms-src:
-        build:
-            context: ..
-            dockerfile: deployment/Dockerfile.noms-src
-        image: "corydodt/noms-src:${NOMS_VERSION}"
-        volumes:
-            - noms-src:/opt/Noms
 
     nginx-letsencrypt-s3:
         build:

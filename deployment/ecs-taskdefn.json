@@ -1,0 +1,76 @@
+{
+    "family": "noms",
+    "containerDefinitions": [
+        {
+            "name": "noms-src",
+            "image": "corydodt/noms-src:noms-21-nomsbook",
+
+            "memory": 10,
+            "essential": false,
+            "cpu": 0
+        },
+        {
+            "name": "noms-main",
+            "image": "corydodt/noms-main:noms-21-nomsbook",
+
+            "volumesFrom": [
+                { "sourceContainer": "noms-src" }
+            ],
+            "memory": 500,
+            "portMappings": [
+                {
+                    "hostPort": 8080,
+                    "containerPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "links": [ "mongo" ],
+            "command": [ "noms" ],
+            "cpu": 0,
+            "environment": [
+                { "name": "NOMS_DB_HOST", "value": "mongo" },
+                { "name": "NOMS_VERSION", "value": "noms-21-nomsbook" }
+            ]
+        },
+        {
+            "name": "mongo",
+            "image": "mongo",
+
+            "memory": 400,
+            "hostname": "mongo",
+            "essential": true,
+            "cpu": 0
+        },
+        {
+            "name": "nginx-letsencrypt-s3",
+            "image": "corydodt/nginx-letsencrypt-s3:noms-21-nomsbook",
+
+            "memory": "20",
+            "essential": true,
+            "portMappings": [
+                {
+                    "hostPort": "80",
+                    "containerPort": "80",
+                    "protocol": "tcp"
+                },
+                {
+                    "hostPort": "443",
+                    "containerPort": "443",
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                { "name": "certbot_email", "value": "corydodt@gmail.com" },
+                { "name": "certbot_flags", "value": "--staging" },
+                { "name": "NOMS_DB_HOST", "value": "mongo" },
+                { "name": "NOMS_VERSION", "value": "noms-21-nomsbook" },
+                { "name": "proxy_hostname", "value": "noms-main" },
+                { "name": "proxy_port", "value": "8080" },
+                { "name": "public_hostname", "value": "dev.nomsbook.com" }
+            ],
+            "links": [ "noms-main" ]
+        }
+    ],
+    "networkMode": "bridge"
+}
