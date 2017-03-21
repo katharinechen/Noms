@@ -17,7 +17,7 @@ pemMissing() {
 execNginx() {
     # generate https+proxy .conf
     export https_conf=1
-    python /j2.py /http.conf.in > /etc/nginx/conf.d/default.conf
+    python /jentemplate /http.conf.in > /etc/nginx/conf.d/default.conf
 
     # install certbot cron job
     echo '4 1,13 * * *  certbot $certbot_flags renew --quiet' | crontab -u root -
@@ -35,7 +35,7 @@ fetchCert() {
 runCertbotAndPushCert() {
     # generate http .conf
     unset https_conf
-    python /j2.py /http.conf.in > /etc/nginx/conf.d/default.conf
+    python /jentemplate /http.conf.in > /etc/nginx/conf.d/default.conf
 
     # run nginx in the background
     nginx

@@ -31,9 +31,13 @@ proxy_port=${proxy_port:-8080}
 
 export NOMS_VERSION NOMS_DB_HOST certbot_flags certbot_email public_hostname proxy_hostname proxy_port
 
-
 rm -rf $buildd
 mkdir -p $buildd
+
+cp -v `which jentemplate` $buildd/
+cp -v deployment/get-pip.py $buildd/
+cp -v deployment/nginx-letsencrypt-s3/{*.sh,http.conf.in,requirements-certbot.txt} $buildd/
+
 echo NOMS_VERSION="$NOMS_VERSION" | tee -a $buildd/env
 echo NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a $buildd/env
 echo certbot_flags="$certbot_flags" | tee -a $buildd/env
@@ -43,4 +47,3 @@ echo proxy_port="$proxy_port" | tee -a $buildd/env
 echo certbot_email="$certbot_email" | tee -a $buildd/env
 
 docker-compose -f deployment/docker-compose.yml "$@"
-jentemplate deployment/ecs.json.in > ecs.json

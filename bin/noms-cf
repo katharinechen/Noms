@@ -1,0 +1,26 @@
+#!/bin/bash -x
+
+stackFile="stack.yml"
+subCommand=$1
+shift
+cf='aws --profile corygoonmill cloudformation'
+
+build() {
+$cf create-stack \
+    --stack-name nomsbook-$hash \
+    --parameters ParameterKey=ecsInstanceName,ParameterValue=ecs.nomsbook.com \
+    --template-body file://<(cat "$stackFile" | sed '/^\s*#/d')
+}
+
+delete() {
+stackName=$(echo "$1" | egrep -o 'nomsbook-[^/]*')
+$cf delete-stack --stack-name "$1"
+}
+
+set -a
+. ./build/env
+set +a
+# FIXME - get rid of the intermediate file and just use the string
+jentemplate deployment/stack.yml.in > stack.yml
+hash=$(md5sum "$stackFile" | awk '{print $1}')
+$subCommand "$@"

@@ -16,3 +16,4 @@ Gemfile.lock
 /.bundle
 /wheels
 /aws.env
+/jentemplate

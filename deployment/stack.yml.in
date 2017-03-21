@@ -1,0 +1,126 @@
+{% macro evar(name) -%}
+{ name: {{ name }}, value: "{{ __environ__[name] }}" }
+{%- endmacro -%}
+
+Resources:
+  clusterInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.small
+      IamInstanceProfile: ecsInstanceRole
+      SubnetId: subnet-3efc7c59
+      KeyName: cory
+      ImageId: ami-022b9262 # amazon ecs-optimized ami (us-west-2)
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          echo ECS_CLUSTER=nomsbook-com >> /etc/ecs/ecs.config
+      SecurityGroupIds:
+          - sg-0247157a
+          - sg-ba2e7cc2
+
+
+  ecsRR:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: "nomsbook.com."
+      Name: !Sub '${ecsInstanceName}.'
+      Type: CNAME
+      TTL: 300
+      ResourceRecords:
+          - !GetAtt clusterInstance.PublicDnsName
+    DependsOn:
+    - clusterInstance
+
+
+  devRR:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: "nomsbook.com."
+      Name: !Sub '${publicHostname}.'
+      Type: CNAME
+      TTL: 300
+      ResourceRecords:
+          - !GetAtt clusterInstance.PublicDnsName
+    DependsOn:
+    - clusterInstance
+
+#   nomsbookcom:
+#     Type: AWS::ECS::Cluster
+#     Properties: {}
+#     DependsOn:
+#     - clusterInstance
+#  noms:
+#    Type: AWS::ECS::TaskDefinition
+#    Properties:
+#        family: noms
+#        taskRoleArn: arn:aws:iam::337712362153:role/ecsTaskS3Everything
+#        containerDefinitions:
+#        - name: noms-src
+#          image: corydodt/noms-src:noms-21-nomsbook
+#          memory: 1
+#          essential: false
+#          cpu: 0
+#        - name: noms-main
+#          image: corydodt/noms-main:noms-21-nomsbook
+#          volumesFrom:
+#              - sourceContainer: noms-src
+#          memory: 500
+#          portMappings:
+#              - hostPort: 8080
+#          containerPort: 8080
+#          protocol: tcp
+#          essential: true
+#          links:
+#              - mongo
+#          command:
+#              - noms
+#          cpu: 0
+#          environment:
+#            - {{ evar("NOMS_DB_HOST") }}
+#            - {{ evar("NOMS_VERSION") }}
+#        - name: mongo
+#          image: mongo
+#          memory: 400
+#          hostname: mongo
+#          essential: true
+#          cpu: 0
+#        - name: nginx-letsencrypt-s3
+#          image: corydodt/nginx-letsencrypt-s3:noms-21-nomsbook
+#          memory: '100'
+#          essential: true
+#          portMappings:
+#              - hostPort: '80'
+#          containerPort: '80'
+#          protocol: tcp
+#        - hostPort: '443'
+#          containerPort: '443'
+#          protocol: tcp
+#          environment:
+#            - {{ evar('NOMS_DB_HOST') }}
+#            - {{ evar('NOMS_VERSION') }}
+#            - {{ evar('certbot_email') }}
+#            - {{ evar('certbot_flags') }}
+#            - {{ evar('proxy_hostname') }}
+#            - {{ evar('proxy_port') }}
+#            - {{ evar('public_hostname') }}
+#          links:
+#              - noms-main
+#          networkMode: bridge
+#  svcnoms:
+#    Type: AWS::ECS::Service
+#    Properties:
+#      TaskDefinition:
+#        Ref: noms
+#      Cluster:
+#        Ref: nomsbookcom
+Parameters:
+  publicHostname:
+    Type: String
+    Default: dev.nomsbook.com
+    Description: Enter the public hostname of the noms site.
+  ecsInstanceName:
+    Type: String
+    Default: ecs.nomsbook.com
+    Description: Enter the hostname of the instance in the cluster.
+AWSTemplateFormatVersion: '2010-09-09'
