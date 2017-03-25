@@ -1,24 +1,31 @@
 // top-level SASS
+@import 'mediaquery';
 @import 'color-scheme'; 
 
 body {
-  font-family: $standard-font; 
-  background: $color3; 
+  // typical font things 
+  font-family: $old-standard-tt; 
+  font-size: $standard-font-size;
+
+  background-color: #FCF8F2; 
+  background-image: url('../images/purty-wood.png'); 
   margin: 0px; 
   padding: 0px; 
 }
 
 h1 { 
-  font: 300% $standard-font; 
+  font-size: 3*$standard-font-size; 
+  font-family: $glory; 
+  margin-bottom: 0; 
 }
 
 h2 { 
-  font: 200% $standard-font; 
+  font-size: 2*$standard-font-size; 
   color: $color5; 
 }
 
 p { 
-  font: 100% $standard-font; 
+  font-size: $standard-font-size; 
   color: $color5; 
 }
 
