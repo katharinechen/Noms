@@ -1,7 +1,3 @@
-{% macro evar(name) -%}
-{ name: {{ name }}, value: "{{ __environ__[name] }}" }
-{%- endmacro -%}
-
 Resources:
     cluster:
         Type: AWS::ECS::Cluster
@@ -47,6 +43,12 @@ Parameters:
     Description: Enter the hostname of the instance in the cluster.
 
 Outputs:
+    dns:
+        Description: Public DNS name of our cluster's host
+        Value: !Ref ecsRR
+        Export:
+            Name: !Sub "${AWS::StackName}-dns"
+
     instance:
         Description: EC2 instance that belongs to our cluster
         Value: !Ref clusterInstance

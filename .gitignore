@@ -18,3 +18,5 @@ Gemfile.lock
 /aws.env
 /jentemplate
 /.last-stack
+/nomsite.yml
+/ecs.yml
