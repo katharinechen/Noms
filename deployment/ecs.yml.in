@@ -1,0 +1,62 @@
+{% macro evar(name) -%}
+{ name: {{ name }}, value: "{{ __environ__[name] }}" }
+{%- endmacro -%}
+
+Resources:
+    cluster:
+        Type: AWS::ECS::Cluster
+        Properties:
+            ClusterName: !Ref AWS::StackName
+
+    clusterInstance:
+        Type: AWS::EC2::Instance
+        Properties:
+            InstanceType: t2.small
+            IamInstanceProfile: ecsInstanceRole
+            SubnetId: subnet-3efc7c59
+            KeyName: cory
+            ImageId: ami-62d35c02 # amazon ecs-optimized ami (us-west-2)
+            UserData: 
+                "Fn::Base64": !Sub "#!/bin/bash -xe\necho ECS_CLUSTER='${cluster}' >> /etc/ecs/ecs.config\n"
+
+            Tags:
+                - { Key: Name, Value: !Ref ecsInstanceName }
+
+            SecurityGroupIds:
+                - sg-0247157a
+                - sg-ba2e7cc2
+        DependsOn:
+            - cluster
+
+    ecsRR:
+        Type: AWS::Route53::RecordSet
+        Properties:
+            HostedZoneName: "nomsbook.com."
+            Name: !Sub '${ecsInstanceName}.'
+            Type: CNAME
+            TTL: 300
+            ResourceRecords:
+                - !GetAtt clusterInstance.PublicDnsName
+        DependsOn:
+            - clusterInstance
+
+Parameters:
+  ecsInstanceName:
+    Type: String
+    Default: ecs.nomsbook.com
+    Description: Enter the hostname of the instance in the cluster.
+
+Outputs:
+    instance:
+        Description: EC2 instance that belongs to our cluster
+        Value: !Ref clusterInstance
+        Export:
+            Name: !Sub "${AWS::StackName}-instance"
+
+    cluster:
+        Description: ECS cluster
+        Value: !Ref cluster
+        Export:
+            Name: !Sub "${AWS::StackName}-cluster"
+
+AWSTemplateFormatVersion: '2010-09-09'

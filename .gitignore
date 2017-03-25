@@ -17,3 +17,4 @@ Gemfile.lock
 /wheels
 /aws.env
 /jentemplate
+/.last-stack
