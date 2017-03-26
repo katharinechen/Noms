@@ -22,7 +22,15 @@ fi
 # if we are on master, update nomsbook.com stack
 if [[ "$TRAVIS_BRANCH" == "master" ]]; then
     export public_hostname='nomsbook.com'
+    doBuild=1
+fi
+
+pat="^(release|devbuild)-"
+if [[ "$NOMS_VERSION" ~= $pat ]]; then
+    doBuild=1
 fi
 
 # make a stack live
-noms-cf changeset nomsite
+if [[ -n "$doBuild" ]]; then
+    noms-cf changeset nomsite
+fi
