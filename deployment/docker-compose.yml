@@ -3,7 +3,7 @@ services:
     noms-src:
         build:
             context: ..
-            dockerfile: deployment/Dockerfile.noms-src
+            dockerfile: deployment/noms-src/Dockerfile
         image: "corydodt/noms-src:${NOMS_VERSION}"
         volumes:
             - noms-src:/opt/Noms
@@ -11,7 +11,7 @@ services:
     noms-main:
         build:
             context: ..
-            dockerfile: deployment/Dockerfile.noms-main
+            dockerfile: deployment/noms-main/Dockerfile
         image: "corydodt/noms-main:${NOMS_VERSION}"
         command: "noms"
         env_file: ../build/env
@@ -32,7 +32,7 @@ services:
     nginx-letsencrypt-s3:
         build:
             context: ..
-            dockerfile: deployment/Dockerfile.nginx-letsencrypt-s3
+            dockerfile: deployment/nginx-letsencrypt-s3/Dockerfile
         image: "corydodt/nginx-letsencrypt-s3:${NOMS_VERSION}"
         command: "sleep 600"
         env_file: 

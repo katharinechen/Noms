@@ -9,9 +9,9 @@ rest="$@"
 
 while ! nc -z "$NOMS_DB_HOST" 27017; do sleep 1.5; done
 
-if [ ! -e '/.docker-init' ]; then
+if [ ! -e '/.boot' ]; then
     echo "First-time run: Installing fresh config and secret_pair"
-    noms-sample "$NOMS_DB_HOST" && touch /.docker-init
+    noms-sample "$NOMS_DB_HOST" && touch /.boot
 fi
 
 if [ -n "$rest" ]; then

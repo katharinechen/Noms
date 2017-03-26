@@ -34,8 +34,8 @@ RUN echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
 
 EXPOSE 8080
 
-COPY ./bin/docker-init /docker-init
-ENTRYPOINT ["/docker-init"]
+COPY ./deployment/noms-main/boot.sh /boot.sh
+ENTRYPOINT ["bash", "/boot.sh"]
 CMD ["noms"]
 
 WORKDIR $noms
