@@ -2,7 +2,8 @@
 
 # Do database initialization if config collection doesn't have data yet
 
-set -e
+set -euo pipefile
+LFS=$'\t\n'
 
 rest="$@"
 

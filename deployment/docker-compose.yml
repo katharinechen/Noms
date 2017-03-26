@@ -37,7 +37,6 @@ services:
         command: "sleep 600"
         env_file: 
             - ../build/env
-            - ../aws.env
 
 volumes:
     noms-src: {}

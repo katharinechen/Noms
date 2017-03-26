@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -euo pipefile
+IFS=$'\n\t'
 
 cf='aws --profile corygoonmill cloudformation'
 

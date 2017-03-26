@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -e 
+set -euo pipefile
+LFS=$'\t\n'
+
 
 nginx_pidfile=/run/nginx/nginx.pid
 

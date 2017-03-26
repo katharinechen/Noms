@@ -1,36 +1,13 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
+IFS=$'\n\t'
 
-# aws.env contains AWS credentials, but it is optional
-if [ ! -e aws.env ]; then touch aws.env; fi
+set -a
+. <(noms-describe)
+set +a
 
-NOMS_VERSION=$(git describe --all | cut -d/ -f2-)
-if echo $NOMS_VERSION | grep / > /dev/null; then
-    echo "** Invalid NOMS_VERSION=$NOMS_VERSION" 1>&2
-    echo "** You should build from either the HEAD of this branch or a tagged revision" 1>&2
-    if echo $NOMS_VERSION | grep origin > /dev/null; then
-        echo "** (You appear to be on an old commit that doesn't have a tag)" 1>&2
-    fi
-    exit 1
-fi
-
-# load environment from build/env if it exists
-buildd=./build
-if [ -e $buildd/env ]; then
-    . $buildd/env
-fi
-
-NOMS_DB_HOST=${NOMS_DB_HOST:-mongo}
-# flags used by nginx-letsencrypt-s3
-certbot_flags=${certbot_flags}
-certbot_email=${certbot_email:-$(git config user.email)}
-public_hostname=${public_hostname:-dev.nomsbook.com}
-proxy_hostname=${proxy_hostname:-noms-main}
-proxy_port=${proxy_port:-8080}
-
-export NOMS_VERSION NOMS_DB_HOST certbot_flags certbot_email public_hostname proxy_hostname proxy_port
-
+buildd='./build'
 rm -rf $buildd
 mkdir -p $buildd
 

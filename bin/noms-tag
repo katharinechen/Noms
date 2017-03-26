@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+"""
+Set a nomstag for this commit
+"""
+from __future__ import print_function
+
+import re
+import json
+import os
+import sys
+from inspect import cleandoc
+import pipes
+import subprocess
+from datetime import datetime
+
+import git
+
+from twisted.python.usage import UsageError
+
+from codado.tx import Main, CLIError
+
+
+class Tag(Main):
+    synopsis = "** Usage: noms-tag -m 'blah blah' <tag> [extra=args ...]"
+    optParameters = [
+            ['message', 'm', None, ''],
+            ['define', 'D', None, ''],
+            ]
+
+    def opt_define(self, value):
+        k, v = value.split("=")
+        self.setdefault('extra', {})[k] = v
+
+    def parseArgs(self, tag):
+        self.setdefault('extra', {})
+        self['nomstag'] = True
+        self['created'] = datetime.utcnow().isoformat()
+        self['tag'] = tag
+        if not self['message']:
+            raise UsageError("** --message is required")
+
+    def postOptions(self):
+        data = dict(
+                nomstag=self['nomstag'],
+                created=self['created'],
+                message=self['message'],
+                tag=self['tag'],
+                **self['extra']
+                )
+        jdata = json.dumps(data, indent=2, sort_keys=1)
+        repo = git.Repo('./')
+        tag = repo.create_tag(self['tag'], message=jdata)
+        print(tag, tag.tag.message)
+
+
+sys.exit(Tag.main())

@@ -1,0 +1,28 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+set -a
+. <(noms-describe)
+set +a
+
+# run tests
+pytest --cov-fail-under=100
+
+# if tests pass, build & push images
+noms-docker build
+noms-docker push
+
+# if this build is a PR build in travis, we are done (no deployment)
+if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
+    exit 0
+fi
+
+# TODO - remove this after we are live!
+# if we are on master, update nomsbook.com stack
+if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+    export public_hostname='nomsbook.com'
+fi
+
+# make a stack live
+noms-cf changeset nomsite

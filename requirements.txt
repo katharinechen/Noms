@@ -1,8 +1,10 @@
 attrs
+awscli
 characteristic
 codado>=0.3.2
 contextdecorator
 coverage
+gitpython
 humanhash
 itsdangerous
 jinja2
