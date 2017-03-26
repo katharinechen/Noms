@@ -12,7 +12,8 @@ before_install:
     - env
 install:
     - pip install -r requirements.txt
-    - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker
+    - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
+    - pgrep -af docker
     - curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname
       -s`-`uname -m` > docker-compose
     - sudo install -m 775 docker-compose /usr/local/bin
