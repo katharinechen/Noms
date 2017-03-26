@@ -6,7 +6,10 @@ services:
 - docker
 # command to install dependencies
 before_install:
+    - pgrep -af docker
+    - dpkg -l | grep -i docker
     - pip install -U pip setuptools
+    - env
 install:
     - pip install -r requirements.txt
     - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker
