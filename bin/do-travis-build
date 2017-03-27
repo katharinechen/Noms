@@ -42,7 +42,7 @@ if [[ "$TRAVIS_BRANCH" == "master" ]]; then
 fi
 
 pat="^(release|devbuild)-"
-if [[ "$NOMS_VERSION" ~= $pat ]]; then
+if [[ "$NOMS_VERSION" =~ $pat ]]; then
     doStackYes "Tag name is $NOMS_VERSION"
 fi
 
