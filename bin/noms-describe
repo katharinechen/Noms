@@ -10,7 +10,8 @@ import os
 import sys
 from inspect import cleandoc
 import pipes
-import subprocess
+
+from git import Repo
 
 from codado.tx import Main, CLIError
 
@@ -83,10 +84,9 @@ class Describe(Main):
             ]
 
     def postOptions(self):
+        repo = Repo('./')
         try:
-            described = subprocess.check_output(
-                    ["git", "describe", "--all", "--long"]
-                    )
+            described = repo.git.describe(['--all', '--long'])
             parsed = parseDescribe(described)
         except ValueError, e:
             raise CLIError('noms-describe', 1, e.message)
