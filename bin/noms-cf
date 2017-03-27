@@ -8,32 +8,32 @@ cf() {
 }
 
 build() {
-stackName="$1"
-if [ -z "$stackName" ]; then
-    echo "** Usage: noms-cf build <stackName>" 1>&2
-    return 1
-fi
-echo $stackName > .last-stack
+    stackName="$1"
+    if [ -z "$stackName" ]; then
+        echo "** Usage: noms-cf build <stackName>" 1>&2
+        return 1
+    fi
+    echo $stackName > .last-stack
 
-cf create-stack \
-    --stack-name $stackName \
-    --template-body file://<(cat $1.yml | sed '/^\s*#/d')
+    cf create-stack \
+        --stack-name $stackName \
+        --template-body file://<(cat $1.yml | sed '/^\s*#/d')
 }
 
 changeset() {
-stackName="$1"
-if [ -z "$stackName" ]; then
-    echo "** Usage: noms-cf changeset <stackName>" 1>&2
-    return 1
-fi
-echo $stackName > .last-stack
-csName=$stackName-cs$(date +%s)
-cf create-change-set \
-    --stack-name $stackName \
-    --change-set-name $csName \
-    --template-body file://<(cat $1.yml | sed '/^\s*#/d')
-cf execute-change-set \
-    --change-set-name $csName
+    stackName="$1"
+    if [ -z "$stackName" ]; then
+        echo "** Usage: noms-cf changeset <stackName>" 1>&2
+        return 1
+    fi
+    echo $stackName > .last-stack
+    csName=$stackName-cs$(date +%s)
+    cf create-change-set \
+        --stack-name $stackName \
+        --change-set-name $csName \
+        --template-body file://<(cat $1.yml | sed '/^\s*#/d')
+    cf execute-change-set \
+        --change-set-name $csName
 }
 
 delete() {
@@ -49,6 +49,8 @@ set +a
 
 jentemplate deployment/ecs.yml.in > ecs.yml
 jentemplate deployment/nomsite.yml.in > nomsite.yml
+
+aws configure set region us-west-2
 
 subCommand=$1
 shift
