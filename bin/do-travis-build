@@ -18,22 +18,35 @@ noms-docker push
 
 # if this build is a PR build in travis, we are done (no deployment)
 if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
+    echo "xxxxxxx PR build, no stack will be deployed"
     exit 0
 fi
+
+# turn on the stack flag
+doStackYes() {
+    echo '==============================================='
+    echo '==============================================='
+    echo 'I AM GOING TO DEPLOY A CLOUDFORMATION STACK because:'
+    echo $1
+    echo '==============================================='
+    echo '==============================================='
+    doStack=1
+}
+
 
 # TODO - remove this after we are live!
 # if we are on master, update nomsbook.com stack
 if [[ "$TRAVIS_BRANCH" == "master" ]]; then
     export public_hostname='nomsbook.com'
-    doBuild=1
+    doStackYes "Commit to master (EARLY STAGE DEVELOPMENT)"
 fi
 
 pat="^(release|devbuild)-"
 if [[ "$NOMS_VERSION" ~= $pat ]]; then
-    doBuild=1
+    doStackYes "Tag name is $NOMS_VERSION"
 fi
 
 # make a stack live
-if [[ -n "$doBuild" ]]; then
+if [[ -n "$doStack" ]]; then
     noms-cf changeset nomsite
 fi
