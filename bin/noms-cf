@@ -27,10 +27,9 @@ changeset() {
         return 1
     fi
     echo $stackName > .last-stack
-    csName=$stackName-cs$(date +%s)
     cf create-change-set \
         --stack-name $stackName \
-        --change-set-name $csName \
+        --change-set-name $stackName \
         --template-body file://<(cat $1.yml | sed '/^\s*#/d')
     cf execute-change-set \
         --change-set-name $csName
