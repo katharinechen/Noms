@@ -3,7 +3,7 @@
 set -euo pipefile
 IFS=$'\n\t'
 
-cf='aws --profile corygoonmill cloudformation'
+cf='aws cloudformation'
 
 build() {
 stackName="$1"

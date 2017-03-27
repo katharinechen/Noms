@@ -13,6 +13,7 @@ pytest --cov-fail-under=100
 
 # if tests pass, build & push images
 noms-docker build
+docker login -u $DOCKER_USER -p $DOCKER_PASS
 noms-docker push
 
 # if this build is a PR build in travis, we are done (no deployment)
