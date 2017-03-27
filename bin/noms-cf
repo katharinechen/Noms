@@ -3,7 +3,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-cf='aws cloudformation'
+cf() {
+    aws cloudformation "$@"
+}
 
 build() {
 stackName="$1"
