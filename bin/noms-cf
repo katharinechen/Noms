@@ -15,7 +15,7 @@ if [ -z "$stackName" ]; then
 fi
 echo $stackName > .last-stack
 
-$cf create-stack \
+cf create-stack \
     --stack-name $stackName \
     --template-body file://<(cat $1.yml | sed '/^\s*#/d')
 }
@@ -28,18 +28,18 @@ if [ -z "$stackName" ]; then
 fi
 echo $stackName > .last-stack
 csName=$stackName-cs$(date +%s)
-$cf create-change-set \
+cf create-change-set \
     --stack-name $stackName \
     --change-set-name $csName \
     --template-body file://<(cat $1.yml | sed '/^\s*#/d')
-$cf execute-change-set \
+cf execute-change-set \
     --change-set-name $csName
 }
 
 delete() {
     last=$(cat .last-stack)
     echo $last
-    $cf delete-stack --stack-name $last
+    cf delete-stack --stack-name $last
     rm .last-stack
 }
 
