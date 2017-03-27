@@ -32,7 +32,7 @@ changeset() {
         --change-set-name $stackName \
         --template-body file://<(cat $1.yml | sed '/^\s*#/d')
     cf execute-change-set \
-        --change-set-name $csName
+        --change-set-name $stackName
 }
 
 delete() {
