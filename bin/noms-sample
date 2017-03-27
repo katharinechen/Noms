@@ -8,10 +8,14 @@ if [ ! -e config.json ]; then
     cp sample/config.json .
 fi
 
-if [ -n "$1" ]; then
-    host="-h $1"
-else
-    host=""
+if [ ! -e secret_pair.json ]; then
+    jentemplate sample/secret_pair.json > secret_pair.json
+fi
+
+host=${1:-}
+
+if [ -n "$host" ]; then
+    host="-h $host"
 fi
 
 mongoimport $host --drop -d noms -c config config.json
