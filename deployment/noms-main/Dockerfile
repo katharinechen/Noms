@@ -5,7 +5,7 @@ ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
 
-COPY ./Gemfile ./Gemfile.lock /
+COPY ./Gemfile /
 COPY ./deployment/get-pip.py ./requirements.txt /
 
 RUN echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories \
