@@ -2,7 +2,7 @@
 
 # Do database initialization if config collection doesn't have data yet
 
-set -euo pipefile
+set -euo pipefail
 LFS=$'\t\n'
 
 rest="$@"
