@@ -6,18 +6,12 @@ from __future__ import print_function
 
 import re
 import json
-import os
 import sys
-from inspect import cleandoc
-import pipes
-import subprocess
 from datetime import datetime
 
 import git
 
-from twisted.python.usage import UsageError
-
-from codado.tx import Main, CLIError
+from codado.tx import Main
 
 
 class Tag(Main):
@@ -32,12 +26,15 @@ class Tag(Main):
         self.setdefault('extra', {})[k] = v
 
     def parseArgs(self, tag):
+        """
+        The tag name is required
+        """
         self.setdefault('extra', {})
         self['nomstag'] = True
         self['created'] = datetime.utcnow().isoformat()
         self['tag'] = tag
         if not self['message']:
-            raise UsageError("** --message is required")
+            self['message'] = self['tag']
 
     def postOptions(self):
         data = dict(
