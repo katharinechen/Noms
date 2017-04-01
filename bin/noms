@@ -3,4 +3,4 @@
 set -euo pipefail
 LFS=$'\t\n'
 
-twistd -n noms "$@"
+twist noms "$@"
