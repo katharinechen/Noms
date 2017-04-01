@@ -13,6 +13,12 @@ import git
 
 from codado.tx import Main
 
+from noms.describe import Describe
+
+
+REGION = 'us-west-2'
+BUCKET = 'config.nomsbook.com'
+
 
 class Tag(Main):
     synopsis = "** Usage: noms-tag -m 'blah blah' <tag> [extra=args ...]"
@@ -30,7 +36,6 @@ class Tag(Main):
         The tag name is required
         """
         self.setdefault('extra', {})
-        self['nomstag'] = True
         self['created'] = datetime.utcnow().isoformat()
         self['tag'] = tag
         if not self['message']:
@@ -38,7 +43,7 @@ class Tag(Main):
 
     def postOptions(self):
         data = dict(
-                nomstag=self['nomstag'],
+                nomstag=True,
                 created=self['created'],
                 message=self['message'],
                 tag=self['tag'],
@@ -47,6 +52,7 @@ class Tag(Main):
         jdata = json.dumps(data, indent=2, sort_keys=1)
         repo = git.Repo('./')
         tag = repo.create_tag(self['tag'], message=jdata)
+
         print(tag, tag.tag.message)
 
 

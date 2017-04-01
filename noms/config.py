@@ -25,7 +25,7 @@ class Config(RenderableDocument):
     @property
     def appID(self):
         """
-        => 'https-apps-nomsbook-com' for example
+        => 'https-app-nomsbook-com' for example
 
         A unique identifier for this instance of the app, for resources tied
         to the app that require a stable and globally-unique name, such as SQS
