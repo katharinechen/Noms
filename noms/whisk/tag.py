@@ -4,16 +4,12 @@ Set a nomstag for this commit
 """
 from __future__ import print_function
 
-import re
 import json
-import sys
 from datetime import datetime
 
 import git
 
 from codado.tx import Main
-
-from noms.describe import Describe
 
 
 REGION = 'us-west-2'
@@ -21,6 +17,9 @@ BUCKET = 'config.nomsbook.com'
 
 
 class Tag(Main):
+    """
+    Add a tag to the current git repo with JSON-structured data in the body
+    """
     synopsis = "** Usage: noms-tag -m 'blah blah' <tag> [extra=args ...]"
     optParameters = [
             ['message', 'm', None, ''],
@@ -55,5 +54,3 @@ class Tag(Main):
 
         print(tag, tag.tag.message)
 
-
-sys.exit(Tag.main())

@@ -19,9 +19,9 @@ FIXME_URL = 'http://localhost:8080'
 STATIC_FILE_PATTERNS = '*.js;*.css;*.html;*.json;*.gif;*.png;*.eot;*.woff;*.otf;*.svg;*.ttf'
 
 
-class NomsOptions(tap.Options):
+class Run(tap.Options):
     """
-    A tap options object suitable for twistd to start, with noms-specific extras
+    Start the noms thing
     """
     optParameters = tap.Options.optParameters + [
             ['alias', None, 'noms', 'Alias for a database connection (see noms.DBAlias)'],
@@ -69,8 +69,7 @@ class NomsOptions(tap.Options):
         return tap.Options.postOptions(self)
 
 
-Options = NomsOptions
-
+Options = Run
 
 makeService = tap.makeService
 

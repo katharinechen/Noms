@@ -8,7 +8,6 @@ from cStringIO import StringIO
 import re
 import json
 import os
-import sys
 from inspect import cleandoc
 import pipes
 
@@ -101,8 +100,7 @@ class Description(object):
 
 class Describe(Main):
     """
-    Describe the build environment of the current directory, using the
-    following data:
+    Describe the build environment of the current directory, using 5 data sources
 
     1. command-line parameters;
     2. stdin; which is assumed to be coming from `git describe --all --long`
