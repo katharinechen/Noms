@@ -13,6 +13,7 @@ from codado.tx import Main
 
 from noms.whisk.describe import Describe
 from noms.whisk.tag import Tag
+from noms.whisk.sample import Sample
 
 
 def doc(cls):
@@ -31,6 +32,7 @@ class BaseOptions(Main):
     subCommands = [
             ("describe", None, Describe, doc(Describe)),
             ("tag", None, Tag, doc(Tag)),
+            ("sample", None, Sample, doc(Sample)),
             ]
 
     def postOptions(self):
