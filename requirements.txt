@@ -1,7 +1,7 @@
 attrs
 awscli
 characteristic
-codado>=0.3.2
+codado>=0.3.3
 contextdecorator
 coverage
 gitpython
