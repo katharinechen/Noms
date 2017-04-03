@@ -8,8 +8,8 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
         $scope.recipe = recipe.data;
     });
 
-    // $scope.user = {
-    //   name: 'awesome user'
-    // }; 
+    $scope.abc = {
+      name: 'awesome user'
+    }; 
 }]);
 
