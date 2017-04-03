@@ -7,5 +7,9 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
     $http({method: 'GET', url: '/api/recipe/' + urlKey}).then(function(recipe) {
         $scope.recipe = recipe.data;
     });
+
+    // $scope.user = {
+    //   name: 'awesome user'
+    // }; 
 }]);
 
