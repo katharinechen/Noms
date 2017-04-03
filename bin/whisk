@@ -2,6 +2,6 @@
 
 from sys import exit
 
-from noms.whisk import BaseOptions
+from noms.whisk import BaseWhisk
 
-exit(BaseOptions.main())
+exit(BaseWhisk.main())

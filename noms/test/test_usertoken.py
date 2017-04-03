@@ -3,7 +3,7 @@ Test the tool that acquires usertokens from the command line
 """
 import re
 
-from noms import usertoken
+from noms.whisk import usertoken
 
 
 TOKEN_RX = re.compile(r'[-a-zA-Z0-9+/_.]{120,}')
@@ -25,7 +25,7 @@ def test_options(weirdo, mockConfig, capsys):
     Does the command-line parser fetch the right token
     """
     weirdo.save()
-    o = usertoken.Options()
+    o = usertoken.UserToken()
     o.parseArgs(weirdo.email)
     o.postOptions()
     out = capsys.readouterr()[0]

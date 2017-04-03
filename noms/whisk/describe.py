@@ -113,7 +113,7 @@ class Describe(Main):
     local.env unless it is missing; then git describe; then
     command-line parameters or their defaults.
     """
-    synopsis = "** Usage: noms-describe"
+    synopsis = "describe"
     optParameters = Description.asParameters()
 
     def buildDescription(self):

@@ -11,7 +11,7 @@ from mongoengine import connect
 
 from noms.server import Server
 from noms import CONFIG, DBAlias, DBHost, user, secret
-from noms.digester import digest
+from noms.whisk.digester import digest
 
 
 MAIN_FUNC = 'noms.cli.main'

@@ -14,6 +14,8 @@ from codado.tx import Main
 from noms.whisk.describe import Describe
 from noms.whisk.tag import Tag
 from noms.whisk.sample import Sample
+from noms.whisk.usertoken import UserToken
+from noms.whisk.digester import Digester
 
 
 def doc(cls):
@@ -24,15 +26,19 @@ def doc(cls):
     return cdoc.split('\n')[0]
 
 
-class BaseOptions(Main):
+class BaseWhisk(Main):
     """
-    A tap options object suitable for twistd to start, with noms-specific extras
+    A collection of tools for maintaining a noms instance
     """
-    synopsis = "whisk [subCommands]"
+    optParameters = [
+            ['alias', None, 'noms', 'Alias for a database connection (see noms.DBAlias)'],
+            ]
     subCommands = [
             ("describe", None, Describe, doc(Describe)),
             ("tag", None, Tag, doc(Tag)),
             ("sample", None, Sample, doc(Sample)),
+            ("usertoken", None, UserToken, doc(UserToken)),
+            ("digester", None, Digester, doc(Digester)),
             ]
 
     def postOptions(self):
@@ -40,5 +46,4 @@ class BaseOptions(Main):
         Deal with missing subcommand
         """
         if self.subCommand is None:
-            self.synopsis = "whisk <subcommand>"
             raise usage.UsageError("** Please specify a subcommand (see \"Commands\").")

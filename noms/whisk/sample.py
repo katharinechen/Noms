@@ -16,7 +16,7 @@ class Sample(Main):
     """
     Load the .json sample files
     """
-    synopsis = "** Usage: whisk sample"
+    synopsis = 'sample'
 
     def postOptions(self):
         for filename in 'user', 'recipe':

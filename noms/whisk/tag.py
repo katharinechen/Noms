@@ -20,7 +20,7 @@ class Tag(Main):
     """
     Add a tag to the current git repo with JSON-structured data in the body
     """
-    synopsis = "** Usage: noms-tag -m 'blah blah' <tag> [extra=args ...]"
+    synopsis = "tag [options] <tag> [extra=args ...]"
     optParameters = [
             ['message', 'm', None, ''],
             ['define', 'D', None, ''],
