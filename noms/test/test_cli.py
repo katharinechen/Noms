@@ -15,6 +15,7 @@ def test_main(mockConfig):
     res = cli.main()
     assert hasattr(res, 'render')
 
+
 def test_postOptions(mockConfig):
     """
     Does postOptions create the config and return options?
@@ -23,7 +24,7 @@ def test_postOptions(mockConfig):
     # postOptions will recreate it.
     secret.SecretPair.objects.get(name='localapi').delete()
 
-    opts = cli.NomsOptions()
+    opts = cli.Run()
     opts['hax'] = 'haxor'
     pPopen = patch.object(subprocess, 'Popen', autospec=True)
 
