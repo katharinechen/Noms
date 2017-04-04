@@ -7,6 +7,8 @@ from __future__ import print_function
 import json
 from datetime import datetime
 
+import attr
+
 import git
 
 from codado.tx import Main
@@ -16,6 +18,26 @@ REGION = 'us-west-2'
 BUCKET = 'config.nomsbook.com'
 
 
+def nowstring():
+    """
+    Produce an ISO-formatted UTC now string
+    """
+    return datetime.utcnow().isoformat()
+
+
+@attr.s
+class NomsTag(object):
+    """
+    A structured tag
+    """
+    message = attr.ib()
+    tag = attr.ib()
+    certbot_email = attr.ib(default=None)
+    certbot_flags = attr.ib(default=None)
+    created = attr.ib(default=nowstring)
+    nomstag = attr.ib(default=True)
+
+
 class Tag(Main):
     """
     Add a tag to the current git repo with JSON-structured data in the body
@@ -23,34 +45,25 @@ class Tag(Main):
     synopsis = "tag [options] <tag> [extra=args ...]"
     optParameters = [
             ['message', 'm', None, ''],
-            ['define', 'D', None, ''],
             ]
-
-    def opt_define(self, value):
-        k, v = value.split("=")
-        self.setdefault('extra', {})[k] = v
 
     def parseArgs(self, tag):
         """
         The tag name is required
         """
-        self.setdefault('extra', {})
-        self['created'] = datetime.utcnow().isoformat()
         self['tag'] = tag
         if not self['message']:
             self['message'] = self['tag']
 
     def postOptions(self):
-        data = dict(
-                nomstag=True,
-                created=self['created'],
+        nt = NomsTag(
                 message=self['message'],
                 tag=self['tag'],
-                **self['extra']
                 )
-        jdata = json.dumps(data, indent=2, sort_keys=1)
+
+        jsonNT = json.dumps({k: v for (k, v) in attr.asdict(nt).items() if v}, indent=2, sort_keys=1)
         repo = git.Repo('./')
-        tag = repo.create_tag(self['tag'], message=jdata)
+        tag = repo.create_tag(self['tag'], message=jsonNT)
 
         print(tag, tag.tag.message)
 
