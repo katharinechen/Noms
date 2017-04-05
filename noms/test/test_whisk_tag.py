@@ -52,14 +52,9 @@ def test_postOptions(gitRepo, capsys):
     tt = tag.Tag()
     tt['tag'] = tt['message'] = 'hello-world'
     pRepo = patch.object(git, 'Repo', gitRepo)
-    # class FixedDatetime(datetime.datetime):
-    #     @classmethod
-    #     def utcnow():
 
     pDatetime = patch.object(datetime, 'datetime', autospec=True)
-    # pNowstring = patch.object(datetime.utcnow, 'isoformat',
     _datetime = datetime.datetime
-    #         return_value="2017-04-04T16:41:41.584844")
     with pRepo as mRepo, pDatetime as mDatetime:
         mDatetime.utcnow.return_value = _datetime(year=2017, month=4,
                 day=4, hour=16, minute=41, tzinfo=utc)
