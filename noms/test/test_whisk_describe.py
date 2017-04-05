@@ -68,7 +68,7 @@ def test_parseDescribe():
             'abbrev': '0g4v39x'}
 
 
-@fixture 
+@fixture
 def nomsTag():
     """
     Produce a NomsTag with some sample data
@@ -136,7 +136,7 @@ def test_postOptions(description, nomsTag, gitRepo, readEnvironmentFileFake, cap
         })
     pRepo = patch.object(describe, 'Repo', gitRepo)
     pReadEnv = patch.object(describe,
-        'readEnvironmentFile', 
+        'readEnvironmentFile',
         readEnvironmentFileFake)
     pExists = patch.object(os.path, 'exists', return_value=True)
     with pEnv, pRepo, pReadEnv, pExists:
@@ -144,7 +144,7 @@ def test_postOptions(description, nomsTag, gitRepo, readEnvironmentFileFake, cap
         descr['proxy_port'] = '9090'
         actual = descr.buildDescription()
         descr.postOptions()
-    
+
     assert actual == expected
     expectedOut = cleandoc('''
         # from cli
@@ -195,7 +195,7 @@ def test_buildDescriptionBadNomsTag(description, gitRepo):
     description.public_hostname = ('cli', 'dev.nomsbook.com')
     description.proxy_port = ('cli', '8080')
     pRepo = patch.object(describe, 'Repo', gitRepo)
-    pEnv = patch.dict(os.environ, 
+    pEnv = patch.dict(os.environ,
             {'TRAVIS_COMMIT_MESSAGE': '{"public_hostname": 1}'})
     with pRepo, pEnv:
         descr = describe.Describe()

@@ -6,7 +6,7 @@ from inspect import cleandoc
 
 from jinja2 import Template
 
-from pytest import raises 
+from pytest import raises
 
 from mongoengine import StringField, IntField
 
@@ -61,7 +61,7 @@ def test_renderRenderableQuerySet(mockConfig):
     Do I produce a json array from a query?
     """
     author = u'cory'
-    
+
     u = user.User(email="dude@gmail.com")
     u.save()
 
@@ -99,21 +99,21 @@ def test_render(mockDatabase):
     assert doc.render(None) == json.dumps({'safe': 'good', 'int': 12})
 
 
-# this is in the style of py.test 
+# this is in the style of py.test
 def test_resourceEncoder():
     """
-    Test that json encoder works on our objects 
+    Test that json encoder works on our objects
     """
-    class SafeClass(object): 
+    class SafeClass(object):
         def safe(self):
             return "19"
     ret = json.dumps(SafeClass(), cls=rendering.ResourceEncoder)
     assert ret == '"19"'
 
-    class NotSoSafeClass(object): 
-        pass 
+    class NotSoSafeClass(object):
+        pass
 
-    with raises(TypeError): 
+    with raises(TypeError):
         json.dumps(NotSoSafeClass(), cls=rendering.ResourceEncoder)
 
 

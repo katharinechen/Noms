@@ -16,7 +16,7 @@ def test_get(weirdo, mockConfig):
     weirdo.save()
     ret = usertoken.get(weirdo.email)
     # we can't predict much about the token besides that it'll be mostly
-    # base64 charset, with some dots, and be about yay long. 
+    # base64 charset, with some dots, and be about yay long.
     assert TOKEN_RX.match(ret)
 
 
