@@ -2,9 +2,11 @@
 Tests of `whisk tag`
 """
 import json
-from datetime import datetime
+import datetime
 
 import git
+
+from pytz import utc
 
 from pytest import fixture
 
@@ -50,13 +52,21 @@ def test_postOptions(gitRepo, capsys):
     tt = tag.Tag()
     tt['tag'] = tt['message'] = 'hello-world'
     pRepo = patch.object(git, 'Repo', gitRepo)
-    pNowstring = patch.object(datetime.utcnow.return_value, 'isoformat',
-            return_value="2017-04-04T16:41:41.584844")
-    with pRepo as mRepo, pNowstring:
+    # class FixedDatetime(datetime.datetime):
+    #     @classmethod
+    #     def utcnow():
+
+    pDatetime = patch.object(datetime, 'datetime', autospec=True)
+    # pNowstring = patch.object(datetime.utcnow, 'isoformat',
+    _datetime = datetime.datetime
+    #         return_value="2017-04-04T16:41:41.584844")
+    with pRepo as mRepo, pDatetime as mDatetime:
+        mDatetime.utcnow.return_value = _datetime(year=2017, month=4,
+                day=4, hour=16, minute=41, tzinfo=utc)
         tt.postOptions()
 
     expectedJSON = json.dumps({
-              "created": "2017-04-04T16:41:41.584844",
+              "created": "2017-04-04T16:41:00+00:00",
               "message": "hello-world",
               "nomstag": True,
               "tag": "hello-world"
@@ -65,4 +75,4 @@ def test_postOptions(gitRepo, capsys):
             'hello-world',
             message=expectedJSON)
     out, err = capsys.readouterr()
-    assert out == 'hello-world' + expectedJSON
+    assert out.strip() == 'hello-world ' + expectedJSON

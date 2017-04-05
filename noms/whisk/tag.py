@@ -5,7 +5,7 @@ Set a nomstag for this commit
 from __future__ import print_function
 
 import json
-from datetime import datetime
+import datetime
 
 import attr
 
@@ -22,7 +22,7 @@ def nowstring():
     """
     Produce an ISO-formatted UTC now string
     """
-    return datetime.utcnow().isoformat()
+    return datetime.datetime.utcnow().isoformat()
 
 
 @attr.s
