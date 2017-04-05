@@ -19,6 +19,7 @@ pytest-cov
 pytest-twisted
 pytest>=3.0
 pyOpenSSL
+pytz
 service_identity
 treq
 twisted
