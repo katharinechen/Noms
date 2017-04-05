@@ -34,8 +34,14 @@ class NomsTag(object):
     tag = attr.ib()
     certbot_email = attr.ib(default=None)
     certbot_flags = attr.ib(default=None)
-    created = attr.ib(default=nowstring)
+    created = attr.ib(default=attr.Factory(nowstring))
     nomstag = attr.ib(default=True)
+
+    def asJSON(self):
+        """
+        JSON representation of NomsTag
+        """
+        return json.dumps({k: v for (k, v) in attr.asdict(self).items() if v}, indent=2, sort_keys=1)
 
 
 class Tag(Main):
@@ -56,14 +62,16 @@ class Tag(Main):
             self['message'] = self['tag']
 
     def postOptions(self):
+        """
+        Construct a json-formatted message body and commit the tag
+        """
         nt = NomsTag(
                 message=self['message'],
                 tag=self['tag'],
                 )
 
-        jsonNT = json.dumps({k: v for (k, v) in attr.asdict(nt).items() if v}, indent=2, sort_keys=1)
         repo = git.Repo('./')
-        tag = repo.create_tag(self['tag'], message=jsonNT)
+        tag = repo.create_tag(self['tag'], message=nt.asJSON())
 
         print(tag, tag.tag.message)
 
