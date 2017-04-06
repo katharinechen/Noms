@@ -133,7 +133,7 @@ def test_postOptions(description, nomsTag, gitRepo, readEnvironmentFileFake, cap
     pEnv = patch.dict(os.environ, {
         'TRAVIS_COMMIT_MESSAGE': nomsTag,
         'NOMS_DB_HOST': 'manga',
-        })
+        }, clear=True)
     pRepo = patch.object(describe, 'Repo', gitRepo)
     pReadEnv = patch.object(describe,
         'readEnvironmentFile',
@@ -196,7 +196,8 @@ def test_buildDescriptionBadNomsTag(description, gitRepo):
     description.proxy_port = ('cli', '8080')
     pRepo = patch.object(describe, 'Repo', gitRepo)
     pEnv = patch.dict(os.environ,
-            {'TRAVIS_COMMIT_MESSAGE': '{"public_hostname": 1}'})
+            {'TRAVIS_COMMIT_MESSAGE': '{"public_hostname": 1}'},
+            clear=True)
     with pRepo, pEnv:
         descr = describe.Describe()
         actual = descr.buildDescription()
