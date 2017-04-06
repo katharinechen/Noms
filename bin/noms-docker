@@ -3,6 +3,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+pwd
+echo $PYTHONPATH
+
 set -a
 . <(whisk describe)
 set +a

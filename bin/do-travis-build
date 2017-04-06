@@ -4,8 +4,10 @@ IFS=$'\n\t'
 
 PATH="$PATH:./bin"
 
+pwd
+
 set -a
-. <(noms-describe)
+. <(whisk describe)
 set +a
 
 # run tests
