@@ -4,7 +4,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 pwd
-echo $PYTHONPATH
+python -c 'import sys; print sys.path'
 
 set -a
 . <(whisk describe)
