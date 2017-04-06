@@ -4,8 +4,6 @@ IFS=$'\n\t'
 
 PATH="$PATH:./bin"
 
-pwd
-
 set -a
 . <(whisk describe)
 set +a
