@@ -4,7 +4,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 set -a
-. <(noms-describe)
+. <(whisk describe)
 set +a
 
 buildd='./build'
