@@ -8,6 +8,7 @@ rm -rf $buildd
 mkdir -p $buildd
 
 whisk describe | tee $buildd/env
+set -a; . <(whisk describe); set +a
 
 cp -v `which jentemplate` $buildd/
 cp -v deployment/get-pip.py $buildd/
