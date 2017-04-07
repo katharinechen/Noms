@@ -3,24 +3,14 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-set -a
-. <(whisk describe)
-set +a
-
 buildd='./build'
 rm -rf $buildd
 mkdir -p $buildd
 
+whisk describe | tee $buildd/env
+
 cp -v `which jentemplate` $buildd/
 cp -v deployment/get-pip.py $buildd/
 cp -v deployment/nginx-letsencrypt-s3/{*.sh,http.conf.in,requirements-certbot.txt} $buildd/
-
-echo NOMS_VERSION="$NOMS_VERSION" | tee -a $buildd/env
-echo NOMS_DB_HOST="$NOMS_DB_HOST" | tee -a $buildd/env
-echo certbot_flags="$certbot_flags" | tee -a $buildd/env
-echo public_hostname="$public_hostname" | tee -a $buildd/env
-echo proxy_hostname="$proxy_hostname" | tee -a $buildd/env
-echo proxy_port="$proxy_port" | tee -a $buildd/env
-echo certbot_email="$certbot_email" | tee -a $buildd/env
 
 docker-compose -f deployment/docker-compose.yml "$@"
