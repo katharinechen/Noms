@@ -16,6 +16,7 @@ from noms.whisk.tag import Tag
 from noms.whisk.sample import Sample
 from noms.whisk.usertoken import UserToken
 from noms.whisk.digester import Digester
+from noms.whisk.dockercmd import Docker
 
 
 def doc(cls):
@@ -39,6 +40,7 @@ class BaseWhisk(Main):
             ("sample", None, Sample, doc(Sample)),
             ("usertoken", None, UserToken, doc(UserToken)),
             ("digester", None, Digester, doc(Digester)),
+            ("docker", None, Docker, doc(Docker)),
             ]
 
     def postOptions(self):
