@@ -3,6 +3,9 @@ Manage build/push of docker images
 """
 import os
 import sys
+import shutil
+
+from twisted.python.procutils import which
 
 import docker as dockerapi
 
@@ -52,6 +55,22 @@ class Docker(Main):
             ['build', None, 'Build container images'],
             ['push', None, 'Push container images to docker.io'],
         ]
+
+    def buildContext(self):
+        """
+        Create files in the build context that can't be built in a Dockerfile
+        """
+        buildd = fromdir(self._deployment('build'))
+        if not os.path.exists(buildd()):
+            os.mkdir(buildd())
+
+        # use describe to write an env file
+        open(buildd('env'), 'w'
+                ).write(self.description.asEnvironment())
+        print self.description.asEnvironment()
+
+        # get jentemplate from PATH
+        shutil.copyfile(which('jentemplate')[0], buildd('jentemplate'))
 
     def build(self):
         """
@@ -118,6 +137,7 @@ class Docker(Main):
         self.description = describe.Describe().buildDescription()
         self.images = self._getImageLabels()
         if self['build']:
+            self.buildContext()
             self.build()
         if self['push']:
             self.push()

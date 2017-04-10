@@ -1,11 +1,13 @@
 # vim:set ft=dockerfile:
 FROM alpine:3.5
 
-ENV buildd ./build
-
 RUN mkdir -p /usr/share/nginx/html /run/nginx
 
-COPY $buildd/get-pip.py $buildd/requirements-certbot.txt /
+COPY ./deployment/get-pip.py \
+     ./deployment/nginx-letsencrypt-s3/requirements-certbot.txt \
+     ./deployment/nginx-letsencrypt-s3/*.sh \
+     ./deployment/nginx-letsencrypt-s3/http.conf.in \
+    /
 
 RUN apk update \
     && apk add --no-cache --virtual build-dependencies \
