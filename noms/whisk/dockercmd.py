@@ -39,9 +39,10 @@ def jen(templateInput, envDescription):
     Render a template to a string, using envDescription
     (an instance of noms.whisk.describe.Description)
     """
-    inputFile = open(templateInput, 'rb')
-    tpl = Template(inputFile.read())
+    tpl = Template(templateInput.read())
+    print envDescription
     env = {k: v[1] for (k, v) in attr.asdict(envDescription).items()}
+    print env
     return tpl.render(__environ__=env)
 
 
@@ -122,7 +123,7 @@ class Docker(Main):
         """
         Dict of image short names to full image labels to build
         """
-        tplInput = self._deployment(NOMSITE_YML_IN)
+        tplInput = open(self._deployment(NOMSITE_YML_IN))
         tpl = jen(tplInput, self.description)
         yml = yaml.load(tpl)
         containers = [x['Name'] for x in yml['Resources']['noms']['Properties']['ContainerDefinitions']]

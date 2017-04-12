@@ -93,8 +93,8 @@ class Description(object):
         for src, k, v in sorted((src, k, v) for (k, (src, v)) in env.items()):
             if last != src:
                 last = src
-                print('\n# from', src)
-            print('%s=%s' % (k, pipes.quote(str(v)) if v else ''))
+                print('\n# from', src, file=out)
+            print('%s=%s' % (k, pipes.quote(str(v)) if v else ''), file=out)
         return out.getvalue()
 
 
