@@ -36,13 +36,11 @@ yaml.add_multi_constructor('', bangCtor)
 
 def jen(templateInput, envDescription):
     """
-    Render a template to a string, using envDescription
+    Render a template through jinja to a string, using envDescription
     (an instance of noms.whisk.describe.Description)
     """
     tpl = Template(templateInput.read())
-    print envDescription
     env = {k: v[1] for (k, v) in attr.asdict(envDescription).items()}
-    print env
     return tpl.render(__environ__=env)
 
 
@@ -137,8 +135,14 @@ class Docker(Main):
         self._deployment = fromdir('deployment')
         self.description = describe.Describe().buildDescription()
         self.images = self._getImageLabels()
+
+        if not self['build'] and not self['push']:
+            raise CLIError(sys.argv[0], 1, '--build or --push is required')
+
         if self['build']:
             self.buildContext()
             self.build()
+
         if self['push']:
             self.push()
+
