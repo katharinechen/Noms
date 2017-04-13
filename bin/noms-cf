@@ -44,7 +44,7 @@ delete() {
 }
 
 set -a
-. ./build/env
+. ./deployment/build/env
 set +a
 
 jentemplate deployment/ecs.yml.in > ecs.yml
