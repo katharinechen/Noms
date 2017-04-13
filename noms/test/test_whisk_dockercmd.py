@@ -104,7 +104,7 @@ def test_build(dockerobj, capsys):
     pBuild = patch.object(dockerobj.client.api, 'build',
             autospec=True,
             return_value=[{'stream': 'Hello'},
-                {'stream': 'My baby'}
+                {'status': 'My baby'}
                 ])
     with pBuild as mBuild:
         dockerobj.build()

@@ -94,10 +94,10 @@ class Docker(Main):
             for line in stream:
                 if 'stream' in line:
                     print line['stream'].strip()
-                elif 'error' in line:
+                elif 'status' in line:
+                    print '-', line['status'].strip()
+                else:
                     raise CLIError(sys.argv[0], 1, line['error'])
-                else: # pragma: nocover
-                    print repr(line).strip()
 
     def push(self):
         """
