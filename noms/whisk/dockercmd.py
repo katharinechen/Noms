@@ -77,10 +77,11 @@ class Docker(Main):
         """
         for dirname in self.images:
             dest = self.images[dirname]
-            print '-_-', dest, '-_' * 20
             df = self._deployment(dirname, 'Dockerfile')
             if not os.path.exists(df):
                 continue
+
+            print '-_-', dest, '-_' * 20
 
             stream = self.client.api.build(
                     path='.',
@@ -115,7 +116,7 @@ class Docker(Main):
                     sys.stdout.write('.')
                     sys.stdout.flush()
                 elif 'error' in line:
-                    print line['error']
+                    raise CLIError(sys.argv[0], 1, line['error'])
 
     def _getImageLabels(self):
         """
