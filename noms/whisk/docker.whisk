@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# @@synopsis: "docker [--build] | [--push]"
+
+IFS=$'\n'
+set -euo pipefail
+
+buildd=./deployment/build
+
+set -a; . <(whisk describe); set +a
+
+
+targets () {
+    pushd deployment > /dev/null
+    find -maxdepth 2 -mindepth 2 -name Dockerfile -printf '%h\n' | egrep -o '[a-z].*'
+    popd > /dev/null
+}
+
+build() {
+    mkdir -p $buildd
+    whisk describe | tee $buildd/env
+    cp $(which jentemplate) $buildd
+
+    set -x
+    for targ in $(targets); do
+        repo=corydodt/$targ
+        docker pull $repo:latest || true
+        docker build -t $repo:latest -t $repo:$NOMS_VERSION -f deployment/$targ/Dockerfile --cache-from $repo:latest .
+    done
+    set +x
+}
+
+push() {
+    set -x
+    for targ in $(targets); do
+        docker push corydodt/$targ:$NOMS_VERSION
+        docker push corydodt/$targ:latest
+    done
+    set +x
+}
+
+
+while [[ $# -gt 0 ]]; do
+    if [[ ${1} == "--build" ]]; then
+        build
+    elif [[ ${1} == "--push" ]]; then
+        push
+    else
+        echo "** Invalid argument ${1}" 1>&2
+        exit 1
+    fi
+    shift
+done
