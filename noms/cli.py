@@ -37,7 +37,6 @@ class Run(tap.Options):
         CONFIG.load()
         
         # now we know CONFIG exists
-        CONFIG.cliOptions = dict(self.items())
         staticPath = '%s/static' % os.getcwd()
         CONFIG.staticHash = digest(staticPath)
         CONFIG.save()

@@ -73,6 +73,51 @@ class Description(object):
     proxy_port = attr.ib(default='8080')
 
     @classmethod
+    def build(cls, opts=None):
+        """
+        Contruct a new Description from environment and options
+        """
+        if opts is None:
+            opts = {}
+
+        repo = Repo('./')
+
+        described = repo.git.describe(['--all', '--long'])
+        parsed = parseDescribe(described)
+
+        # 1. command-line params
+        self = cls(**{k: ('cli', v) for (k, v) in opts.items()})
+
+        # 2. git describe
+        self.NOMS_VERSION = ('git describe', parsed['short'])
+
+        # 3. local.env
+        if os.path.exists(LOCAL_ENV):
+            local = readEnvironmentFile(LOCAL_ENV)
+            for k, v in local.items():
+                setattr(self, k, ('local.env', v))
+
+        # 4. os.environ
+        for k in attr.asdict(self):
+            v = os.environ.get(k, None)
+            if v is not None:
+                setattr(self, k, ('process environment', v))
+
+        # 5. structured nomstag
+        try:
+            mess = os.environ.get('TRAVIS_COMMIT_MESSAGE', '')
+            loaded = json.loads(mess)
+            if 'nomstag' in loaded:
+                for k, v in loaded.items():
+                    setattr(self, k, ('nomstag', v))
+            else:
+                raise ValueError("JSON-like commit body was not a nomstag")
+        except ValueError:
+            "Not a structured tag"
+
+        return self
+
+    @classmethod
     def asParameters(cls):
         """
         Return the 4-tuples that can be used as Options optParameters
@@ -116,46 +161,9 @@ class Describe(Main):
     synopsis = "describe"
     optParameters = Description.asParameters()
 
-    def buildDescription(self):
-        repo = Repo('./')
-
-        try:
-            described = repo.git.describe(['--all', '--long'])
-            parsed = parseDescribe(described)
-        except ValueError, e:
-            raise CLIError('noms-describe', 1, e.message)
-
-        # 1. command-line params
-        description = Description(**{k: ('cli', v) for (k, v) in self.items()})
-
-        # 2. git describe
-        description.NOMS_VERSION = ('git describe', parsed['short'])
-
-        # 3. local.env
-        if os.path.exists(LOCAL_ENV):
-            local = readEnvironmentFile(LOCAL_ENV)
-            for k, v in local.items():
-                setattr(description, k, ('local.env', v))
-
-        # 4. os.environ
-        for k in attr.asdict(description):
-            v = os.environ.get(k, None)
-            if v is not None:
-                setattr(description, k, ('process environment', v))
-
-        # 5. structured nomstag
-        try:
-            mess = os.environ.get('TRAVIS_COMMIT_MESSAGE', '')
-            loaded = json.loads(mess)
-            if 'nomstag' in loaded:
-                for k, v in loaded.items():
-                    setattr(description, k, ('nomstag', v))
-            else:
-                raise ValueError("JSON-like commit body was not a nomstag")
-        except ValueError:
-            "Not a structured tag"
-
-        return description
-
     def postOptions(self):
-        print(self.buildDescription().asEnvironment())
+        try:
+            description = Description.build(self)
+        except ValueError, e:
+            raise CLIError('whisk describe', 1, e.message)
+        print(description.asEnvironment())

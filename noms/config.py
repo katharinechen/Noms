@@ -18,8 +18,6 @@ class Config(RenderableDocument):
             required=True, unique=True) # unique helps ensure we'll only have
                                         # one Config in the database
 
-    cliOptions = fields.DictField() # options from NomsOptions, the cli parser class
-
     staticHash = fields.StringField()
 
     @property

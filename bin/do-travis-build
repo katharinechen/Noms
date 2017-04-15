@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -51,4 +52,5 @@ fi
 # make a stack live
 if [[ -n "$doStack" ]]; then
     whisk cloudform --changeset nomsite
+    FIXME - confirm that the taskdefinition was actually created
 fi
