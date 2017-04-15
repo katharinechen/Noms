@@ -50,5 +50,5 @@ fi
 
 # make a stack live
 if [[ -n "$doStack" ]]; then
-    whisk cloudform changeset nomsite
+    whisk cloudform --changeset nomsite
 fi
