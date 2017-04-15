@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# @@synopsis: "cloudform <[--changeset] | [--build]> <changeset>"
+
+set -euo pipefail
+IFS=$'\n\t'
+
+cf() {
+    aws --region=us-west-2 cloudformation "$@"
+}
+
+build() {
+    jentemplate deployment/$1.yml.in > $1.yml
+    cf create-stack \
+        --stack-name $1 \
+        --template-body file://<(cat $1.yml | sed '/^\s*#/d')
+}
+
+changeset() {
+    jentemplate deployment/$1.yml.in > $1.yml
+    cf create-change-set --stack-name $1 --change-set-name $1 \
+        --template-body file://<(cat $1.yml | sed '/^\s*#/d')
+    cf wait change-set-create-complete --stack-name $1 --change-set-name $1
+    cf execute-change-set --stack-name $1 --change-set-name $1
+}
+
+set -a; . <(whisk describe); set +a
+
+if [ -z "${1:-}" ]; then
+    echo "** Usage: whisk cloudform <[--changeset] | [--build]> <stackName>" 1>&2
+    exit 1
+fi
+subCommand=$1
+shift
+if [[ ${subCommand} == "--build" ]]; then
+    build "$@"
+elif [[ ${subCommand} == "--changeset" ]]; then
+    changeset "$@"
+else
+    echo "** Invalid argument ${subCommand}" 1>&2
+    exit 1
+fi

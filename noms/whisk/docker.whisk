@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# @@synopsis: "docker [--build] | [--push]"
+# @@synopsis: "docker <[--build] | [--push]>"
 
 IFS=$'\n'
 set -euo pipefail
@@ -40,6 +40,10 @@ push() {
 }
 
 
+if [ -z "${1:-}" ]; then
+    echo "** Usage: whisk docker <[--build] | [--push]>" 1>&2
+    exit 1
+fi
 while [[ $# -gt 0 ]]; do
     if [[ ${1} == "--build" ]]; then
         build
