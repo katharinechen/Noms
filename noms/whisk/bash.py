@@ -48,7 +48,7 @@ class BashCommand(Main):
 
         proc.wait()
         if not proc.returncode == 0:
-            raise CLIError(sys.argv[0], proc.returncode, '')
+            raise CLIError(sys.argv[0], proc.returncode, 'failed')
 
     def parseOptions(self, args):
         self.rawArgs = args
