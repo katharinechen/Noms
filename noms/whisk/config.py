@@ -3,6 +3,8 @@ Set, get, and publish config for noms
 """
 from boto import s3
 
+from mongoengine import connect
+
 from codado.tx import Main, CLIError
 
 from noms import (
