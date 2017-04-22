@@ -77,8 +77,5 @@ def main():
     """
     Return a resource to start our application
     """
-    resource = Server().app.resource
-    alias = CONFIG.cliOptions['alias']
-    connect(**DBHost[alias])
-    return resource()
+    return Server().app.resource()
 

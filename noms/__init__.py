@@ -58,7 +58,7 @@ def urlify(*args):
 
 class LazyConfig(object):
     """
-    A placeholder for config that exists before the database is connected.
+    A placeholder for configuration that exists before the database is connected.
 
     This allows us to make CONFIG a simple global instance
     """
@@ -72,7 +72,7 @@ class LazyConfig(object):
     @property
     def realConfig(self):
         """
-        Lazily create a config for me to proxy
+        Lazily create a configuration for me to proxy
         """
         if not self.hasRealConfig:
             self.load()
@@ -84,15 +84,15 @@ class LazyConfig(object):
 
     def __setattr__(self, attr, value):
         if not self.hasRealConfig:
-            raise TypeError('Cannot set values on uninitialized config')
+            raise TypeError('Cannot set values on uninitialized configuration')
         self.realConfig.__setattr__(attr, value)
 
     def load(self):
         """
         Initialize from the database
         """
-        from noms.config import Config
-        cfg = Config.objects().first()
+        from noms.configuration import Configuration
+        cfg = Configuration.objects().first()
         assert cfg is not None, "Couldn't load a config from the database"
         self.__dict__['_realConfig'] = cfg
         return self

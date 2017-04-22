@@ -22,7 +22,7 @@ from mock import patch, ANY
 from pytest import fixture, inlineCallbacks, raises
 
 from noms import (
-        server, fromNoms, config,
+        server, fromNoms, configuration,
         recipe, urlify, CONFIG,
         )
 from noms.interface import ICurrentUser
@@ -45,7 +45,7 @@ def test_querySet(mockConfig):
     Does querySet(fn)() render the result of the cursor returned by fn?
     """
     def _configs(req):
-        return config.Config.objects()
+        return configuration.Configuration.objects()
 
     configsFn = server.querySet(_configs)
     assert configsFn(None) == '[{"apparentURL": "https://app.nomsbook.com"}]'

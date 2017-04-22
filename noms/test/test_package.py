@@ -20,7 +20,7 @@ def test_urlify():
 
 def test_laziness(mockConfig):
     """
-    Do I acquire a config object upon access?
+    Do I acquire a Configuration object upon access?
     """
     del mockConfig.__dict__['_realConfig']
     mockConfig.apparentURL
