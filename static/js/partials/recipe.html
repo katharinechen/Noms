@@ -1,12 +1,12 @@
 <!--  individual recipe  -->
-<div ng-controller="Recipe">
+<form ng-controller="Recipe" editable-form name="recipeForm" onaftersave="saveRecipe()">
 
     Testing
     <a href="#" editable-text="abc.name">{{ abc.name || "empty" }}</a>
 
     <div class="recipe-header">
         <div class="recipe-description"> 
-            <h2 class="recipe-name">{{ recipe.name }}</h2> 
+            <h2 href="#" editable-text="recipe.name" class="recipe-name">{{ recipe.name }}</h2> 
             <div class="row-section">
                 <div>
                     <span class="section-title">Author:</span>
@@ -56,4 +56,24 @@
                 <li>{{ instruction }}</li>
             </ul>
         </div>
-</div>
+    </div>
+
+    <div>
+        <!-- button to show form -->
+        <button type="button" class="btn btn-default" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
+            Edit
+        </button>
+      
+        <!-- buttons to submit / cancel form -->
+        <span ng-show="recipeForm.$visible">
+            <button type="submit" class="btn btn-primary" ng-disabled="recipeForm.$waiting">
+                Save
+            </button>
+        
+            <button type="button" class="btn btn-default" ng-disabled="recipeForm.$waiting" ng-click="recipeForm.$cancel()">
+                Cancel
+            </button>
+        </span>
+    </div>
+
+</form>

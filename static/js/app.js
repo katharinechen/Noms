@@ -5,7 +5,7 @@
 var app = angular.module("noms", ["xeditable"]);
 
 app.run(function(editableOptions) {
-    editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
+    editableOptions.theme = 'default'; // bootstrap3 theme. Can be also 'bs2', 'default'
 });
 
 var Preload = app.controller("Preload", ['$rootScope', '$window', function ($rootScope, $window) {

@@ -192,6 +192,15 @@ class APIServer(object):
         """
         return Recipe.objects(urlKey=urlKey).first()
 
+    @app.route("/recipe/<string:urlKey>/save")
+    def saveRecipe(self, request, urlKey):
+        """
+        Save a recipe from the recipe form 
+        """
+        print "yo"
+        return OK()
+
+
     @app.route("/sso")
     @defer.inlineCallbacks
     def sso(self, request):

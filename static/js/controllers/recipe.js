@@ -8,8 +8,15 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
         $scope.recipe = recipe.data;
     });
 
-    $scope.abc = {
-      name: 'awesome user'
-    }; 
+
+    $scope.saveRecipe = function() {
+    	return $http.post('/api/recipe/' + urlKey + '/save').then(
+    		function successCallback() {
+    			console.log("I am a success!!!"); 
+    		}, function errorCallback() {
+    			console.log("I am sad"); 
+    		}
+    	)
+    }
 }]);
 
