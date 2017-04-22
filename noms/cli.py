@@ -15,7 +15,7 @@ from noms.whisk.digester import digest
 
 
 MAIN_FUNC = 'noms.cli.main'
-FIXME_URL = 'http://localhost:8080'
+FIXME_LOCALAPI_URL = 'http://localhost:8080'
 STATIC_FILE_PATTERNS = '*.js;*.css;*.html;*.json;*.gif;*.png;*.eot;*.woff;*.otf;*.svg;*.ttf'
 
 
@@ -54,7 +54,7 @@ class Run(tap.Options):
         watchCL = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
         watchCL = watchCL.format(
             pat=STATIC_FILE_PATTERNS,
-            cmd='digester -U %s/api/sethash/ %s' % (FIXME_URL, staticPath),
+            cmd='digester -U %s/api/sethash/ %s' % (FIXME_LOCALAPI_URL, staticPath),
             where=staticPath,
             )
         subprocess.Popen(shlex.split(watchCL), stdout=subprocess.PIPE)
@@ -78,7 +78,5 @@ def main():
     Return a resource to start our application
     """
     resource = Server().app.resource
-    alias = CONFIG.cliOptions['alias']
-    connect(**DBHost[alias])
     return resource()
 

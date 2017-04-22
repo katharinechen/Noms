@@ -25,7 +25,6 @@ def test_postOptions(mockConfig):
     secret.SecretPair.objects.get(name='localapi').delete()
 
     opts = cli.Run()
-    opts['hax'] = 'haxor'
     pPopen = patch.object(subprocess, 'Popen', autospec=True)
 
     with pPopen as mPopen:
@@ -34,7 +33,6 @@ def test_postOptions(mockConfig):
     calls = mPopen.call_args_list
     assert calls[0][0][0][0] == 'watchmedo'
     assert calls[1][0][0][:3] == ['bundle', 'exec', 'sass']
-    assert mockConfig.cliOptions.get('hax') == 'haxor'
 
     # did postOptions recreate the localapi secret?
     assert secret.get('localapi')[0] == 'localapi'

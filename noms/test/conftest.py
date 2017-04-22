@@ -122,7 +122,7 @@ def mockConfig(mockDatabase):
         assert docs == 0
 
         from noms.config import Config
-        cfg = Config(cliOptions={'alias': DBAlias.nomsTest})
+        cfg = Config()
         cfg.save()
 
         from noms import secret
