@@ -8,7 +8,7 @@ from mongoengine import fields
 from noms.rendering import RenderableDocument
 
 
-class Config(RenderableDocument):
+class Configuration(RenderableDocument):
     """
     Config stored in the server
     """

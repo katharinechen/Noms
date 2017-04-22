@@ -121,8 +121,8 @@ def mockConfig(mockDatabase):
         docs = sum(mockDatabase[c].count() for c in cols)
         assert docs == 0
 
-        from noms.config import Config
-        cfg = Config()
+        from noms.configuration import Configuration
+        cfg = Configuration()
         cfg.save()
 
         from noms import secret

@@ -77,6 +77,5 @@ def main():
     """
     Return a resource to start our application
     """
-    resource = Server().app.resource
-    return resource()
+    return Server().app.resource()
 

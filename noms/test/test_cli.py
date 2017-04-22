@@ -18,7 +18,7 @@ def test_main(mockConfig):
 
 def test_postOptions(mockConfig):
     """
-    Does postOptions create the config and return options?
+    Does postOptions create the configuration and return options?
     """
     # remove the localapi secret that mockConfig creates, so we can be sure
     # postOptions will recreate it.
