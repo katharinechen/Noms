@@ -64,13 +64,13 @@ class Description(object):
     """
     A structured set of parameters to become the build environment
     """
-    NOMS_VERSION = attr.ib(default=None)
-    NOMS_DB_HOST = attr.ib(default='mongo')
-    certbot_flags = attr.ib(default='')
-    certbot_email = attr.ib(default='corydodt@gmail.com')
-    public_hostname = attr.ib(default='dev.nomsbook.com')
-    proxy_hostname = attr.ib(default='noms-main')
-    proxy_port = attr.ib(default='8080')
+    NOMS_VERSION = attr.ib(default=('cli', None))
+    NOMS_DB_HOST = attr.ib(default=('cli', 'mongo'))
+    certbot_flags = attr.ib(default=('cli', ''))
+    certbot_email = attr.ib(default=('cli', 'corydodt@gmail.com'))
+    public_hostname = attr.ib(default=('cli', 'dev.nomsbook.com'))
+    proxy_hostname = attr.ib(default=('cli', 'noms-main'))
+    proxy_port = attr.ib(default=('cli', '8080'))
 
     @classmethod
     def build(cls, opts=None):
@@ -125,7 +125,7 @@ class Description(object):
         ret = []
         atts = attr.fields(cls)
         for att in atts:
-            ret.append((att.name, None, att.default, ''))
+            ret.append((att.name, None, att.default[1], ''))
         return ret
 
     def asEnvironment(self):

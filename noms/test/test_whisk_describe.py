@@ -13,8 +13,6 @@ from pytest import fixture, raises
 
 from mock import patch, create_autospec, MagicMock
 
-from codado.tx import CLIError
-
 from noms.whisk import describe
 from noms.whisk import tag
 
@@ -125,7 +123,11 @@ def description():
             )
 
 
-def test_postOptions(description, nomsTag, gitRepo, readEnvironmentFileFake, capsys):
+def test_buildDescription(
+        description,
+        nomsTag,
+        gitRepo,
+        readEnvironmentFileFake):
     """
     Do I integrate the 5 sources of information correctly?
     """
@@ -140,12 +142,67 @@ def test_postOptions(description, nomsTag, gitRepo, readEnvironmentFileFake, cap
         readEnvironmentFileFake)
     pExists = patch.object(os.path, 'exists', return_value=True)
     with pEnv, pRepo, pReadEnv, pExists:
-        descr = describe.Describe()
-        descr['proxy_port'] = '9090'
-        actual = descr.buildDescription()
-        descr.postOptions()
+        descr = describe.Description()
+        actual = descr.build({'proxy_port': '9090'})
 
     assert actual == expected
+
+test_buildDescription.gitDescribeReturn = 'asdf/asdf-10-g0g4v39x'
+
+
+def test_buildDescriptionBadGit(gitRepo):
+    """
+    Do I bail out if `git describe` is unexpectedly malformatted?
+    """
+    pRepo = patch.object(describe, 'Repo', gitRepo)
+    with raises(ValueError), pRepo:
+        descr = describe.Description()
+        descr.build()
+
+test_buildDescriptionBadGit.gitDescribeReturn = 'bad/asdf/asdf-10-g0g4v39x'
+
+
+def test_buildDescriptionBadNomsTag(description, gitRepo):
+    """
+    Do I ignore TRAVIS_COMMIT_MESSAGE if it's not a real nomstag?
+
+    (i.e. nomstag:true is not part of the json)
+    """
+    description.certbot_flags = ('cli', '')
+    description.certbot_email = ('cli', 'corydodt@gmail.com')
+    description.NOMS_DB_HOST = ('cli', 'mongo')
+    description.public_hostname = ('cli', 'dev.nomsbook.com')
+    description.proxy_port = ('cli', '8080')
+    pRepo = patch.object(describe, 'Repo', gitRepo)
+    pEnv = patch.dict(os.environ,
+            {'TRAVIS_COMMIT_MESSAGE': '{"public_hostname": 1}'},
+            clear=True)
+    with pRepo, pEnv:
+        descr = describe.Description()
+        actual = descr.build()
+
+    assert actual == description
+
+test_buildDescriptionBadNomsTag.gitDescribeReturn = test_buildDescription.gitDescribeReturn
+
+def test_postOptions(description,
+        nomsTag,
+        gitRepo,
+        readEnvironmentFileFake,
+        capsys):
+    de = describe.Describe()
+    pEnv = patch.dict(os.environ, {
+        'TRAVIS_COMMIT_MESSAGE': nomsTag,
+        'NOMS_DB_HOST': 'manga',
+        }, clear=True)
+    pRepo = patch.object(describe, 'Repo', gitRepo)
+    pReadEnv = patch.object(describe,
+        'readEnvironmentFile',
+        readEnvironmentFileFake)
+    pExists = patch.object(os.path, 'exists', return_value=True)
+    with pEnv, pRepo, pReadEnv, pExists:
+        de.postOptions()
+
     expectedOut = cleandoc('''
         # from cli
         proxy_hostname=noms-main
@@ -168,41 +225,4 @@ def test_postOptions(description, nomsTag, gitRepo, readEnvironmentFileFake, cap
     out = out.strip()
     assert out, err == (expectedOut, '')
 
-test_postOptions.gitDescribeReturn = 'asdf/asdf-10-g0g4v39x'
-
-
-def test_buildDescriptionBadGit(gitRepo):
-    """
-    Do I bail out if `git describe` is unexpectedly malformatted?
-    """
-    pRepo = patch.object(describe, 'Repo', gitRepo)
-    with raises(CLIError), pRepo:
-        descr = describe.Describe()
-        descr.buildDescription()
-
-test_buildDescriptionBadGit.gitDescribeReturn = 'bad/asdf/asdf-10-g0g4v39x'
-
-
-def test_buildDescriptionBadNomsTag(description, gitRepo):
-    """
-    Do I ignore TRAVIS_COMMIT_MESSAGE if it's not a real nomstag?
-
-    (i.e. nomstag:true is not part of the json)
-    """
-    description.certbot_flags = ('cli', '')
-    description.certbot_email = ('cli', 'corydodt@gmail.com')
-    description.NOMS_DB_HOST = ('cli', 'mongo')
-    description.public_hostname = ('cli', 'dev.nomsbook.com')
-    description.proxy_port = ('cli', '8080')
-    pRepo = patch.object(describe, 'Repo', gitRepo)
-    pEnv = patch.dict(os.environ,
-            {'TRAVIS_COMMIT_MESSAGE': '{"public_hostname": 1}'},
-            clear=True)
-    with pRepo, pEnv:
-        descr = describe.Describe()
-        actual = descr.buildDescription()
-
-    assert actual == description
-
-test_buildDescriptionBadNomsTag.gitDescribeReturn = test_postOptions.gitDescribeReturn
-
+test_postOptions.gitDescribeReturn = test_buildDescription.gitDescribeReturn
