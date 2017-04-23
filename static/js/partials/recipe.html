@@ -1,20 +1,19 @@
 <!--  individual recipe  -->
 <form ng-controller="Recipe" editable-form name="recipeForm" onaftersave="saveRecipe()">
 
-    Testing
-    <a href="#" editable-text="abc.name">{{ abc.name || "empty" }}</a>
-
     <div class="recipe-header">
         <div class="recipe-description"> 
             <h2 href="#" editable-text="recipe.name" class="recipe-name">{{ recipe.name }}</h2> 
             <div class="row-section">
                 <div>
                     <span class="section-title">Author:</span>
-                    <span class="section-text">{{ recipe.author }}</span>
+                    <span href="#" editable-text="recipe.author" class="section-text">{{ recipe.author }}</span>
                 </div>
                 <div>
                     <span class="section-title">User:</span>
-                    <span class="section-text">{{ recipe.user.givenName }} {{ recipe.user.familyName }} ({{ recipe.user.email}})</span>
+                    <span href="#" editable-text="recipe.user.giveName" class="section-text">{{ recipe.user.givenName }}</span>
+                    <span href="#" editable-text="recipe.user.familyName" class="section-text">{{ recipe.user.familyName }}</span> 
+                    <span href="#" editable-text="recipe.user.email" class="section-text">({{ recipe.user.email}})</span> 
                 </div>
                 <div>
                     <span class="section-title">Last Modified:</span>
@@ -22,7 +21,7 @@
                 </div>
                 <div>
                     <span class="section-title">Recipe Yield:</span>
-                    <span class="section-text">{{ recipe.recipeYield }}</span>
+                    <span href="#" editable-text="recipe.recipeYield" class="section-text">{{ recipe.recipeYield }}</span>
                 </div>
                 <div>
                     <span class="section-title">Tags:</span>
