@@ -78,7 +78,7 @@ class HumanReadable(object):
         else: # pragma: no cover
             assert 0, "Got %r; needed a template or a template file" % templateOrFilename
         kwargs.setdefault('preload', {}).update(
-                {'apparentURL': CONFIG.apparentURL,
+                {'apparentURL': 'https://' + CONFIG.public_hostname,
                  'staticHash': CONFIG.staticHash,
                 })
         kwargs['preload']['auth0Public'] = secret.get('auth0')[0]

@@ -34,12 +34,10 @@ class Run(tap.Options):
         alias = self['alias']
         assert alias in DBAlias
         connect(**DBHost[alias])
-        CONFIG.load()
         
         # now we know CONFIG exists
         staticPath = '%s/static' % os.getcwd()
         CONFIG.staticHash = digest(staticPath)
-        CONFIG.save()
 
         # store an internally-shared secret
         if not secret.get('localapi', None):

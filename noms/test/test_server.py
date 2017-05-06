@@ -22,7 +22,7 @@ from mock import patch, ANY
 from pytest import fixture, inlineCallbacks, raises
 
 from noms import (
-        server, fromNoms, configuration,
+        server, fromNoms,
         recipe, urlify, CONFIG,
         )
 from noms.interface import ICurrentUser

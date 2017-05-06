@@ -14,10 +14,6 @@ import git
 from codado.tx import Main
 
 
-REGION = 'us-west-2'
-BUCKET = 'config.nomsbook.com'
-
-
 def nowstring():
     """
     Produce an ISO-formatted UTC now string

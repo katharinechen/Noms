@@ -12,7 +12,6 @@ from twisted.python import usage
 from codado.tx import Main
 
 from noms.whisk.bash import makeCommand
-from noms.whisk.config import Config
 from noms.whisk.describe import Describe
 from noms.whisk.digester import Digester
 from noms.whisk.sample import Sample
@@ -45,7 +44,6 @@ class BaseWhisk(Main):
                 'Run docker to build images'),
             ("cloudform", None, makeCommand('cloudform.whisk'), 
                 'Run cloudform to deploy service'),
-            ("config", None, Config, doc(Config)),
             ]
 
     def postOptions(self):
