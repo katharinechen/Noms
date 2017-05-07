@@ -38,7 +38,7 @@ Next time, if you want to enter your virtual environment, you can simply use ``w
 
 Install Requirements 
 ~~~~~~~~~~~~~~~~~~~~
-Install all the necessary packages for ``Noms`` via ``pip`` ::
+Install all the necessary packages for ``Noms`` via ``pip``: ::
 
 	$ pip install -U -r requirements.txt
 
