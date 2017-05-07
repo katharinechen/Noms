@@ -20,3 +20,6 @@ service_identity
 treq
 twisted
 watchdog
+sphinx 
+sphinx-autobuild
+recommonmark
