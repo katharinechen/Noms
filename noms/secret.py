@@ -2,10 +2,17 @@
 Passwords, intended to be stored in the database
 """
 import os
+import StringIO
+
+import time
+
+from bson import json_util  
+
+import boto3 
 
 from mongoengine import fields
 
-from noms import documentutil
+from noms import documentutil, CONFIG
 
 
 NO_DEFAULT = object()
@@ -50,3 +57,22 @@ def randomPassword(n=32):
     Produce a string n*2 bytes long, of hex digits
     """
     return ''.join('%02x' % ord(c) for c in os.urandom(n))
+
+
+def fetchAWSConfig(): 
+    """
+    Fetch secret pairs from AWS config file and load it in mongo
+    """
+    # get the secret_pair.json file from AWS 
+    s3 = boto3.resource('s3')
+    loading_bucket = s3.buckets.filter(Name="config.{ph}".format(ph=CONFIG.public_hostname))
+    if len(loading_bucket) > 0: 
+        loading_bucket = loading_bucket[0]
+    else: 
+        loading_bucket = s3.Bucket("config.dev.nomsbook.com")
+    output = StringIO.StringIO() 
+    loading_bucket.download_fileobj('secret_pair/secret_pair.json', output)
+
+    # save it to mongo if mongo is empty
+    if SecretPair.objects.count() == 0: 
+        SecretPair._get_collection().insert(json_util.loads(output.getvalue())) 

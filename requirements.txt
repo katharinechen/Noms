@@ -25,3 +25,4 @@ service_identity
 treq
 twisted
 watchdog
+boto3

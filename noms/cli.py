@@ -39,6 +39,9 @@ class Run(tap.Options):
         staticPath = '%s/static' % os.getcwd()
         CONFIG.staticHash = digest(staticPath)
 
+        # get configs from aws and store them in mongo
+        secret.fetchAWSConfig()
+
         # store an internally-shared secret
         if not secret.get('localapi', None):
             password = secret.randomPassword()
