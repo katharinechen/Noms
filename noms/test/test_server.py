@@ -45,11 +45,11 @@ def test_querySet(mockConfig):
     Does querySet(fn)() render the result of the cursor returned by fn?
     """
     def _configs(req):
-        return configuration.Configuration.objects()
+        return User.objects()
 
+    User(email='hello').save()
     configsFn = server.querySet(_configs)
-    assert configsFn(None) == '[{"apparentURL": "https://app.nomsbook.com"}]'
-
+    assert configsFn(None) == '[{"email": "hello", "familyName": null, "givenName": null, "roles": []}]'
 
 
 @attr.s(init=False)
@@ -263,7 +263,7 @@ def test_sso(mockConfig, apiServer, req, weirdo):
                 server.TOKEN_URL,
                 json.dumps({'client_id': 'abc123',
                  'client_secret': 'ABC!@#',
-                 'redirect_uri': CONFIG.apparentURL + '/api/sso',
+                 'redirect_uri': 'https://' + CONFIG.public_hostname + '/api/sso',
                  'code': 'idk123bbq',
                  'grant_type': 'authorization_code',
                  }, sort_keys=True),

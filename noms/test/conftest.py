@@ -6,6 +6,8 @@ import json
 
 from pytest import fixture
 
+from mock import patch
+
 from twisted.web.test.requesthelper import DummyRequest
 
 from mongoengine import connect, Document
@@ -110,35 +112,30 @@ def _scrubMongoEngineBecauseMongoEngineIsSoStupid(client, db):
 @fixture
 def mockConfig(mockDatabase):
     """
-    Define database connections for code that needs mongo
+    Wrap a fake config object into each test request along with a mock database
     """
     # in tests, we replace the global CONFIG without patching it
-    from noms import CONFIG
-    assert '_realConfig' not in CONFIG.__dict__
+    import noms
 
     try:
         cols = mockDatabase.collection_names()
         docs = sum(mockDatabase[c].count() for c in cols)
         assert docs == 0
 
-        from noms.configuration import Configuration
-        cfg = Configuration()
-        cfg.save()
+        cfg = noms.Config()
+        cfg.public_hostname = 'app.nomsbook.com'
 
         from noms import secret
         secret.put('auth0', 'abc123', 'ABC!@#')
         secret.put('localapi', 'localapi', '!@#ABC')
 
-        CONFIG.load()
-        yield CONFIG
+        with patch.object(noms, 'CONFIG', cfg):
+            yield cfg
 
     finally:
         # despite dropping the database we have to do this, because it's
         # still an object in memory
-        cfg.delete()
-
-    if '_realConfig' in CONFIG.__dict__:
-        del CONFIG.__dict__['_realConfig']
+        "If you created any database objects in the try block, delete them here"
 
 
 @fixture

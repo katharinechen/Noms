@@ -2,7 +2,7 @@
 """
 Test of package-level code contained in noms.__init__
 """
-from pytest import raises, inlineCallbacks
+from pytest import inlineCallbacks
 
 from twisted.internet import defer
 
@@ -22,21 +22,17 @@ def test_laziness(mockConfig):
     """
     Do I acquire a Configuration object upon access?
     """
-    del mockConfig.__dict__['_realConfig']
-    mockConfig.apparentURL
-    assert '_realConfig' in mockConfig.__dict__, "oops, test config should have _realConfig now but doesn't"
+    mockConfig.public_hostname
+    assert 'description' in mockConfig.__dict__, "oops, test config should have description now but doesn't"
 
 
 def test_attributeAccess(mockConfig):
     """
     Try out the attribute proxying properties
     """
-    del mockConfig.__dict__['_realConfig']
-    with raises(TypeError):
-        setattr(mockConfig, 'uninitialized', 20)
-    assert mockConfig.apparentURL == 'https://app.nomsbook.com'
-    mockConfig.apparentURL = 'dfgkljdhf'
-    assert mockConfig.apparentURL == 'dfgkljdhf'
+    assert mockConfig.public_hostname == 'app.nomsbook.com'
+    mockConfig.public_hostname = 'dfgkljdhf'
+    assert mockConfig.public_hostname == 'dfgkljdhf'
 
 
 @inlineCallbacks

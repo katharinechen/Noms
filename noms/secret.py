@@ -4,8 +4,6 @@ Passwords, intended to be stored in the database
 import os
 import StringIO
 
-import time
-
 from bson import json_util  
 
 import boto3 
