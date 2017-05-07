@@ -30,8 +30,10 @@ def test_renderHumanReadable(mockConfig):
     """)
     tplTemplate = Template(tplString)
 
-    hrTemplate = rendering.HumanReadable(tplTemplate,
-            banana='yellow and delicious')
+    pCONFIG = patch.object(rendering, 'CONFIG', mockConfig)
+    with pCONFIG:
+        hrTemplate = rendering.HumanReadable(tplTemplate,
+                banana='yellow and delicious')
 
     expected = cleandoc("""
         hi there
@@ -40,7 +42,8 @@ def test_renderHumanReadable(mockConfig):
         yellow and delicious
         """)
 
-    assert hrTemplate.render(None) == expected
+    with pCONFIG:
+        assert hrTemplate.render(None) == expected
 
     expected = cleandoc("""
         hi there
@@ -49,7 +52,8 @@ def test_renderHumanReadable(mockConfig):
         brown and gross
         """)
 
-    with patch.object(rendering.env, 'get_template', return_value=tplTemplate):
+    pGetTemplate = patch.object(rendering.env, 'get_template', return_value=tplTemplate)
+    with pGetTemplate, pCONFIG:
         hrString = rendering.HumanReadable('tpl_from_loader.txt',
                 banana='brown and gross')
 

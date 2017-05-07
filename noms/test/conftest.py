@@ -14,8 +14,8 @@ from mongoengine import connect, Document
 
 from codado import fromdir
 
-from noms import DBAlias, DBHost
-from noms import documentutil, user
+from noms import DBAlias, DBHost, documentutil, user
+from noms.whisk import describe
 
 
 _client = None
@@ -123,7 +123,10 @@ def mockConfig(mockDatabase):
         assert docs == 0
 
         cfg = noms.Config()
-        cfg.public_hostname = 'app.nomsbook.com'
+        descr = describe.Description()
+        descr.public_hostname = ('cli', 'app.nomsbook.com')
+        cfg.description = descr
+        cfg.staticHash = 'asdfasdfsdaf'
 
         from noms import secret
         secret.put('auth0', 'abc123', 'ABC!@#')

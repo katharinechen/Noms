@@ -162,7 +162,10 @@ def test_buildDescriptionBadGit(gitRepo):
 test_buildDescriptionBadGit.gitDescribeReturn = 'bad/asdf/asdf-10-g0g4v39x'
 
 
-def test_buildDescriptionBadNomsTag(description, gitRepo):
+def test_buildDescriptionBadNomsTag(
+        description,
+        gitRepo,
+        readEnvironmentFileFake):
     """
     Do I ignore TRAVIS_COMMIT_MESSAGE if it's not a real nomstag?
 
@@ -171,13 +174,14 @@ def test_buildDescriptionBadNomsTag(description, gitRepo):
     description.certbot_flags = ('cli', '')
     description.certbot_email = ('cli', 'corydodt@gmail.com')
     description.NOMS_DB_HOST = ('cli', 'mongo')
-    description.public_hostname = ('cli', 'dev.nomsbook.com')
+    description.public_hostname = ('local.env', 'hello.world')
     description.proxy_port = ('cli', '8080')
     pRepo = patch.object(describe, 'Repo', gitRepo)
     pEnv = patch.dict(os.environ,
             {'TRAVIS_COMMIT_MESSAGE': '{"public_hostname": 1}'},
             clear=True)
-    with pRepo, pEnv:
+    pReadEnv = patch.object(describe, 'readEnvironmentFile', readEnvironmentFileFake)
+    with pRepo, pEnv, pReadEnv:
         descr = describe.Description()
         actual = descr.build()
 
