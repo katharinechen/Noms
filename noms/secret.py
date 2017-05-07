@@ -59,20 +59,23 @@ def randomPassword(n=32):
     return ''.join('%02x' % ord(c) for c in os.urandom(n))
 
 
-def fetchAWSConfig(): 
+def loadFromS3(): 
     """
-    Fetch secret pairs from AWS config file and load it in mongo
+    Fetch secrets from config file held in S3, and load them in mongo
     """
-    # get the secret_pair.json file from AWS 
-    s3 = boto3.resource('s3')
-    loading_bucket = s3.buckets.filter(Name="config.{ph}".format(ph=CONFIG.public_hostname))
-    if len(loading_bucket) > 0: 
-        loading_bucket = loading_bucket[0]
-    else: 
-        loading_bucket = s3.Bucket("config.dev.nomsbook.com")
-    output = StringIO.StringIO() 
-    loading_bucket.download_fileobj('secret_pair/secret_pair.json', output)
-
-    # save it to mongo if mongo is empty
     if SecretPair.objects.count() == 0: 
+        # get the secret_pair.json file from AWS 
+        s3 = boto3.resource('s3')
+        for b in s3.buckets.all():
+            if b.name == 'config.%s' % CONFIG.public_hostname:
+                bucket = b
+                break
+        else:
+            bucket = s3.Bucket("config.dev.nomsbook.com")
+
+        output = StringIO.StringIO() 
+        bucket.download_fileobj('secret_pair/secret_pair.json', output)
+
+        # save it to mongo
+        print("Piping hot fresh secrets from bucket %r" % bucket.name)
         SecretPair._get_collection().insert(json_util.loads(output.getvalue())) 

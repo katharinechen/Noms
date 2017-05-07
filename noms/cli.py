@@ -35,12 +35,12 @@ class Run(tap.Options):
         assert alias in DBAlias
         connect(**DBHost[alias])
         
-        # now we know CONFIG exists
+        # compute the current static digest hash
         staticPath = '%s/static' % os.getcwd()
         CONFIG.staticHash = digest(staticPath)
 
-        # get configs from aws and store them in mongo
-        secret.fetchAWSConfig()
+        # get secrets from aws and store them in mongo
+        secret.loadFromS3()
 
         # store an internally-shared secret
         if not secret.get('localapi', None):

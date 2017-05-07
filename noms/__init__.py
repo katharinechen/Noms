@@ -57,12 +57,16 @@ def urlify(*args):
 
 
 class Config(object):
+    """
+    Lazy-loaded config object using our Description class as the data.
+    """
     def __getattr__(self, name):
-        if not hasattr(self, 'description'):
+        if not 'description' in self.__dict__:
             from noms.whisk.describe import Description
             self.description = Description.build()
 
-        return getattr(self.description, name)[1]
+        ret = getattr(self.__dict__['description'], name)[1]
+        return ret
 
 
 CONFIG = Config()
