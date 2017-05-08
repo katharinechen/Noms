@@ -119,8 +119,8 @@ def mockConfig(mockDatabase):
 
     try:
         cols = mockDatabase.collection_names()
-        docs = sum(mockDatabase[c].count() for c in cols)
-        assert docs == 0
+        for c in cols:
+            assert mockDatabase[c].count() == 0, c + " not empty"
 
         cfg = noms.Config()
         descr = describe.Description()
@@ -138,7 +138,10 @@ def mockConfig(mockDatabase):
     finally:
         # despite dropping the database we have to do this, because it's
         # still an object in memory
-        "If you created any database objects in the try block, delete them here"
+        for c in cols:
+            col = mockDatabase[c]
+            col.remove()
+            assert col.count() == 0, "%r not empty" % c
 
 
 @fixture
