@@ -164,6 +164,6 @@ class Describe(Main):
     def postOptions(self):
         try:
             description = Description.build(self)
-        except ValueError, e:
+        except ValueError, e: # pragma: nocover
             raise CLIError('whisk describe', 1, e.message)
         print(description.asEnvironment())

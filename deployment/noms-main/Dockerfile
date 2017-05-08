@@ -1,5 +1,5 @@
 # vim:set ft=dockerfile:
-FROM alpine:3.5
+FROM alpine:edge
 
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
@@ -8,8 +8,7 @@ ENV PYTHONPATH $noms
 COPY ./Gemfile /
 COPY ./deployment/get-pip.py ./requirements.txt /
 
-RUN echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories \
-    && apk update \
+RUN apk update \
     && apk add --no-cache --virtual build-dependencies \
         g++ \
         libffi-dev \
@@ -20,7 +19,7 @@ RUN echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
     && apk add --no-cache \
         bash \
         ca-certificates \
-        mongodb-tools \
+        mongodb \
         netcat-openbsd \
         python \
         ruby \

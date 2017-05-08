@@ -18,7 +18,7 @@ docker login -u $DOCKER_USER -p $DOCKER_PASS
 whisk docker --build --push
 
 # if this build is a PR build in travis, we are done (no deployment)
-if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
+if [[ "${TRAVIS_EVENT_TYPE:-}" == "pull_request" ]]; then
     echo "xxxxxxx PR build, no stack will be deployed"
     exit 0
 fi
@@ -39,7 +39,7 @@ doStackYes() {
 
 # TODO - remove this after we are live!
 # if we are on master, update nomsbook.com stack
-if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+if [[ "${TRAVIS_BRANCH:-}" == "master" ]]; then
     export public_hostname='nomsbook.com'
     doStackYes "Commit to master (EARLY STAGE DEVELOPMENT)"
 fi
