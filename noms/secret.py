@@ -63,6 +63,9 @@ def loadFromS3():
 
     If a bucket matching 'config.' + public_hostname exists, get secrets file
     from there. Otherwise, get them from config.dev.nomsbook.com
+
+    Does nothing if the secret_pair collection already exists; to force, drop
+    the secret_pair collection.
     """
     if SecretPair.objects.count() == 0: 
         # get the secret_pair.json file from AWS 

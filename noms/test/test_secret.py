@@ -95,3 +95,12 @@ def test_loadFromS3(public_hostname, expected, mockConfig, s3client):
         mockConfig.public_hostname = public_hostname
         secret.loadFromS3()
         assert secret.get('auth0')[0] == expected
+
+
+def test_loadFromS3Skipped(mockConfig, s3client):
+    """
+    I should be a no-op if secrets already exists
+    """
+    assert secret.SecretPair.objects.count() > 0
+    secret.loadFromS3()
+    assert s3client.call_args_list == []
