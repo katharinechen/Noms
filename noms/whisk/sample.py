@@ -4,12 +4,13 @@ Import samples
 """
 from __future__ import print_function
 
-import shlex
-import subprocess
+from mongoengine import connect
+
+from bson import json_util
 
 from codado.tx import Main
 
-from noms import NOMS_DB_HOST
+from noms import recipe, user, DBHost, DBAlias
 
 
 class Sample(Main):
@@ -19,9 +20,14 @@ class Sample(Main):
     synopsis = 'sample'
 
     def postOptions(self):
-        for filename in 'user', 'recipe':
-            cl = shlex.split(
-                "mongoimport -h %s --drop -d noms -c %s sample/%s.json" %
-                (NOMS_DB_HOST, filename, filename)
-                )
-            print(subprocess.check_output(cl))
+        alias = self.parent['alias']
+        assert alias in DBAlias
+        connect(**DBHost[alias])
+        for cls in user.User, recipe.Recipe:
+            cls.objects.delete()
+            col = cls._get_collection()
+            data = open('sample/%s.json' % col.name).read()
+            col.insert(json_util.loads(data))
+            print('{name}: {count} objects inserted'.format(
+                name=col.name, count=cls.objects.count()
+                ))

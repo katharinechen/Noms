@@ -3,6 +3,7 @@ Test the tool that acquires usertokens from the command line
 """
 import re
 
+from noms import DBAlias
 from noms.whisk import usertoken
 
 
@@ -26,6 +27,7 @@ def test_options(weirdo, mockConfig, capsys):
     """
     weirdo.save()
     o = usertoken.UserToken()
+    o.parent = {'alias': DBAlias.nomsTest}
     o.parseArgs(weirdo.email)
     o.postOptions()
     out = capsys.readouterr()[0]
