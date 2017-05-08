@@ -60,6 +60,9 @@ def randomPassword(n=32):
 def loadFromS3(): 
     """
     Fetch secrets from config file held in S3, and load them in mongo
+
+    If a bucket matching 'config.' + public_hostname exists, get secrets file
+    from there. Otherwise, get them from config.dev.nomsbook.com
     """
     if SecretPair.objects.count() == 0: 
         # get the secret_pair.json file from AWS 
