@@ -28,11 +28,12 @@ def readEnvironmentFile(fl):
     This file must consist of K=V lines with optional #comment lines.
     """
     ret = {}
-    for line in open(fl):
-        if re.match('^\s*#', line):
-            continue
-        k, v = line.strip().split('=', 1)
-        ret[k] = v
+    if os.path.exists(fl):
+        for line in open(fl):
+            if re.match('^\s*#', line):
+                continue
+            k, v = line.strip().split('=', 1)
+            ret[k] = v
     return ret
 
 
@@ -92,10 +93,9 @@ class Description(object):
         self.NOMS_VERSION = ('git describe', parsed['short'])
 
         # 3. local.env
-        if os.path.exists(LOCAL_ENV):
-            local = readEnvironmentFile(LOCAL_ENV)
-            for k, v in local.items():
-                setattr(self, k, ('local.env', v))
+        local = readEnvironmentFile(LOCAL_ENV)
+        for k, v in local.items():
+            setattr(self, k, ('local.env', v))
 
         # 4. os.environ
         for k in attr.asdict(self):
