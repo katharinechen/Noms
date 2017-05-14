@@ -19,7 +19,7 @@ def before_start_importSample(watcher, arbiter, hook_name):
         connect(**DBHost['noms'])
         if not recipe.Recipe.objects.count():
             print "First-time run. Installing fresh users and recipes."
-            sample.Sample.postOptions()
+            sample.Sample().postOptions()
         print "%r connected" % DBHost['noms']['host']
         return True
     except errors.ServerSelectionTimeoutError:
