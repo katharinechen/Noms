@@ -4,14 +4,10 @@ Command-line interface for noms
 import os
 import shlex
 import subprocess
-import time
 
 from twisted.web import tap
-from twisted.internet import reactor
 
 from mongoengine import connect
-
-from tqdm import trange
 
 from noms.server import Server
 from noms import CONFIG, DBAlias, DBHost, user, secret
@@ -35,12 +31,6 @@ class Run(tap.Options):
         """
         Connect to the noms database and make sure a config exists
         """
-        # If noms crashes, we'll wait 5 minutes to aid troubleshooting.
-        trig = reactor.addSystemEventTrigger('after', 'shutdown', shutdownWait, 300)
-        # If noms doesn't crash within the first 5 minutes, never mind; at
-        # that point we probably want to shut down as fast as possible.
-        reactor.callLater(300, reactor.removeSystemEventTrigger, trig)
-
         alias = self['alias']
         assert alias in DBAlias
         connect(**DBHost[alias])
@@ -77,17 +67,6 @@ class Run(tap.Options):
         self.opt_class(MAIN_FUNC)
 
         tap.Options.postOptions(self)
-
-
-def shutdownWait(n):
-    """
-    Wait a certain number of seconds (with progress bar).
-
-    Used to delay a restart when noms has crashed.
-    """
-    print "Noms crashed. Waiting..."
-    for n in trange(n):
-        time.sleep(1)
 
 
 Options = Run

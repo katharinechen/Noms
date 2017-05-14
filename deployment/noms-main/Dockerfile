@@ -16,6 +16,8 @@ RUN apk update \
         openssl-dev \
         ruby-dev \
         python-dev \
+        linux-vanilla-dev \
+        linux-headers \
     && apk add --no-cache \
         bash \
         ca-certificates \
@@ -33,8 +35,7 @@ RUN apk update \
 
 EXPOSE 8080
 
-COPY ./deployment/noms-main/boot.sh /boot.sh
-ENTRYPOINT ["bash", "/boot.sh"]
-CMD ["noms"]
+ENTRYPOINT ["circusd"]
+CMD ["noms.circus.ini"]
 
 WORKDIR $noms

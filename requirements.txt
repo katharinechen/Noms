@@ -1,6 +1,7 @@
 attrs
 awscli
 characteristic
+circus
 codado>=0.3.3
 contextdecorator
 coverage
