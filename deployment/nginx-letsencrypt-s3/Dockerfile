@@ -1,7 +1,7 @@
 # vim:set ft=dockerfile:
 FROM alpine:3.5
 
-ENV buildd ./build
+ENV buildd ./deployment/build
 
 RUN mkdir -p /usr/share/nginx/html /run/nginx
 
