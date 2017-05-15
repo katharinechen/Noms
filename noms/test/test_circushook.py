@@ -6,22 +6,21 @@ from mock import patch
 
 from pymongo.errors import ServerSelectionTimeoutError
 
-from noms import circushook
-from noms.whisk import  sample
+from noms import circushook, whisk
 
 
-def test_before_start_importSample(mockDatabase):
+def test_before_start_importSample(mockConfig):
     """
     Do I attempt to load users when the database is available?
     """
-    pSample = patch.object(sample, 'Sample', autospec=True)
-    with pSample as mSample:
+    pWhisk = patch.object(whisk, 'BaseWhisk', autospec=True)
+    with pWhisk as mWhisk:
         ret = circushook.before_start_importSample(None, None, None)
-    mSample.return_value.postOptions.assert_called_once_with()
+    mWhisk.main.assert_called_once_with(['sample'])
     assert ret == True
 
 
-def test_before_start_importSampleBadConnection(mockDatabase):
+def test_before_start_importSampleBadConnection(mockConfig):
     """
     Do I return False when I can't find a database?
     """

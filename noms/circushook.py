@@ -15,11 +15,11 @@ def before_start_importSample(watcher, arbiter, hook_name):
     time.sleep(0.5)
     try:
         from noms import DBHost, recipe
-        from noms.whisk import sample
+        from noms import whisk
         connect(**DBHost['noms'])
         if not recipe.Recipe.objects.count():
             print "First-time run. Installing fresh users and recipes."
-            sample.Sample().postOptions()
+            whisk.BaseWhisk.main(['sample'])
         print "%r connected" % DBHost['noms']['host']
         return True
     except errors.ServerSelectionTimeoutError:

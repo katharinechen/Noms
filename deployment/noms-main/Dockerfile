@@ -36,6 +36,6 @@ RUN apk update \
 EXPOSE 8080
 
 ENTRYPOINT ["circusd"]
-CMD ["noms.circus.ini"]
+CMD ["circus.ini"]
 
 WORKDIR $noms
