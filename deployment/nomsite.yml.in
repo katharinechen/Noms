@@ -108,6 +108,7 @@ Parameters:
 
   nomsTaskRole: 
     Type: String
+    # Default: !ImportValue ecs-taskRole
     Default: arn:aws:iam::337712362153:role/ecsTaskS3Everything
     Description: IAM role used by tasks
 
