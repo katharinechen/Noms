@@ -24,7 +24,7 @@ Resources:
           Image: !Sub "corydodt/noms-main:${NOMSVERSION}"
           VolumesFrom:
               - SourceContainer: noms-src
-          Memory: 225
+          Memory: 450
           PortMappings:
               - HostPort: !Ref proxyport
                 ContainerPort: !Ref proxyport
@@ -40,13 +40,13 @@ Resources:
             - { Name: NOMS_VERSION, Value: !Ref NOMSVERSION }
         - Name: mongo
           Image: mongo
-          Memory: 225
+          Memory: 250
           Hostname: mongo
           Essential: true
           Cpu: 0
         - Name: nginx-letsencrypt-s3
           Image: !Sub "corydodt/nginx-letsencrypt-s3:${NOMSVERSION}"
-          Memory: 50
+          Memory: 100
           Essential: true
           PortMappings:
               - HostPort: '80'
