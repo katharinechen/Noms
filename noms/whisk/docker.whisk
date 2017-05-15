@@ -17,11 +17,11 @@ targets () {
 }
 
 build() {
+    set -x
     mkdir -p $buildd
     whisk describe | tee $buildd/env
-    cp $(which jentemplate) $buildd
+    cp -v $(which jentemplate) $buildd
 
-    set -x
     for targ in $(targets); do
         repo=corydodt/$targ
         docker pull $repo:latest || true

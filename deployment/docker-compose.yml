@@ -13,7 +13,7 @@ services:
             context: ..
             dockerfile: deployment/noms-main/Dockerfile
         image: "corydodt/noms-main:${NOMS_VERSION}"
-        command: "noms"
+        command: "circus.ini"
         env_file: ../build/env
         ports:
             - 8080:8080
