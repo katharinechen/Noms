@@ -21,6 +21,7 @@ RUN apk update \
     && apk add --no-cache \
         bash \
         ca-certificates \
+        git \
         mongodb \
         netcat-openbsd \
         python \
