@@ -1,4 +1,78 @@
+# creates the unique singleton resources required by the nomsite stacks
 Resources:
+    ecsTaskS3Everything:
+        Type: "AWS::IAM::Role"
+        Properties: 
+          RoleName: 'ecsTaskS3Everything'
+          AssumeRolePolicyDocument:
+              Version: 2008-10-17
+              Statement:
+                 Effect: Allow
+                 Principal:
+                    Service: ecs-tasks.amazonaws.com
+                 Action: 'sts:AssumeRole'
+              
+          ManagedPolicyArns:
+            - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+
+    ecsInstanceRole:
+        Type: "AWS::IAM::Role"
+        Properties: 
+          RoleName: 'ecsInstanceRole'
+          AssumeRolePolicyDocument:
+              Version: 2008-10-17
+              Statement:
+                 Effect: Allow
+                 Principal:
+                    Service: ec2.amazonaws.com
+                 Action: 'sts:AssumeRole'
+              
+          ManagedPolicyArns:
+            - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+
+    travisPolicy:
+        Type: "AWS::IAM::Policy"
+        PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+              - "cloudformation:CreateChangeSet"
+              - "cloudformation:CreateStack"
+              - "cloudformation:DescribeChangeSet"
+              Resource:
+              # FIXME: We don't know the ARN of this stack in advance, since
+              # these permissions need to be built BEFORE we build that stack.
+              - "arn:aws:cloudformation:us-west-2:337712362153:stack/nomsite/*"
+
+            - Effect: Allow
+              Action:
+              - "cloudformation:ExecuteChangeSet"
+              - "ecs:DeregisterTaskDefinition"
+              - "ecs:RegisterTaskDefinition"
+              - "ecs:UpdateService"
+              - "ecs:DescribeServices"
+              Resource:
+              - "*"
+
+            - Effect: Allow
+              Action:
+              - "iam:PassRole"
+              Resource:
+              - !Ref ecsTaskS3Everything
+
+        DependsOn:
+            - ecsTaskS3Everything
+
+    travisUser:
+        Type: "AWS::IAM::User"
+        Properties: 
+          ManagedPolicyArns:
+            - !Ref travisPolicy 
+          UserName: "travis"
+        DependsOn:
+            - travisPolicy
+
     cluster:
         Type: AWS::ECS::Cluster
         Properties:
@@ -8,12 +82,12 @@ Resources:
         Type: AWS::EC2::Instance
         Properties:
             InstanceType: t2.small
-            IamInstanceProfile: ecsInstanceRole
+            IamInstanceProfile: !Ref ecsInstanceRole
             SubnetId: subnet-3efc7c59
             KeyName: cory
             ImageId: ami-62d35c02 # amazon ecs-optimized ami (us-west-2)
             UserData: 
-                "Fn::Base64": !Sub "#!/bin/bash -xe\necho ECS_CLUSTER='${cluster}' >> /etc/ecs/ecs.config\n"
+                "Fn::Base64": !Sub "!/bin/bash -xe\necho ECS_CLUSTER='${cluster}' >> /etc/ecs/ecs.config\necho ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=10m >> /etc/ecs/ecs.config\n"
 
             Tags:
                 - { Key: Name, Value: !Ref ecsInstanceName }
@@ -23,6 +97,7 @@ Resources:
                 - sg-ba2e7cc2
         DependsOn:
             - cluster
+            - ecsInstanceRole
 
     ecsRR:
         Type: AWS::Route53::RecordSet
@@ -36,13 +111,27 @@ Resources:
         DependsOn:
             - clusterInstance
 
+
 Parameters:
   ecsInstanceName:
     Type: String
     Default: ecs.nomsbook.com
     Description: Enter the hostname of the instance in the cluster.
 
+
 Outputs:
+    user:
+        Description: User object on travis
+        Value: !Ref travisUser
+        Export:
+            Name: "${AWS::StackName}-user"
+
+    taskRole:
+        Description: Role to allow the ECS task to do its work
+        Value: !Ref ecsTaskS3Everything
+        Export:
+            Name: "${AWS::StackName}-taskRole"
+
     dns:
         Description: Public DNS name of our cluster's host
         Value: !Ref ecsRR
