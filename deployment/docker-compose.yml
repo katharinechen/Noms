@@ -13,8 +13,7 @@ services:
             context: ..
             dockerfile: deployment/noms-main/Dockerfile
         image: "corydodt/noms-main:${NOMS_VERSION}"
-        command: "circus.ini"
-        env_file: ../build/env
+        env_file: ./build/env
         ports:
             - 8080:8080
         links:
@@ -36,7 +35,7 @@ services:
         image: "corydodt/nginx-letsencrypt-s3:${NOMS_VERSION}"
         command: "sleep 600"
         env_file: 
-            - ../build/env
+            - ./build/env
 
 volumes:
     noms-src: {}
