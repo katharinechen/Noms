@@ -197,9 +197,13 @@ class APIServer(object):
         """
         Save a recipe from the recipe form 
         """
-        print "yo"
+        data = json.load(request.content)
+        recipe = Recipe.objects(urlKey=urlKey).first()
+        for k in data.keys():
+            if k != 'user': # 
+                setattr(recipe, k, data[k])
+        recipe.save() 
         return OK()
-
 
     @app.route("/sso")
     @defer.inlineCallbacks

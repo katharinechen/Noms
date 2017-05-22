@@ -8,9 +8,8 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
         $scope.recipe = recipe.data;
     });
 
-
     $scope.saveRecipe = function() {
-    	return $http.post('/api/recipe/' + urlKey + '/save').then(
+    	return $http.post('/api/recipe/' + urlKey + '/save', $scope.recipe).then(
     		function successCallback() {
     			console.log("I am a success!!!"); 
     		}, function errorCallback() {
