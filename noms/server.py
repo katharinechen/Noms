@@ -202,6 +202,8 @@ class APIServer(object):
         for k in data.keys():
             if k != 'user': # 
                 setattr(recipe, k, data[k])
+            if k == 'tags': 
+                recipe.tags = [t['text'] for t in data['tags']]
         recipe.save() 
         return OK()
 

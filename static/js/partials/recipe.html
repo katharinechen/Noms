@@ -51,11 +51,7 @@
                 </div>
                 <div>
                     <span class="section-title">Tags:</span>
-
-
-                    <div class="section-text" ng-repeat="tag in recipe.tags">
-                        <div class="tag">{{ tag }}</div> 
-                    </div>
+                    <tags-input ng-model="recipe.tags"></tags-input>
                 </div>
             </div>
         </div> 
