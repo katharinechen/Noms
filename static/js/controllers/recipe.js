@@ -11,9 +11,9 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
     $scope.saveRecipe = function() {
     	return $http.post('/api/recipe/' + urlKey + '/save', $scope.recipe).then(
     		function successCallback() {
-    			console.log("I am a success!!!"); 
+                $scope.message = 'success'; 
     		}, function errorCallback() {
-    			console.log("I am sad"); 
+    			$scope.message = "error"; 
     		}
     	)
     }
