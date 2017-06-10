@@ -1,23 +1,20 @@
 # vim:set ft=dockerfile:
-FROM alpine:edge
+FROM corydodt/circus-base
 
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
 
 COPY ./Gemfile /
-COPY ./deployment/get-pip.py ./requirements.txt /
+COPY ./requirements.txt /
 
 RUN apk update \
     && apk add --no-cache --virtual build-dependencies \
-        g++ \
-        libffi-dev \
         make \
+        libffi-dev \
         openssl-dev \
         ruby-dev \
         python-dev \
-        linux-vanilla-dev \
-        linux-headers \
     && apk add --no-cache \
         bash \
         ca-certificates \
@@ -28,15 +25,10 @@ RUN apk update \
         ruby \
         ruby-bundler \
     && bundle install --path /vendor/bundle/ \
-    && python /get-pip.py \
     && pip install --no-cache-dir -U pip \
-    && pip install -U --no-cache-dir -r /requirements.txt \
-    && rm /get-pip.py \
+    && pip install --no-cache-dir -U -r /requirements.txt \
     && apk del build-dependencies
 
 EXPOSE 8080
-
-ENTRYPOINT ["circusd"]
-CMD ["circus.ini"]
 
 WORKDIR $noms

@@ -24,8 +24,7 @@ build() {
 
     for targ in $(targets); do
         repo=corydodt/$targ
-        docker pull $repo:latest || true
-        docker build -t $repo:latest -t $repo:$NOMS_VERSION -f deployment/$targ/Dockerfile --cache-from $repo:latest .
+        docker build -t $repo:latest -t $repo:$NOMS_VERSION -f deployment/$targ/Dockerfile .
     done
     set +x
 }
