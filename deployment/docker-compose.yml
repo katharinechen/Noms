@@ -26,14 +26,10 @@ services:
             - noms-src:/opt/Noms
 
     mongo:
-        image: mongo
+        image: mongo:3.4
 
-    nginx-letsencrypt-s3:
-        build:
-            context: ..
-            dockerfile: deployment/nginx-letsencrypt-s3/Dockerfile
-        image: "corydodt/nginx-letsencrypt-s3:${NOMS_VERSION}"
-        command: "sleep 600"
+    nginx-proximation:
+        image: "corydodt/nginx-proximation:latest"
         env_file: 
             - ./build/env
 

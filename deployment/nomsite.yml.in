@@ -26,7 +26,7 @@ Resources:
               - SourceContainer: noms-src
           Memory: 450
           PortMappings:
-              - HostPort: !Ref proxyport
+              - HostPort: 0    # auto-assign a free host port
                 ContainerPort: !Ref proxyport
                 Protocol: tcp
           Essential: true
@@ -36,6 +36,8 @@ Resources:
           Environment:
             - { Name: NOMS_DB_HOST, Value: !Ref NOMSDBHOST }
             - { Name: NOMS_VERSION, Value: !Ref NOMSVERSION }
+            - { Name: virtual_host, Value: !Ref publichostname }
+            - { Name: virtual_port, Value: "8080" }
         - Name: mongo
           Image: mongo:3.4
           Memory: 250
