@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# @@synopsis: "cloudform <[--changeset] | [--build]> <changeset>"
+# @@synopsis: "cloudform <[--changeset] | [--build]> <stackname>"
 
 set -euo pipefail
 IFS=$'\n\t'

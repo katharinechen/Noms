@@ -1,0 +1,49 @@
+Resources:
+  proximation:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+        Family: proximation
+        TaskRoleArn: !Ref taskRole
+        ContainerDefinitions:
+        - Name: nginx-proximation
+          Image: corydodt/nginx-proximation:latest
+          Memory: 100
+          Essential: true
+          PortMappings:
+              - HostPort: '80'
+                ContainerPort: '80'
+                Protocol: tcp
+              - HostPort: '443'
+                ContainerPort: '443'
+                Protocol: tcp
+          Environment:
+            - { Name: certbot_email, Value: !Ref certbotemail }
+            - { Name: certbot_flags, Value: !Ref certbotflags }
+
+  svcproximation:
+    Type: AWS::ECS::Service
+    Properties:
+      TaskDefinition: !Ref proximation
+      Cluster: !ImportValue "ecs-cluster"
+      DesiredCount: 1
+
+Parameters:
+{%- macro param(name, description) -%}
+  {{ name | replace("_", "") }}:
+    Type: String
+    Default: "{{ __environ__[name] }}"
+    Description: "{{ description }}"
+{%- endmacro %}
+  {{ param("certbot_email", 
+  "Email address that will be used on LetsEncrypt certs") }}
+
+  {{ param("certbot_flags", 
+  "Extra certbot flags, e.g. --staging") }}
+
+  taskRole: 
+    Type: String
+    # Default: !ImportValue ecs-taskRole
+    Default: arn:aws:iam::337712362153:role/ecsTaskS3Everything
+    Description: IAM role used by tasks
+
+AWSTemplateFormatVersion: '2010-09-09'
