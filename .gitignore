@@ -20,4 +20,5 @@ Gemfile.lock
 /.last-stack
 /nomsite.yml
 /ecs.yml
+/proximation.yml
 /deployment/build/env

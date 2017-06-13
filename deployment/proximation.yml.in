@@ -6,7 +6,7 @@ Resources:
         TaskRoleArn: !Ref taskRole
         ContainerDefinitions:
         - Name: nginx-proximation
-          Image: corydodt/nginx-proximation:latest
+          Image: corydodt/nginx-proximation:0.1
           Memory: 100
           Essential: true
           PortMappings:
