@@ -36,8 +36,8 @@ Resources:
           Environment:
             - { Name: NOMS_DB_HOST, Value: !Ref NOMSDBHOST }
             - { Name: NOMS_VERSION, Value: !Ref NOMSVERSION }
-            - { Name: virtual_host, Value: !Ref publichostname }
-            - { Name: virtual_port, Value: "8080" }
+            - { Name: public_hostname, Value: !Ref publichostname }
+            - { Name: private_port, Value: "8080" }
         - Name: mongo
           Image: mongo:3.4
           Memory: 250
