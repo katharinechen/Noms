@@ -4,11 +4,19 @@ Resources:
     Properties:
         Family: proximation
         TaskRoleArn: !Ref taskRole
+        Volumes:
+            - Name: dockersock
+              Host:
+                  SourcePath: /var/run/docker.sock
         ContainerDefinitions:
         - Name: nginx-proximation
-          Image: corydodt/nginx-proximation:0.1
+          Image: corydodt/nginx-proximation:0.1.1
           Memory: 100
           Essential: true
+          MountPoints:
+              - ContainerPath: /var/run/docker.sock
+                SourceVolume: dockersock
+                ReadOnly: true
           PortMappings:
               - HostPort: '80'
                 ContainerPort: '80'
