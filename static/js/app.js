@@ -15,3 +15,18 @@ var Preload = app.controller("Preload", ['$rootScope', '$window', function ($roo
         $rootScope.preload = JSON.parse($window.nomsPreload);
     }
 }]);
+
+// figure out how to deal with this tag filter
+// // temporary placement of the filter 
+// app.filter('tag', function () {
+//   return function (tag) {
+
+//   	var newArray = []; 
+// 	for (var i in tag) {
+// 		if (typeof(tag[i]) === "object") { 
+// 			newArray.append(tag[i]['text'])
+// 		} 
+// 	}
+
+//   };
+// }); 
