@@ -15,13 +15,14 @@ services:
         image: "corydodt/noms-main:${NOMS_VERSION}"
         env_file: ./build/env
         ports:
-            - 8080:8080
+            - 8080
         links:
             - mongo
             - noms-src
         depends_on:
             - mongo
             - noms-src
+            - nginx-proximation
         volumes:
             - noms-src:/opt/Noms
 
@@ -29,9 +30,11 @@ services:
         image: mongo:3.4
 
     nginx-proximation:
-        image: "corydodt/nginx-proximation:latest"
+        image: "corydodt/nginx-proximation:0.1.2"
         env_file: 
             - ./build/env
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
     noms-src: {}
