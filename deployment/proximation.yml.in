@@ -10,7 +10,7 @@ Resources:
                   SourcePath: /var/run/docker.sock
         ContainerDefinitions:
         - Name: nginx-proximation
-          Image: corydodt/nginx-proximation:0.1.1
+          Image: corydodt/nginx-proximation:0.1.2
           Memory: 100
           Essential: true
           MountPoints:
