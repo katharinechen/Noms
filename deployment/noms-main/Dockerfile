@@ -7,6 +7,8 @@ ENV PYTHONPATH $noms
 
 COPY ./Gemfile ./requirements.txt /
 
+WORKDIR $noms
+
 RUN apk update \
     && apk add --no-cache --virtual build-dependencies \
         make \
@@ -23,7 +25,7 @@ RUN apk update \
         python \
         ruby \
         ruby-bundler \
-    && bundle install --path /vendor/bundle/ \
+    && bundle install \
     && pip install --no-cache-dir -U pip \
     && pip install --no-cache-dir -U -r /requirements.txt \
     && apk del build-dependencies
@@ -31,5 +33,3 @@ RUN apk update \
 COPY ./00-noms.ini /etc/circus.d/
 
 EXPOSE 8080
-
-WORKDIR $noms

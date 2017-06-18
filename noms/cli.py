@@ -55,7 +55,7 @@ class Run(tap.Options):
         watchCL = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
         watchCL = watchCL.format(
             pat=STATIC_FILE_PATTERNS,
-            cmd='digester -U %s/api/sethash/ %s' % (FIXME_LOCALAPI_URL, staticPath),
+            cmd='whisk digester -U %s/api/sethash/ %s' % (FIXME_LOCALAPI_URL, staticPath),
             where=staticPath,
             )
         subprocess.Popen(shlex.split(watchCL), stdout=subprocess.PIPE)
