@@ -16,9 +16,8 @@ Gemfile.lock
 /.bundle
 /wheels
 /aws.env
-/jentemplate
 /.last-stack
 /nomsite.yml
 /ecs.yml
 /proximation.yml
-/deployment/build/env
+/docs/_build

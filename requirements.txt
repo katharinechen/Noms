@@ -1,5 +1,6 @@
 attrs
 awscli
+boto3
 characteristic
 circus
 codado>=0.3.3
@@ -23,7 +24,9 @@ pytest>=3.0
 pyOpenSSL
 pytz
 service_identity
+sphinx 
+sphinx-autobuild
+sphinx_rtd_theme
 treq
 twisted
 watchdog
-boto3
