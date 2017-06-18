@@ -1,4 +1,4 @@
-Frequency Asked Questions
+Frequently Asked Questions
 =========================
 
 **How do I see a list of all of the urls in ``Noms``?**

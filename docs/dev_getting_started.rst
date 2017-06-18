@@ -5,7 +5,7 @@ This document will show you how to get up and running with ``Noms``.
 
 Initial Setup
 -------------
-If this is your first time working with ``Noms``, you have to complete the following steps to get``Noms`` running in your local environment. 
+If this is your first time working with ``Noms``, you have to complete the following steps to get ``Noms`` running in your local environment. 
 
 First, downalod ``Noms`` source files from ``Github``: :: 
 	
@@ -23,7 +23,7 @@ In your ``~/.bash-profile`` add:
 	
 	source /usr/local/bin/virtualenvwrapper.sh
 
-Continue by making your ``Noms` your virtualenv: ::
+Continue by making your ``Noms`` your virtualenv: ::
 
 	$ mkvirtualenv -a Noms noms
 
