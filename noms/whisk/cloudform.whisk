@@ -13,12 +13,14 @@ build() {
     jentemplate deployment/$1.yml.in > $1.yml
     cf create-stack \
         --stack-name $1 \
+        --capabilities CAPABILITY_NAMED_IAM \
         --template-body file://<(cat $1.yml | sed '/^\s*#/d')
 }
 
 changeset() {
     jentemplate deployment/$1.yml.in > $1.yml
     cf create-change-set --stack-name $1 --change-set-name $1 \
+        --capabilities CAPABILITY_NAMED_IAM \
         --template-body file://<(cat $1.yml | sed '/^\s*#/d')
     cf wait change-set-create-complete --stack-name $1 --change-set-name $1
     cf execute-change-set --stack-name $1 --change-set-name $1
