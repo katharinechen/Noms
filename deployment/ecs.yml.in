@@ -97,7 +97,7 @@ Resources:
             KeyName: cory
             ImageId: ami-596d6520 # amazon ecs-optimized ami (us-west-2)
             UserData:
-                "Fn::Base64": !Sub "!/bin/bash -xe\necho ECS_CLUSTER='${cluster}' >> /etc/ecs/ecs.config\necho ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=10m >> /etc/ecs/ecs.config\n"
+                "Fn::Base64": !Sub "#!/bin/bash -xe\necho ECS_CLUSTER='${cluster}' >> /etc/ecs/ecs.config\necho ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=10m >> /etc/ecs/ecs.config\n"
 
             Tags:
                 - { Key: Name, Value: !Ref ecsInstanceName }
