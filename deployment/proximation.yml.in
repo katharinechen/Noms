@@ -3,7 +3,6 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
         Family: proximation
-        TaskRoleArn: !Ref taskRole
         Volumes:
             - Name: dockersock
               Host:
@@ -53,11 +52,5 @@ Parameters:
 
   {{ param("certbot_flags", 
   "Extra certbot flags, e.g. --staging") }}
-
-  taskRole: 
-    Type: String
-    # Default: !ImportValue ecs-taskRole
-    Default: arn:aws:iam::337712362153:role/ecsTaskS3Everything
-    Description: IAM role used by tasks
 
 AWSTemplateFormatVersion: '2010-09-09'

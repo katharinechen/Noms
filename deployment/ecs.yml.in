@@ -62,7 +62,7 @@ Resources:
                   Resource:
                   # FIXME: We don't know the ARN of this stack in advance, since
                   # these permissions need to be built BEFORE we build that stack.
-                  - "arn:aws:cloudformation:us-west-2:337712362153:stack/nomsite/*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/nomsite/*"
 
                 - Effect: Allow
                   Action:
@@ -78,7 +78,7 @@ Resources:
                   Action:
                   - "iam:PassRole"
                   Resource:
-                  - "arn:aws:iam::337712362153:role/ecsTaskS3Everything"
+                  - !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskS3Everything"
 
         DependsOn:
             - ecsTaskS3Everything
@@ -221,8 +221,9 @@ Outputs:
 
   fileSystemID:
     Description: File system ID
-    Value:
-      Ref: fileSystem
+    Value: !Ref fileSystem
+    Export:
+        Name: !Sub "${AWS::StackName}-fileSystemID"
 
   securityGroup:
     Description: Security Group for the EFS's
