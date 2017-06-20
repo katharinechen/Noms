@@ -13,7 +13,9 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
         Family: noms
-        TaskRoleArn: !Ref nomsTaskRole
+        TaskRoleArn:
+            Fn::ImportValue:
+                !Sub "arn:aws:iam::${AWS::AccountId}:role/${ecs-taskRole}"
         ContainerDefinitions:
         - Name: noms-src
           Image: !Sub "corydodt/noms-src:${NOMSVERSION}"
@@ -84,11 +86,5 @@ Parameters:
     Type: String
     Default: nomsbook.com
     Description: DNS zone used by the application
-
-  nomsTaskRole: 
-    Type: String
-    # Default: !ImportValue ecs-taskRole
-    Default: arn:aws:iam::337712362153:role/ecsTaskS3Everything
-    Description: IAM role used by tasks
 
 AWSTemplateFormatVersion: '2010-09-09'
