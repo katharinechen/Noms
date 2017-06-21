@@ -13,9 +13,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
         Family: noms
-        TaskRoleArn:
-            Fn::ImportValue:
-                !Sub "arn:aws:iam::${AWS::AccountId}:role/${ecs-taskRole}"
+        TaskRoleArn: !Join ["", [!Sub "arn:aws:iam::${AWS::AccountId}:role/", !ImportValue ecs-taskRole]]
         ContainerDefinitions:
         - Name: noms-src
           Image: !Sub "corydodt/noms-src:${NOMSVERSION}"
