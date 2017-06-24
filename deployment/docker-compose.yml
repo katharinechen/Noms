@@ -1,40 +1,21 @@
 version: '3'
 services:
-    noms-src:
-        build:
-            context: ..
-            dockerfile: deployment/noms-src/Dockerfile
-        image: "corydodt/noms-src:${NOMS_VERSION}"
-        volumes:
-            - noms-src:/opt/Noms
-
     noms-main:
-        build:
-            context: ..
-            dockerfile: deployment/noms-main/Dockerfile
-        image: "corydodt/noms-main:${NOMS_VERSION}"
-        env_file: ./build/env
+        image: "corydodt/noms-main:latest"
+        env_file: ../env
         ports:
-            - 8080
+            - 8080:8080
         links:
             - mongo
-            - noms-src
         depends_on:
             - mongo
-            - noms-src
-            - nginx-proximation
         volumes:
             - noms-src:/opt/Noms
 
     mongo:
         image: mongo:3.4
 
-    nginx-proximation:
-        image: "corydodt/nginx-proximation:0.1.2"
-        env_file: 
-            - ./build/env
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
-    noms-src: {}
+    noms-src:
+        external: true
