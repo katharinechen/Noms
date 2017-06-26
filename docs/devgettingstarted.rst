@@ -52,7 +52,7 @@ example below.
 If you already have working AWS credentials for the noms project, you do not
 need to do this.
 
-.. code-black:: bash
+.. code-block:: bash
 
     $ aws configure
     AWS Access Key ID: AKIAUSEAREALAUTHKEYY
