@@ -200,10 +200,10 @@ class APIServer(object):
         data = json.load(request.content)
         recipe = Recipe.objects(urlKey=urlKey).first()
         for k in data.keys():
+            if k not in ['user', 'tags']: 
+                setattr(recipe, k, data[k])
             if k == 'tags': 
                 recipe.tags = [t['text'] for t in data['tags']]
-            if k != 'user': 
-                setattr(recipe, k, data[k])
         recipe.save()
         return OK()
 

@@ -16,17 +16,16 @@ var Preload = app.controller("Preload", ['$rootScope', '$window', function ($roo
     }
 }]);
 
-// figure out how to deal with this tag filter
-// // temporary placement of the filter 
-// app.filter('tag', function () {
-//   return function (tag) {
-
-//   	var newArray = []; 
-// 	for (var i in tag) {
-// 		if (typeof(tag[i]) === "object") { 
-// 			newArray.append(tag[i]['text'])
-// 		} 
-// 	}
-
-//   };
-// }); 
+// not sure where to put this 
+app.filter('tag', function () { 
+	return function ( tag ) { 
+		if ( typeof(tag[0]) != "string" ) { 
+			var cleanArray = []; 
+			for (var i in tag ) { 
+				cleanArray.push(tag[i]['text']); 
+			}; 
+			return cleanArray; 
+		}; 
+		return tag; 
+	}; 
+}); 
