@@ -200,11 +200,11 @@ class APIServer(object):
         data = json.load(request.content)
         recipe = Recipe.objects(urlKey=urlKey).first()
         for k in data.keys():
-            if k != 'user': # 
-                setattr(recipe, k, data[k])
             if k == 'tags': 
                 recipe.tags = [t['text'] for t in data['tags']]
-        recipe.save() 
+            if k != 'user': 
+                setattr(recipe, k, data[k])
+        recipe.save()
         return OK()
 
     @app.route("/sso")
