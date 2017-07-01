@@ -58,7 +58,7 @@ def urlify(*args):
 
 class Config(object):
     """
-    Lazy-loaded config object using our Description class as the data.
+    Config object using our Description class as the data.
     """
     def __getattr__(self, name):
         if not 'description' in self.__dict__:

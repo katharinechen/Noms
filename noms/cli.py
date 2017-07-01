@@ -21,7 +21,7 @@ STATIC_FILE_PATTERNS = '*.js;*.css;*.html;*.json;*.gif;*.png;*.eot;*.woff;*.otf;
 
 class Run(tap.Options):
     """
-    Start the noms thing
+    Run noms
     """
     optParameters = tap.Options.optParameters + [
             ['alias', None, 'noms', 'Alias for a database connection (see noms.DBAlias)'],

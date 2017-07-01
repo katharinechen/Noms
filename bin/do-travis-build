@@ -6,6 +6,7 @@ IFS=$'\n\t'
 PATH="$PATH:./bin"
 export PYTHONPATH=`pwd`
 
+# set environment variables for the build from whisk describe
 set -a
 . <(whisk describe)
 set +a
