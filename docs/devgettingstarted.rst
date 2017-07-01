@@ -23,7 +23,7 @@ Install ``virtualenvwrapper``.
 
 .. code-block:: bash
 
-    $ sudo pip install virtualenwrapper
+    $ sudo pip install virtualenvwrapper
 
 In your ``~/.bash-profile`` add::
 
@@ -66,8 +66,9 @@ It is easiest to run Noms inside of a preconfigured container. You can build
 the container locally.
 
 **As a prerequisite, you must have installed Docker already. If you are using
-a Mac for development, you should install _Docker for Mac_ in preference to
-the other Docker packages.**
+a Mac for development, you should install
+[Docker for Mac](https://docs.docker.com/docker-for-mac/install/) in
+preference to the other Docker packages.**
 
 .. code-block:: bash
 
