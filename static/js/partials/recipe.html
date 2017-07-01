@@ -65,15 +65,18 @@
     </div>
 
     <div class="recipe-section">
+
         <!-- Ingredient sections  -->
         <div class="ingredients">
             <span class="row-title">INGREDIENTS</span>
-            <ul ng-repeat="ingredient in recipe.ingredients">
-                <li>
-                    <i class="fa fa-check" aria-hidden="true"></i>
-                    {{ ingredient }}
-                </li>
-            </ul>
+            <div editable-textarea="recipe.ingredients"> 
+                <ul ng-repeat="ingredient in recipe.ingredients">
+                    <li>
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        {{ ingredient }}
+                    </li>
+                </ul>
+            </div> 
         </div>
 
         <!-- Directions -->
