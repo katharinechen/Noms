@@ -1,6 +1,6 @@
 #!/bin/bash
 
 set -euo pipefail
-LFS=$'\t\n'
+IFS=$'\t\n'
 
 exec twist noms "$@"
