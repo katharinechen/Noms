@@ -20,3 +20,7 @@ service_identity
 treq
 twisted
 watchdog
+sphinx 
+sphinx-autobuild
+sphinx_rtd_theme
+

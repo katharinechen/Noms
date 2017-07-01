@@ -11,3 +11,4 @@ htmlcov/
 static/css/
 /env
 Gemfile.lock
+/docs/_build
