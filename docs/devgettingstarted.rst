@@ -119,11 +119,12 @@ of `Build Container Images`.
 Restarting
 **********
 
-If you are running ``noms`` in the foreground (using the first command under
-`First-time run`), you can simply press Ctrl+C and run it again.
+You usually have two choices for restarting noms.
 
-If you are running ``noms`` in the background (using the second command), you
-can restart noms by running::
+If you are running ``noms`` in the foreground (using the first command under
+`First-time run`), you can simply press Ctrl+C, and run it again.
+
+You can ALSO restart noms by running::
 
     docker kill -s HUP deployment_noms-main_1
 
@@ -148,6 +149,6 @@ Ongoing Steps
 Now that you have completed the initial setup, moving forward you will only
 need to do the following to set be ready to work on Noms:
 
-- ``workon Noms`` will automatically drop you in your virtual environment.
+- ``workon noms`` will automatically drop you into your virtual environment.
 - ``docker-compose -f deployment/docker-compose.yml up`` will run the
   application in the foreground.
