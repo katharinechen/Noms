@@ -9,6 +9,15 @@ htmlcov/
 .cache
 .sass-cache/
 static/css/
-/env
 Gemfile.lock
+/build
+/ruby
+/vendor
+/.bundle
+/wheels
+/aws.env
+/.last-stack
+/nomsite.yml
+/ecs.yml
+/proximation.yml
 /docs/_build

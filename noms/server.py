@@ -181,7 +181,6 @@ class APIServer(object):
         Put a new static hash in the database for cache-busting
         """
         CONFIG.staticHash = hash
-        CONFIG.save()
         print 'New hash=%r' % CONFIG.staticHash
         return OK(message='hash=%r' % CONFIG.staticHash)
 
@@ -210,7 +209,7 @@ class APIServer(object):
         tokenPayload = {
           'client_id':     auth0ID,
           'client_secret': auth0Secret,
-          'redirect_uri':  CONFIG.apparentURL + '/api/sso',
+          'redirect_uri':  'https://' + CONFIG.public_hostname + '/api/sso',
           'code':          code,
           'grant_type':    'authorization_code'
         }

@@ -28,10 +28,10 @@ def test_safe():
     u = user.User(email='hello@hello.com', roles=[user.Roles.user])
 
     assert u.safe() == {
-            'email': u'hello@hello.com', 
-            'givenName': None, 
-            'familyName': None, 
-            'roles': [u'user'], 
+            'email': u'hello@hello.com',
+            'givenName': None,
+            'familyName': None,
+            'roles': [u'user'],
             }
 
 

@@ -56,47 +56,17 @@ def urlify(*args):
     return re.sub(r'[^-a-z0-9]', '-', url.lower())
 
 
-class LazyConfig(object):
+class Config(object):
     """
-    A placeholder for config that exists before the database is connected.
-
-    This allows us to make CONFIG a simple global instance
+    Config object using our Description class as the data.
     """
-    @property
-    def hasRealConfig(self):
-        """
-        => True if this object is initialized (previously memoized)
-        """
-        return '_realConfig' in self.__dict__
+    def __getattr__(self, name):
+        if not 'description' in self.__dict__:
+            from noms.whisk.describe import Description
+            self.description = Description.build()
 
-    @property
-    def realConfig(self):
-        """
-        Lazily create a config for me to proxy
-        """
-        if not self.hasRealConfig:
-            self.load()
-
-        return self.__dict__['_realConfig']
-
-    def __getattr__(self, attr):
-        return getattr(self.realConfig, attr)
-
-    def __setattr__(self, attr, value):
-        if not self.hasRealConfig:
-            raise TypeError('Cannot set values on uninitialized config')
-        self.realConfig.__setattr__(attr, value)
-
-    def load(self):
-        """
-        Initialize from the database
-        """
-        from noms.config import Config
-        cfg = Config.objects().first()
-        assert cfg is not None, "Couldn't load a config from the database"
-        self.__dict__['_realConfig'] = cfg
-        return self
+        ret = getattr(self.__dict__['description'], name)[1]
+        return ret
 
 
-CONFIG = LazyConfig()
-
+CONFIG = Config()

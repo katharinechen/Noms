@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# @@synopsis: "cloudform <[--changeset] | [--build]> <stackname>"
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# run cloudformation in our region
+cf() {
+    aws --region=us-west-2 cloudformation "$@"
+}
+
+# Do the *initial* build of a cloudformation stack.
+# Once the stack is created, you should use changeset instead.
+build() {
+    jentemplate deployment/$1.yml.in > $1.yml
+    cf create-stack \
+        --stack-name $1 \
+        --capabilities CAPABILITY_NAMED_IAM \
+        --template-body file://<(cat $1.yml | sed '/^\s*#/d')
+}
+
+# Create, and execute, a changeset on an existing cloudformation stack.
+changeset() {
+    jentemplate deployment/$1.yml.in > $1.yml
+    cf create-change-set --stack-name $1 --change-set-name $1 \
+        --capabilities CAPABILITY_NAMED_IAM \
+        --template-body file://<(cat $1.yml | sed '/^\s*#/d')
+    cf wait change-set-create-complete --stack-name $1 --change-set-name $1
+    cf execute-change-set --stack-name $1 --change-set-name $1
+}
+
+# set environment variables for the build from whisk describe
+set -a; . <(whisk describe); set +a
+
+# parse command line and do the build or changeset
+if [ -z "${1:-}" ]; then
+    echo "** Usage: whisk cloudform <[--changeset] | [--build]> <stackName>" 1>&2
+    exit 1
+fi
+subCommand=$1
+shift
+
+if [[ ${subCommand} == "--build" ]]; then
+    build "$@"
+elif [[ ${subCommand} == "--changeset" ]]; then
+    changeset "$@"
+else
+    echo "** Invalid argument ${subCommand}" 1>&2
+    exit 1
+fi

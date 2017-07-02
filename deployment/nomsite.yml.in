@@ -1,0 +1,88 @@
+Resources:
+  siteRR:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub "${nomsZone}."
+      Name: !Sub '${publichostname}.'
+      Type: CNAME
+      TTL: 300
+      ResourceRecords:
+          - !ImportValue "ecs-dns"
+
+  noms:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+        Family: noms
+        TaskRoleArn: !Join ["", [!Sub "arn:aws:iam::${AWS::AccountId}:role/", !ImportValue ecs-taskRole]]
+        ContainerDefinitions:
+        - Name: noms-src
+          Image: !Sub "corydodt/noms-src:${NOMSVERSION}"
+          Memory: 1
+          Essential: false
+          Cpu: 0
+        - Name: noms-main
+          Image: !Sub "corydodt/noms-main:${NOMSVERSION}"
+          VolumesFrom:
+              - SourceContainer: noms-src
+          Memory: 450
+          PortMappings:
+              - HostPort: 0    # auto-assign a free host port
+                ContainerPort: !Ref proxyport
+                Protocol: tcp
+          Essential: true
+          Links:
+              - mongo
+          Cpu: 0
+          Environment:
+            - { Name: NOMS_DB_HOST, Value: !Ref NOMSDBHOST }
+            - { Name: NOMS_VERSION, Value: !Ref NOMSVERSION }
+            - { Name: public_hostname, Value: !Ref publichostname }
+            - { Name: private_port, Value: "8080" }
+        - Name: mongo
+          Image: mongo:3.4
+          Memory: 250
+          Hostname: mongo
+          Essential: true
+          Cpu: 0
+
+  svcnoms:
+    Type: AWS::ECS::Service
+    Properties:
+      TaskDefinition: !Ref noms
+      Cluster: !ImportValue "ecs-cluster"
+      DesiredCount: 1
+
+Parameters:
+{%- macro param(name, description) -%}
+  {{ name | replace("_", "") }}:
+    Type: String
+    Default: "{{ __environ__[name] }}"
+    Description: "{{ description }}"
+{%- endmacro %}
+  {{ param("public_hostname", 
+  "Public hostname of the noms site.") }}
+
+  {{ param("NOMS_VERSION", 
+  "Source code tag of the version to build") }}
+
+  {{ param("NOMS_DB_HOST", 
+  "Hostname of the associated mongodb service") }}
+
+  {{ param("certbot_email", 
+  "Email address that will be used on LetsEncrypt certs") }}
+
+  {{ param("certbot_flags", 
+  "Extra certbot flags, e.g. --staging") }}
+
+  {{ param("proxy_hostname", 
+  "Hostname of the associated noms application container") }}
+
+  {{ param("proxy_port", 
+  "IPv4 port number of the associated noms application runtime") }}
+
+  nomsZone: 
+    Type: String
+    Default: nomsbook.com
+    Description: DNS zone used by the application
+
+AWSTemplateFormatVersion: '2010-09-09'

@@ -3,7 +3,9 @@ Tests of the secret data
 """
 import re
 
-from pytest import raises
+from pytest import raises, mark, fixture
+
+from mock import patch, MagicMock
 
 from noms import secret
 
@@ -41,10 +43,64 @@ def test_randomPassword():
     """
     Is it random enough?
     """
-    s1 = secret.randomPassword()
-    s2 = secret.randomPassword()
-    assert re.match('[0-9abcdef]{64}', s1)
-    assert re.match('[0-9abcdef]{64}', s2)
-    assert s1 != s2
-    s3 = secret.randomPassword(10)
-    assert re.match('[0-9abcdef]{20}', s3)
+    sec1 = secret.randomPassword()
+    sec2 = secret.randomPassword()
+    assert re.match('[0-9abcdef]{64}', sec1)
+    assert re.match('[0-9abcdef]{64}', sec2)
+    assert sec1 != sec2
+    sec3 = secret.randomPassword(10)
+    assert re.match('[0-9abcdef]{20}', sec3)
+
+
+@fixture
+def s3client():
+    """
+    An s3 resource with appropriate mocks
+    """
+    devBucket = MagicMock(name='Bucket Dev')
+    devBucket.name = 'config.dev.nomsbook.com'
+    devJSON = '{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"devnomsbookcom_auth0_key","secret":"debnomsbookcom_auth0_secret"}'
+    devBucket.download_fileobj = MagicMock(name='download_fileobj',
+            side_effect=lambda s, io: io.write(devJSON))
+
+    coryBucket = MagicMock(name='Bucket Cory')
+    coryBucket.name = 'config.cory.ngrok.io'
+    coryJSON = '{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"coryngrokio_auth0_key","secret":"coryngrokio_auth0_secret"}'
+    coryBucket.download_fileobj = MagicMock(name='download_fileobj', 
+            side_effect=lambda s, io: io.write(coryJSON))
+
+    ret = MagicMock(name='S3 Resource')
+    ret.Bucket = MagicMock()
+    ret.Bucket.return_value = devBucket
+    ret.buckets.all.return_value = [devBucket, coryBucket]
+
+    with patch.object(secret.boto3, 'resource', return_value=ret):
+        yield ret
+
+
+@mark.parametrize('public_hostname,expected', [
+        ['app.nomsbook.com', 'devnomsbookcom_auth0_key'],
+        ['dev.nomsbook.com', 'devnomsbookcom_auth0_key'],
+        ['cory.ngrok.io', 'coryngrokio_auth0_key'],
+        ])
+def test_loadFromS3(public_hostname, expected, mockConfig, s3client):
+    """
+    Do I get secrets from the right bucket, given a set of buckets and a
+    certain hostname?
+    """
+    with patch.object(secret, 'CONFIG', mockConfig):
+        # purge the secrets our test fixture normally adds
+        secret.SecretPair.objects.delete()
+
+        mockConfig.public_hostname = public_hostname
+        secret.loadFromS3()
+        assert secret.get('auth0')[0] == expected
+
+
+def test_loadFromS3Skipped(mockConfig, s3client):
+    """
+    I should be a no-op if secrets already exists
+    """
+    assert secret.SecretPair.objects.count() > 0
+    secret.loadFromS3()
+    assert s3client.call_args_list == []

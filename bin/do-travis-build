@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+PATH="$PATH:./bin"
+export PYTHONPATH=`pwd`
+
+# set environment variables for the build from whisk describe
+set -a
+. <(whisk describe)
+set +a
+
+# run tests
+pytest --cov-fail-under=100
+
+# if tests pass, build & push images
+docker login -u $DOCKER_USER -p $DOCKER_PASS
+whisk docker --build --push
+
+# if this build is a PR build in travis, we are done (no deployment)
+if [[ "${TRAVIS_EVENT_TYPE:-}" == "pull_request" ]]; then
+    echo "xxxxxxx PR build, no stack will be deployed"
+    exit 0
+fi
+
+doStack=
+
+# turn on the stack flag
+doStackYes() {
+    echo '==============================================='
+    echo '==============================================='
+    echo 'I AM GOING TO DEPLOY A CLOUDFORMATION STACK because:'
+    echo $1
+    echo '==============================================='
+    echo '==============================================='
+    doStack=1
+}
+
+
+# TODO - remove this after we are live!
+# if we are on master, update nomsbook.com stack
+if [[ "${TRAVIS_BRANCH:-}" == "master" ]]; then
+    export public_hostname='nomsbook.com'
+    doStackYes "Commit to master (EARLY STAGE DEVELOPMENT)"
+fi
+
+# tags that start with release- or devbuild- will be deployed as new versions
+# of the production, or development sites respectively
+# Use `whisk tag` for convenience when tagging.
+pat="^(release|devbuild)-"
+if [[ "$NOMS_VERSION" =~ $pat ]]; then
+    doStackYes "Tag name is $NOMS_VERSION"
+fi
+
+# make a stack live
+if [[ -n "$doStack" ]]; then
+    whisk cloudform --changeset nomsite
+fi
