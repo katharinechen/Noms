@@ -18,9 +18,10 @@ Enterprise Infrastructure
 -------------------------
 
 A number of one-time steps are required on
-[ecs.nomsbook.com](http://ecs.nomsbook.com) to get it to run noms. This work
+``ecs.nomsbook.com`` to get it to run noms. This work
 happens inside the instance environment, so it cannot be captured (easily) by
 a docker image or a cloudformation script.
+
 
 Run the ecs stack build
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,7 +81,7 @@ The easiest way to launch an instance of noms into this environment is to commit
 1. Add a tag prefixed with ``devbuild-``. Any tag beginning with this string
    will become the new official `dev.nomsbook.com` site.
 
-2. Add a tag prefixied with ``release-``. Any tag beginning with this string
+2. Add a tag prefixed with ``release-``. Any tag beginning with this string
    will become the new official `nomsbook.com` site.
 
 This step can be performed many times, with either kind of tag. Every time a

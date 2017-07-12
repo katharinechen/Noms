@@ -46,7 +46,7 @@ Get AWS Credentials
 ~~~~~~~~~~~~~~~~~~~
 
 You will need a project maintainer to set up AWS account credentials for you.
-When you have them, run ``aws configure`` and following the prompts, as in the
+When you have them, run ``aws configure`` and follow the prompts, as in the
 example below.
 
 If you already have working AWS credentials for the noms project, you do not
@@ -66,9 +66,10 @@ It is easiest to run Noms inside of a preconfigured container. You can build
 the container locally.
 
 **As a prerequisite, you must have installed Docker already. If you are using
-a Mac for development, you should install
-[Docker for Mac](https://docs.docker.com/docker-for-mac/install/) in
-preference to the other Docker packages.**
+a Mac for development, you should install** `Docker for Mac`_
+**in preference to the other Docker packages.**
+
+.. _Docker for Mac: https://docs.docker.com/docker-for-mac/install/
 
 .. code-block:: bash
 
