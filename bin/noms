@@ -1,3 +1,6 @@
 #!/bin/bash
 
-twistd -n noms "$@"
+set -euo pipefail
+IFS=$'\t\n'
+
+exec twist noms "$@"

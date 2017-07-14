@@ -1,10 +1,13 @@
 language: python
 python:
   - "2.7"
+sudo: required
+services:
+- docker
 # command to install dependencies
 before_install:
     - pip install -U pip setuptools
 install:
     - pip install -r requirements.txt
 # command to run tests
-script: py.test --cov-fail-under=100
+script: bin/do-travis-build

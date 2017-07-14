@@ -1,9 +1,9 @@
 """
 Command-line interface for noms
 """
-import subprocess
 import os
 import shlex
+import subprocess
 
 from twisted.web import tap
 
@@ -11,17 +11,17 @@ from mongoengine import connect
 
 from noms.server import Server
 from noms import CONFIG, DBAlias, DBHost, user, secret
-from noms.digester import digest
+from noms.whisk.digester import digest
 
 
 MAIN_FUNC = 'noms.cli.main'
-FIXME_URL = 'http://localhost:8080'
+FIXME_LOCALAPI_URL = 'http://localhost:8080'
 STATIC_FILE_PATTERNS = '*.js;*.css;*.html;*.json;*.gif;*.png;*.eot;*.woff;*.otf;*.svg;*.ttf'
 
 
-class NomsOptions(tap.Options):
+class Run(tap.Options):
     """
-    A tap options object suitable for twistd to start, with noms-specific extras
+    Run noms
     """
     optParameters = tap.Options.optParameters + [
             ['alias', None, 'noms', 'Alias for a database connection (see noms.DBAlias)'],
@@ -34,13 +34,13 @@ class NomsOptions(tap.Options):
         alias = self['alias']
         assert alias in DBAlias
         connect(**DBHost[alias])
-        CONFIG.load()
         
-        # now we know CONFIG exists
-        CONFIG.cliOptions = dict(self.items())
+        # compute the current static digest hash
         staticPath = '%s/static' % os.getcwd()
         CONFIG.staticHash = digest(staticPath)
-        CONFIG.save()
+
+        # get secrets from aws and store them in mongo
+        secret.loadFromS3()
 
         # store an internally-shared secret
         if not secret.get('localapi', None):
@@ -55,7 +55,7 @@ class NomsOptions(tap.Options):
         watchCL = "watchmedo shell-command --patterns='{pat}' --recursive --command='{cmd}' {where}"
         watchCL = watchCL.format(
             pat=STATIC_FILE_PATTERNS,
-            cmd='digester -U %s/api/sethash/ %s' % (FIXME_URL, staticPath),
+            cmd='whisk digester -U %s/api/sethash/ %s' % (FIXME_LOCALAPI_URL, staticPath),
             where=staticPath,
             )
         subprocess.Popen(shlex.split(watchCL), stdout=subprocess.PIPE)
@@ -66,11 +66,10 @@ class NomsOptions(tap.Options):
 
         self.opt_class(MAIN_FUNC)
 
-        return tap.Options.postOptions(self)
+        tap.Options.postOptions(self)
 
 
-Options = NomsOptions
-
+Options = Run
 
 makeService = tap.makeService
 
@@ -79,8 +78,5 @@ def main():
     """
     Return a resource to start our application
     """
-    resource = Server().app.resource
-    alias = CONFIG.cliOptions['alias']
-    connect(**DBHost[alias])
-    return resource()
+    return Server().app.resource()
 

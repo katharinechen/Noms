@@ -13,7 +13,6 @@
 *.bson
 *~
 *.idx
-.git
 .cache
 _pytest_temp
 .coverage

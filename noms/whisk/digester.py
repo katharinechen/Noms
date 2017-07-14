@@ -13,18 +13,20 @@ import treq
 
 from codado.tx import Main
 
-from noms import usertoken
+from noms.whisk import usertoken
 
 
 LOCALAPI_EMAIL = 'localapi@example.com'
 
 
-class Options(Main):
+class Digester(Main):
+    """
+    Print a digest of the given directory; with -U, also send it to the server
+    """
     synopsis = "digester <directory>"
 
     optParameters = [
             ['update-url', 'U', None, 'Append the new hash to the URL and make an HTTP GET to update it'],
-            ['alias', None, 'noms', 'Alias for a database connection (see noms.DBAlias)'],
             ]
 
     def parseArgs(self, directory):
@@ -43,7 +45,7 @@ class Options(Main):
         Make an HTTP GET to update-url with the new digest
         """
         url = self['update-url'] + self._digest
-        token = usertoken.get(LOCALAPI_EMAIL, connectAlias=self['alias'])
+        token = usertoken.get(LOCALAPI_EMAIL)
         res = yield treq.get(url, headers={'x-token': token})
         response = yield res.content()
 

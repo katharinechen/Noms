@@ -21,8 +21,8 @@ Please feel free to give us feedback on how we can improve our product and/or ou
    :maxdepth: 1
    :caption: Developer Documentation
 
-   dev_getting_started
-   docker
+   devgettingstarted
+   deployment
    dod
    faq
 
@@ -32,7 +32,7 @@ Please feel free to give us feedback on how we can improve our product and/or ou
    :maxdepth: 1
    :caption: User Documentation
 
-   user_getting_started
+   usergettingstarted
 
 
 Indices and tables

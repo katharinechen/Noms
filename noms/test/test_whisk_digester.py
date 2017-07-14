@@ -11,7 +11,7 @@ from mock import patch, Mock, ANY
 
 from codado import fromdir
 
-from noms import digester
+from noms.whisk import digester
 
 
 TESTDIR_HASH = 'oregon-avocado-north'
@@ -24,7 +24,7 @@ def testdir():
 
 @fixture
 def opt(testdir):
-    o = digester.Options()
+    o = digester.Digester()
     o.parseArgs(testdir)
     return o
 
