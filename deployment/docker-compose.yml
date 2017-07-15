@@ -11,6 +11,8 @@ services:
             - mongo
         volumes:
             - noms-src:/opt/Noms
+        stdin_open: true
+        tty: true
 
     mongo:
         image: mongo:3.4

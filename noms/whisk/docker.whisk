@@ -5,23 +5,19 @@
 IFS=$'\n'
 set -euo pipefail
 
-buildd=./deployment/build
-
-set -a; . <(whisk describe); set +a
+tmp=$(mktemp)
+whisk describe > $tmp
+set -a; . $tmp; set +a
+rm -f $tmp
 
 
 targets () {
-    pushd deployment > /dev/null
-    find -maxdepth 2 -mindepth 2 -name Dockerfile -printf '%h\n' | egrep -o '[a-z].*'
-    popd > /dev/null
+    echo noms-src
+    echo noms-main
 }
 
 build() {
     set -x
-    mkdir -p $buildd
-    whisk describe | tee $buildd/env
-    cp -v $(which jentemplate) $buildd
-
     for targ in $(targets); do
         repo=corydodt/$targ
         docker build -t $repo:latest -t $repo:$NOMS_VERSION -f deployment/$targ/Dockerfile .
