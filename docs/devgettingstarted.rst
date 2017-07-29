@@ -117,6 +117,18 @@ mounted in the container you started when you ran ``docker-compose``. This is
 accomplished using the named volume ``noms-src`` that you created at the end
 of `Build Container Images`.
 
+Running PDB
+************
+To run pdb, you have ``docker attach`` your ``noms-main:latest`` container. To see what your containers are::
+
+    docker ps 
+
+Grab the container id for your ``noms-main:latest`` image. In a new tab::
+
+    docker attach <noms-main id>
+
+Here you should be able to interact with pdb. 
+
 Restarting
 **********
 

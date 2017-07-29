@@ -9,11 +9,15 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
     });
 
     $scope.saveRecipe = function() {
+        console.log("hello"); 
+
     	return $http.post('/api/recipe/' + urlKey + '/save', $scope.recipe).then(
     		function successCallback() {
                 $scope.message = 'success'; 
+                console.log("success"); 
     		}, function errorCallback() {
-    			$scope.message = "error"; 
+    			$scope.message = "error";
+                console.log("error");  
     		}
     	)
     }

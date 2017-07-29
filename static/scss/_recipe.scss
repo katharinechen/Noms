@@ -8,7 +8,7 @@
 }
 
 .recipe-header { 
-    background: $color4; 
+    background: $color3; 
     padding: 20px; 
     margin-bottom: 20px; 
     overflow: hidden; // need to if you have aligned items 
@@ -51,6 +51,9 @@
     .ingredients { 
         width: 38%; 
         float: left;
+        editable-input {
+            width: 100%; 
+        }
         ul { 
             list-style-type: none;
             margin-left: -20px; 
@@ -71,7 +74,6 @@
             list-style-type: none; 
             margin-left: -20px; 
         }
-
         @include media-xxs { 
             width: 100%; 
         }
@@ -83,6 +85,8 @@
 
 .row-title { 
     font-weight: bold; 
+    width: 100%;
+    display: inline-block;
 }
 
 img {
