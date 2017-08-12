@@ -208,17 +208,17 @@ class APIServer(object):
 
     @app.route("/recipe/<string:urlKey>/save")
     def saveRecipe(self, request, urlKey):
-        """
-        Save a recipe from the recipe form 
-        """
-        data = json.load(request.content)
-        recipe = Recipe.objects(urlKey=urlKey).first()
-        for k in data.keys():
-            if k not in ['user', 'tags']: 
-                setattr(recipe, k, data[k])
-            if k == 'tags': 
-                recipe.tags = [t['text'] for t in data['tags']]
-        recipe.save()
+        # """
+        # Save a recipe from the recipe form 
+        # """
+        # data = json.load(request.content)
+        # recipe = Recipe.objects(urlKey=urlKey).first()
+        # for k in data.keys():
+        #     if k not in ['user', 'tags']: 
+        #         setattr(recipe, k, data[k])
+        #     if k == 'tags': 
+        #         recipe.tags = [t['text'] for t in data['tags']]
+        # recipe.save()
         return OK()
 
     @app.route("/sso")

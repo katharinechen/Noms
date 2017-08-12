@@ -15,27 +15,35 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
         for (var key in data) { 
             recipe[key] = data[key]; 
         } 
-        // reset the following 
-        $scope.restructureArray(recipe, 'ingredients'); 
-        $scope.restructureArray(recipe, 'instructions');
+        // reset the following attributes  
+        recipe['ingredients'] = $scope.restructureArray(recipe, 'ingredients'); 
+        recipe['instructions'] = $scope.restructureArray(recipe, 'instructions');
         return recipe 
     }
 
-    // convert the array into a dictionary with the index as the key 
-    // this allow us to CRUD specific items in an array in our form 
-    $scope.restructureArray = function(recipe, key) { 
-        var original = recipe[key]; 
-        recipe[key] = {};
-        for (var i=0; i < original.length; i++) {
-            recipe[key][i] = original[i]; 
+    // convert array of strings into array of dicts 
+    $scope.restructureArray = function(recipe, category) { 
+        var originalArray = recipe[category]; 
+        var newArray = []; 
+        for (var i=0; i < originalArray.length; i++) { 
+            var newObj = {"index": i, "description": originalArray[i]}; 
+            newArray.push(newObj); 
         }
-        return recipe[key]; 
-    }
+        return newArray; 
+    }; 
 
-    // hide a "delete" item from the view 
-    $scope.removeFromView = function() {
-        // in progress 
-    }
+    // remove an item to an array 
+    $scope.remove = function(catObj, index) {
+        catObj.splice(index, 1); 
+    }; 
+
+    // add an item to an array 
+    $scope.add = function(catObj) {
+        var inserted = {
+            "description": ''
+        };
+        catObj.push(inserted);
+    };
 
     $scope.saveRecipe = function() {
     	return $http.post('/api/recipe/' + urlKey + '/save', $scope.recipe).then(
@@ -47,6 +55,6 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
                 console.log("error");  
     		}
     	)
-    }
+    }; 
 }]);
 
