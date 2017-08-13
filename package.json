@@ -1,0 +1,44 @@
+{
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "dependencies": {
+    "chai": "",
+    "karma": ">=0.10.9",
+    "karma-chai": "",
+    "karma-chrome-launcher": "",
+    "karma-coverage": "",
+    "karma-mocha": "",
+    "karma-script-launcher": "",
+    "karma-sinon": "",
+    "mocha": "^3.5.0",
+    "sinon": "1.17.6"
+  },
+  "name": "Noms",
+  "description": "Noms =====",
+  "version": "0.0.0",
+  "directories": {},
+  "scripts": {
+    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/corydodt/Noms"
+  },
+  "keywords": [
+    "noms",
+    "Nomsbook",
+    "nomsbook.com",
+    "recipe"
+  ],
+  "author": "Noms Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/corydodt/Noms/issues"
+  },
+  "homepage": "https://nomsbook.com/",
+  "devDependencies": {
+    "jshint": "^2.8.0",
+    "karma-mocha-reporter": "^1.0.2"
+  }
+}

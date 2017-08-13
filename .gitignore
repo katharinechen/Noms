@@ -21,3 +21,4 @@ Gemfile.lock
 /ecs.yml
 /proximation.yml
 /docs/_build
+/node_modules
