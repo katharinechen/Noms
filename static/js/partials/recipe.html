@@ -49,10 +49,19 @@
                     <span class="section-title">Recipe Yield:</span>
                     <span href="#" editable-text="recipe.recipeYield" class="section-text" e-required>{{ recipe.recipeYield }}</span>
                 </div>
-      <!--           <div editable-tags-input="recipe.tags" data-e-form="recipeForm" data-e-name="tags" name="tags" id="tags" data-e-ng-model="recipe.tags">
+            <!--     <div editable-tags-input="recipe.tags" data-e-form="recipeForm" data-e-name="tags" name="tags" id="tags" data-e-ng-model="recipe.tags">
                     <span class="section-title">Tag:</span>
                     {{ recipe.tags }}
                 </div> -->
+                <div>
+                    <span class="section-title">Tags:</span>
+                    <ul ng-repeat="tag in recipe.tags">
+                        <li>
+                            <span editable-text="tag.description">{{ tag.description }}</span>
+                            <button type=button ng-show="recipeForm.$visible" ng-click="remove(recipe.tags, $index)">x</button>
+                        </li>
+                    </ul>
+                </div>
                 <br/>
 
             </div>
