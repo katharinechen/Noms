@@ -2,34 +2,40 @@
 
 // controls the display of a single recipe
 app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http, $location) {
-    var urlKey = $scope.preload.urlKey;
+    $scope.arraySections = ['tags', 'ingredients', 'instructions'];  
 
+    var urlKey = $scope.preload.urlKey;
     $http({method: 'GET', url: '/api/recipe/' + urlKey}).then(function(recipe) {
         $scope.recipe = $scope.buildRecipeObjects(recipe.data); 
     });
 
     // create a recipe object that is easy for the front-end to use
+    // to use angular-xeditable, array with strings must be transformed into array with objects 
     $scope.buildRecipeObjects = function(data) { 
-        var recipe = {}; 
-        // set all attributes 
-        for (var key in data) { 
-            recipe[key] = data[key]; 
-        } 
-        // reset the following attributes  
-        recipe['ingredients'] = $scope.restructureArray(recipe, 'ingredients'); 
-        recipe['instructions'] = $scope.restructureArray(recipe, 'instructions');
-        return recipe 
-    }
+        for (var a=0; a < $scope.arraySections.length; a++) { 
+            var section = data[$scope.arraySections[a]]; 
+            var newArray = []; 
+            for (var i=0; i < section.length; i++) { 
+                var newObj = {"description": section[i]}; 
+                newArray.push(newObj); 
+            }
+            data[$scope.arraySections[a]] = newArray; 
+        }; 
+        return data; 
+    };
 
-    // convert array of strings into array of dicts 
-    $scope.restructureArray = function(recipe, category) { 
-        var originalArray = recipe[category]; 
-        var newArray = []; 
-        for (var i=0; i < originalArray.length; i++) { 
-            var newObj = {"index": i, "description": originalArray[i]}; 
-            newArray.push(newObj); 
-        }
-        return newArray; 
+    // teardown recipe object transformations 
+    // array with objects are transformed back into array with strings 
+    $scope.tearDownRecipeObjects = function(data) { 
+        for (var a=0; a < $scope.arraySections.length; a++) { 
+            var section = data[$scope.arraySections[a]]; 
+            var newArray = []; 
+            for (var i=0; i < section.length; i++) { 
+                newArray.push(section[i]['description']); 
+            }
+            data[$scope.arraySections[a]] = newArray; 
+        }; 
+        return data; 
     }; 
 
     // remove an item to an array 
@@ -46,15 +52,15 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
     };
 
     $scope.saveRecipe = function() {
-    	return $http.post('/api/recipe/' + urlKey + '/save', $scope.recipe).then(
+        var testy = JSON.parse(JSON.stringify($scope.recipe)); 
+        $scope.sendBack = $scope.tearDownRecipeObjects(testy);
+    	return $http.post('/api/recipe/' + urlKey + '/save', $scope.sendBack).then(
     		function successCallback() {
-                $scope.message = 'success'; 
-                console.log("success"); 
     		}, function errorCallback() {
     			$scope.message = "error";
-                console.log("error");  
     		}
     	)
     }; 
+
 }]);
 

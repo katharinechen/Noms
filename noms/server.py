@@ -134,21 +134,6 @@ def querySet(fn):
     return deco
 
 
-# def parsingFormInput(data): 
-#     """
-#     Parse the inputs into an array for saving 
-#     """
-#     if type(data) is list:
-#         data = '/n'.join(data) # convert into a string 
-        
-#     if type(data) in [str, unicode]: 
-#         data = data.split('\n') # split on the "-"
-#         data = [s.strip() for s in data if s] # strip whitespces and empty strings 
-#     else: 
-#         assert type(data) not in [list, str, unicode], "Unexpected input type: %s" % (type(data))
-#     return data 
- 
-
 class APIServer(object):
     """
     The web server for JSON API
@@ -208,17 +193,15 @@ class APIServer(object):
 
     @app.route("/recipe/<string:urlKey>/save")
     def saveRecipe(self, request, urlKey):
-        # """
-        # Save a recipe from the recipe form 
-        # """
-        # data = json.load(request.content)
-        # recipe = Recipe.objects(urlKey=urlKey).first()
-        # for k in data.keys():
-        #     if k not in ['user', 'tags']: 
-        #         setattr(recipe, k, data[k])
-        #     if k == 'tags': 
-        #         recipe.tags = [t['text'] for t in data['tags']]
-        # recipe.save()
+        """
+        Save a recipe from the recipe form 
+        """
+        data = json.load(request.content)
+        recipe = Recipe.objects(urlKey=urlKey).first()
+        for k in data.keys():
+            if k not in ['user']: 
+                setattr(recipe, k, data[k])
+        recipe.save()
         return OK()
 
     @app.route("/sso")
@@ -311,4 +294,3 @@ class ClipResponse(rendering.ResponseData):
     Response from using the chrome extension to clip
     """
     recipes = attr.ib(default=attr.Factory(list))
-

@@ -15,17 +15,3 @@ var Preload = app.controller("Preload", ['$rootScope', '$window', function ($roo
         $rootScope.preload = JSON.parse($window.nomsPreload);
     }
 }]);
-
-// not sure where to put this 
-app.filter('tag', function () { 
-	return function ( tag ) { 
-		if ( typeof(tag[0]) != "string" ) { 
-			var cleanArray = []; 
-			for (var i in tag ) { 
-				cleanArray.push(tag[i]['text']); 
-			}; 
-			return cleanArray; 
-		}; 
-		return tag; 
-	}; 
-}); 
