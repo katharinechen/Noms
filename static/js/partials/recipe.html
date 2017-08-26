@@ -18,9 +18,13 @@
         </button>
 
         <!-- button to delete recope -->
-        <button type="button" class="form-button" ng-click="deleteRecipe(recipe)">
+    <!--     <button type="button" class="form-button" ng-click="deleteRecipe(recipe)">
             <span>Delete</span>
         </button>
+ -->
+        <md-button class="md-primary md-raised" ng-click="showConfirm($event)" >
+            Confirm Delete
+        </md-button>
 
         <!-- buttons to submit / cancel form -->
         <span ng-show="recipeForm.$visible">

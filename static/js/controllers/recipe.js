@@ -1,7 +1,7 @@
 'use strict';
 
 // controls the display of a single recipe
-app.controller('Recipe', ['$scope', '$http', '$window', function($scope, $http, $window) {
+app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', function($scope, $http, $window, $mdDialog) {
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];  
 
     var urlKey = $scope.preload.urlKey;
@@ -76,5 +76,21 @@ app.controller('Recipe', ['$scope', '$http', '$window', function($scope, $http, 
     	)
     }; 
 
+    $scope.showConfirm = function(ev) {
+        // Appending dialog to document.body to cover sidenav in docs app
+        var confirm = $mdDialog.confirm()
+              .title('Would you like to delete your debt?')
+              .textContent('All of the banks have agreed to forgive you your debts.')
+              .ariaLabel('Lucky day')
+              .targetEvent(ev)
+              .ok('Please do it!')
+              .cancel('Sounds like a scam');
+
+        $mdDialog.show(confirm).then(function() {
+          $scope.status = 'You decided to get rid of your debt.';
+        }, function() {
+          $scope.status = 'You decided to keep your debt.';
+        });
+    };
 }]);
 
