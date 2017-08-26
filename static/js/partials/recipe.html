@@ -16,6 +16,12 @@
         <button type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
             <i class="fa fa-pencil" aria-hidden="true"></i> 
         </button>
+
+        <!-- button to delete recope -->
+        <button type="button" class="form-button" ng-click="deleteRecipe(recipe)">
+            <span>Delete</span>
+        </button>
+
         <!-- buttons to submit / cancel form -->
         <span ng-show="recipeForm.$visible">
             <button type="submit" class="form-button" ng-disabled="recipeForm.$waiting">
@@ -49,10 +55,6 @@
                     <span class="section-title">Recipe Yield:</span>
                     <span href="#" editable-text="recipe.recipeYield" class="section-text" e-required>{{ recipe.recipeYield }}</span>
                 </div>
-            <!--     <div editable-tags-input="recipe.tags" data-e-form="recipeForm" data-e-name="tags" name="tags" id="tags" data-e-ng-model="recipe.tags">
-                    <span class="section-title">Tag:</span>
-                    {{ recipe.tags }}
-                </div> -->
                 <div>
                     <span class="section-title">Tags:</span>
                     <ul ng-repeat="tag in recipe.tags">

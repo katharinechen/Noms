@@ -1,7 +1,7 @@
 'use strict';
 
 // controls the display of a single recipe
-app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http, $location) {
+app.controller('Recipe', ['$scope', '$http', '$window', function($scope, $http, $window) {
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];  
 
     var urlKey = $scope.preload.urlKey;
@@ -51,6 +51,20 @@ app.controller('Recipe', ['$scope', '$http', '$location', function($scope, $http
         catObj.push(inserted);
     };
 
+    // delete recipe and redirect to recipe list page 
+    $scope.deleteRecipe = function(recipe) { 
+        return $http.post('/api/recipe/' + urlKey + '/delete').then(
+            function successCallback() {
+                console.log("yeah"); 
+                $window.location.href = '/recipes'; 
+
+            }, function errorCallback() {
+                console.log("error"); 
+            }
+        )
+    };
+
+    // save editted recipe 
     $scope.saveRecipe = function() {
         var testy = JSON.parse(JSON.stringify($scope.recipe)); 
         $scope.sendBack = $scope.tearDownRecipeObjects(testy);

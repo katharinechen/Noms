@@ -204,6 +204,15 @@ class APIServer(object):
         recipe.save()
         return OK()
 
+    @app.route("/recipe/<string:urlKey>/delete")
+    def deleteRecipe(self, request, urlKey):
+        """
+        Delete a recipe from the recipe form 
+        """
+        recipe = Recipe.objects(urlKey=urlKey).first()
+        recipe.delete()
+        return OK()
+
     @app.route("/sso")
     @defer.inlineCallbacks
     def sso(self, request):
