@@ -2,6 +2,7 @@
 
 // controls the display of a single recipe
 app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', function($scope, $http, $window, $mdDialog) {
+    $scope.message = ''; 
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];  
 
     var urlKey = $scope.preload.urlKey;
@@ -51,46 +52,41 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', function($s
         catObj.push(inserted);
     };
 
-    // delete recipe and redirect to recipe list page 
-    $scope.deleteRecipe = function(recipe) { 
-        return $http.post('/api/recipe/' + urlKey + '/delete').then(
-            function successCallback() {
-                console.log("yeah"); 
-                $window.location.href = '/recipes'; 
-
-            }, function errorCallback() {
-                console.log("error"); 
-            }
-        )
-    };
-
     // save editted recipe 
     $scope.saveRecipe = function() {
-        var testy = JSON.parse(JSON.stringify($scope.recipe)); 
-        $scope.sendBack = $scope.tearDownRecipeObjects(testy);
+        var modifiedRecipe = JSON.parse(JSON.stringify($scope.recipe)); 
+        $scope.sendBack = $scope.tearDownRecipeObjects(modifiedRecipe);
     	return $http.post('/api/recipe/' + urlKey + '/save', $scope.sendBack).then(
     		function successCallback() {
+                $scope.message = "Your save was awesome! Thanks!"
     		}, function errorCallback() {
-    			$scope.message = "error";
+    			$scope.message = "Something is wrong with your save!";
     		}
     	)
     }; 
 
-    $scope.showConfirm = function(ev) {
-        // Appending dialog to document.body to cover sidenav in docs app
-        var confirm = $mdDialog.confirm()
-              .title('Would you like to delete your debt?')
-              .textContent('All of the banks have agreed to forgive you your debts.')
-              .ariaLabel('Lucky day')
-              .targetEvent(ev)
-              .ok('Please do it!')
-              .cancel('Sounds like a scam');
+    // delete recipe and redirect to recipe list page 
+    $scope.deleteRecipe = function(recipe) { 
+        return $http.post('/api/recipe/' + urlKey + '/delete').then(
+            function successCallback() {
+                $window.location.href = '/recipes'; 
+            }, function errorCallback() {
+            }
+        )
+    };
 
+    // show confirmation modal for deleting a recipe
+    $scope.deleteConfirm = function(ev, recipe) {
+        var confirm = $mdDialog.confirm()
+              .title('Would you like to delete this recipe?')
+              .textContent('This is a permanent change. You will not be able to restore this recipe after delection.')
+              .targetEvent(ev)
+              .ok('Yes')
+              .cancel('No');
         $mdDialog.show(confirm).then(function() {
-          $scope.status = 'You decided to get rid of your debt.';
-        }, function() {
-          $scope.status = 'You decided to keep your debt.';
+            $scope.deleteRecipe(recipe); 
         });
     };
+
 }]);
 

@@ -1,105 +1,98 @@
-<!-- alert  -->
-<div>
-    <div ng-show="message === 'success'" class="alert-message">
-        Your recipe was successfully saved! 
+<div ng-controller="Recipe"> <!-- alert  -->
+    <div>
+        <div class="alert-message">
+            {{ message }}
+        </div>
     </div>
-    <div ng-show="message === 'error'" class="alert-message">
-        Something went wrong with your save! 
-    </div>
-</div>
 
-<!--  individual recipe  -->
-<form ng-controller="Recipe" editable-form name="recipeForm" onaftersave="saveRecipe()">
+    <!--  individual recipe  -->
+    <form editable-form name="recipeForm" onaftersave="saveRecipe()" class="recipe-form">
 
-    <div class="form-button-group">
-        <!-- button to show form -->
-        <button type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
-            <i class="fa fa-pencil" aria-hidden="true"></i> 
-        </button>
-
-        <!-- button to delete recope -->
-    <!--     <button type="button" class="form-button" ng-click="deleteRecipe(recipe)">
-            <span>Delete</span>
-        </button>
- -->
-        <md-button class="md-primary md-raised" ng-click="showConfirm($event)" >
-            Confirm Delete
-        </md-button>
-
-        <!-- buttons to submit / cancel form -->
-        <span ng-show="recipeForm.$visible">
-            <button type="submit" class="form-button" ng-disabled="recipeForm.$waiting">
-                <i class="fa fa-floppy-o" aria-hidden="true"></i>
+        <div class="form-button-group">
+            <!-- button to show form -->
+            <button type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
+                <i class="fa fa-pencil" aria-hidden="true"></i> 
             </button>
-            <button type="button" class="form-button" ng-disabled="recipeForm.$waiting" ng-click="recipeForm.$cancel()">
-                <i class="fa fa-times" aria-hidden="true"></i>
-            </button>
-        </span>
-    </div>
 
-    <div class="recipe-header">
-        <div class="recipe-description"> 
-            <h2 href="#" editable-text="recipe.name" class="recipe-name" e-required>{{ recipe.name }}</h2> 
-            <div class="row-section">
-                <div>
-                    <span class="section-title">Author:</span>
-                    <span href="#" editable-text="recipe.author" class="section-text" e-required>{{ recipe.author }}</span>
-                </div>
-                <div>
-                    <span class="section-title">User:</span>
-                    <span href="#" class="section-text">{{ recipe.user.givenName }}</span>
-                    <span href="#" class="section-text">{{ recipe.user.familyName }}</span> 
-                    <span href="#" class="section-text">({{ recipe.user.email}})</span> 
-                </div>
-                <div>
-                    <span class="section-title">Last Modified:</span>
-                    <span class="section-text">{{ recipe.modified }}</span>
-                </div>
-                <div>
-                    <span class="section-title">Recipe Yield:</span>
-                    <span href="#" editable-text="recipe.recipeYield" class="section-text" e-required>{{ recipe.recipeYield }}</span>
-                </div>
-                <div>
-                    <span class="section-title">Tags:</span>
-                    <ul ng-repeat="tag in recipe.tags">
-                        <li>
-                            <span editable-text="tag.description">{{ tag.description }}</span>
-                            <button type=button ng-show="recipeForm.$visible" ng-click="remove(recipe.tags, $index)">x</button>
-                        </li>
-                    </ul>
-                </div>
-                <br/>
+            <md-button class="md-primary md-raised" ng-click="deleteConfirm($event, recipe)" >
+                Delete
+            </md-button>
 
+            <!-- buttons to submit / cancel form -->
+            <span ng-show="recipeForm.$visible">
+                <button type="submit" class="form-button" ng-disabled="recipeForm.$waiting">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="form-button" ng-disabled="recipeForm.$waiting" ng-click="recipeForm.$cancel()">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </span>
+        </div>
+
+        <div class="recipe-header">
+            <div class="recipe-description"> 
+                <h2 href="#" editable-text="recipe.name" class="recipe-name" e-required>{{ recipe.name }}</h2> 
+                <div class="row-section">
+                    <div>
+                        <span class="section-title">Author:</span>
+                        <span href="#" editable-text="recipe.author" class="section-text" e-required>{{ recipe.author }}</span>
+                    </div>
+                    <div>
+                        <span class="section-title">User:</span>
+                        <span href="#" class="section-text">{{ recipe.user.givenName }}</span>
+                        <span href="#" class="section-text">{{ recipe.user.familyName }}</span> 
+                        <span href="#" class="section-text">({{ recipe.user.email }})</span> 
+                    </div>
+                    <div>
+                        <span class="section-title">Last Modified:</span>
+                        <span class="section-text">{{ recipe.modified }}</span>
+                    </div>
+                    <div>
+                        <span class="section-title">Recipe Yield:</span>
+                        <span href="#" editable-text="recipe.recipeYield" class="section-text" e-required>{{ recipe.recipeYield }}</span>
+                    </div>
+                    <div>
+                        <span class="section-title">Tags:</span>
+                        <ul ng-repeat="tag in recipe.tags">
+                            <li>
+                                <span editable-text="tag.description">{{ tag.description }}</span>
+                                <button type=button ng-show="recipeForm.$visible" ng-click="remove(recipe.tags, $index)">x</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <br/>
+
+                </div>
+            </div> 
+        </div>
+
+        <div class="recipe-section">
+
+            <!-- Ingredient sections  -->
+            <div class="ingredients">
+                <span class="row-title">INGREDIENTS</span>
+                <ul ng-repeat="ingredient in recipe.ingredients">
+                    <li>
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <span editable-text="ingredient.description">{{ ingredient.description }}</span>
+                        <button type=button ng-show="recipeForm.$visible" ng-click="remove(recipe.ingredients, $index)">x</button>
+                    </li>
+                </ul>
+                <button type=button ng-show="recipeForm.$visible" ng-click="add(recipe.ingredients)">Add Ingredient</button>
             </div>
-        </div> 
-    </div>
 
-    <div class="recipe-section">
-
-        <!-- Ingredient sections  -->
-        <div class="ingredients">
-            <span class="row-title">INGREDIENTS</span>
-            <ul ng-repeat="ingredient in recipe.ingredients">
-                <li>
-                    <i class="fa fa-check" aria-hidden="true"></i>
-                    <span editable-text="ingredient.description">{{ ingredient.description }}</span>
-                    <button type=button ng-show="recipeForm.$visible" ng-click="remove(recipe.ingredients, $index)">x</button>
-                </li>
-            </ul>
-            <button type=button ng-show="recipeForm.$visible" ng-click="add(recipe.ingredients)">Add Ingredient</button>
+            <!-- Directions -->
+            <div class="directions">
+                <span class="row-title">DIRECTIONS</span>
+                <ul ng-repeat="instruction in recipe.instructions">
+                    <li>
+                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                        <span editable-text="instruction.description">{{ instruction.description }}</span>
+                        <button ng-show="recipeForm.$visible" ng-click="remove(recipe.instructions, $index)">x</button>
+                    </li>
+                </ul>
+                <button type=button ng-show="recipeForm.$visible" ng-click="add(recipe.instructions)">Add Instructions</button>
+            </div>
         </div>
-
-        <!-- Directions -->
-        <div class="directions">
-            <span class="row-title">DIRECTIONS</span>
-            <ul ng-repeat="instruction in recipe.instructions">
-                <li>
-                    <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-                    <span editable-text="instruction.description">{{ instruction.description }}</span>
-                    <button ng-show="recipeForm.$visible" ng-click="remove(recipe.instructions, $index)">x</button>
-                </li>
-            </ul>
-            <button type=button ng-show="recipeForm.$visible" ng-click="add(recipe.instructions)">Add Instructions</button>
-        </div>
-    </div>
-</form>
+    </form>
+</div>
