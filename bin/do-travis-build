@@ -8,7 +8,7 @@ export PYTHONPATH=`pwd`
 
 # set environment variables for the build from whisk describe
 set -a
-. <(whisk describe)
+eval "$(whisk describe)"
 set +a
 
 # run tests
