@@ -16,6 +16,7 @@ RUN apk update \
         openssl-dev \
         ruby-dev \
         python-dev \
+        linux-headers \
     && apk add --no-cache \
         bash \
         ca-certificates \
