@@ -31,7 +31,7 @@ changeset() {
 }
 
 # set environment variables for the build from whisk describe
-set -a; . <(whisk describe); set +a
+set -a; eval "$(whisk describe)"; set +a
 
 # parse command line and do the build or changeset
 if [ -z "${1:-}" ]; then

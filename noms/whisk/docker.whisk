@@ -7,7 +7,7 @@ set -euo pipefail
 
 buildd=./deployment/build
 
-set -a; . <(whisk describe); set +a
+set -a; eval "$(whisk describe)"; set +a
 
 
 targets () {
