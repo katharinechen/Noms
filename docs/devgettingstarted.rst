@@ -60,6 +60,24 @@ need to do this.
     Default region name: us-west-2
     Default output format [text]:
 
+Get Ngrok Credentials
+~~~~~~~~~~~~~~~~~~~
+
+Download ``ngrok`` and save it in your ``env/noms/bin`` directory. Make this file executable. 
+
+You will need a project maintainer to provide you with a Ngrok auth key. 
+When you have them, run ``ngrok`` with the keys. This will create a config file that you edit. 
+
+.. code-block:: bash
+
+    tunnels: 
+      noms: 
+        proto: http 
+        addr: 8080
+        hostname: [get from project maintainer]
+
+To start ``ngrok`` you have to type the following in the terminal: ``ngrok start noms``. 
+
 Build Container Images
 ~~~~~~~~~~~~~~~~~~~~~~
 It is easiest to run Noms inside of a preconfigured container. You can build
