@@ -5,11 +5,9 @@
 IFS=$'\n'
 set -euo pipefail
 
-tmp=$(mktemp)
-whisk describe > $tmp
-set -a; . $tmp; set +a
-rm -f $tmp
+buildd=./deployment/build
 
+set -a; eval "$(whisk describe)"; set +a
 
 targets () {
     echo noms-src
