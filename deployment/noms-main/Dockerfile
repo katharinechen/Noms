@@ -26,6 +26,7 @@ RUN apk update \
         python \
         ruby \
         ruby-bundler \
+        openssl \
     && bundle install \
     && pip install --no-cache-dir -U pip \
     && pip install --no-cache-dir -U -r /requirements.txt \
