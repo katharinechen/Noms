@@ -10,9 +10,9 @@
 
         <div class="form-button-group">
             <!-- button to show form -->
-            <button type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
-                <i class="fa fa-pencil" aria-hidden="true"></i> 
-            </button>
+            <md-button type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
+                Edit
+            </md-button>
 
             <md-button class="md-primary md-raised" ng-click="deleteConfirm($event, recipe)" >
                 Delete
@@ -20,12 +20,12 @@
 
             <!-- buttons to submit / cancel form -->
             <span ng-show="recipeForm.$visible">
-                <button type="submit" class="form-button" ng-disabled="recipeForm.$waiting">
-                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
-                </button>
-                <button type="button" class="form-button" ng-disabled="recipeForm.$waiting" ng-click="recipeForm.$cancel()">
-                    <i class="fa fa-times" aria-hidden="true"></i>
-                </button>
+                <md-button type="submit" class="form-button" ng-disabled="recipeForm.$waiting">
+                    Save
+                </md-button>
+                <md-button type="button" class="form-button" ng-disabled="recipeForm.$waiting" ng-click="recipeForm.$cancel()">
+                    Cancel
+                </md-button>
             </span>
         </div>
 
