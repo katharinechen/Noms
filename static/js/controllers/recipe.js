@@ -1,7 +1,7 @@
 'use strict';
 
 // controls the display of a single recipe
-app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', function($scope, $http, $window, $mdDialog) {
+app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast', function($scope, $http, $window, $mdDialog, $mdToast) {
     $scope.message = ''; 
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];  
 
@@ -75,7 +75,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', function($s
         )
     };
 
-    // show confirmation modal for deleting a recipe
+    // Confirmation modal for deleting a recipe
     $scope.deleteConfirm = function(ev, recipe) {
         var confirm = $mdDialog.confirm()
               .title('Would you like to delete this recipe?')
@@ -87,6 +87,5 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', function($s
             $scope.deleteRecipe(recipe); 
         });
     };
-
 }]);
 

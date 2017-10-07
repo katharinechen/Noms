@@ -1,41 +1,31 @@
 <!-- navbar -->
 <script src="https://cdn.auth0.com/js/lock-8.2.min.js"></script>
 
-<nav class="navbar" ng-controller="NavbarCtrl">
-    <!-- first set of navbar: auth  --> 
-    <ul class="nav-list">
-        <li>
-            <a class="link" ng-show="!user.email || user.email == 'anonymous@example.com'" ng-click="showLogin()" href="#">
-                <span class="fa fa-social fa-google"></span> 
-                Login
-            </a>
-        </li>
-        <li>
-            <a ng-show="user.email && user.email != 'anonymous@example.com'" class="link" href="#">
-                Welcome {{ user.givenName || user.email }}
-            </a>
-        </li>
-    </ul>
+<md-content class="md-padding" ng-controller="NavbarCtrl">
 
-    <!-- second set of navbar: menu items -->
-    <ul class="nav-list">
-        <li>
-            <a class="link logo" href="/">
-                NomsBook
-            </a>
-        </li>
-        <li>
-            <a class="link" href="/recipes">
-                <i class="fa fa-list" aria-hidden="true"></i>
-                Recipe List
-            </a>
-        </li>
-        <li>
-            <a class="link" href="/recipes/new">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-                Create New Recipe
-            </a>
-        </li>
-    </ul>
-</nav>
+    <!-- First set of navbar: auth -->
+    <md-nav-bar md-no-ink-bar="disableInkBar" md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+        <md-nav-item ng-show="!user.email || user.email == 'anonymous@example.com'" ng-click="showLogin()" md-nav-href="#">
+            <span class="fa fa-social fa-google"></span>
+            Login
+        </md-nav-item>
+        <md-nav-item ng-show="user.email && user.email != 'anonymous@example.com'" md-nav-href="#">
+            Welcome {{ user.givenName || user.email }}
+        </md-nav-item>
+    </md-nav-bar> 
+
+    <!-- Second set of navbar: menu items -->
+    <md-nav-bar md-no-ink-bar="disableInkBar" md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+       <md-nav-item class="link logo" md-nav-href="/">
+            NomsBook
+        </md-nav-item>
+        <md-nav-item md-nav-href="/recipes">
+            Recipe List
+        </md-nav-item>
+        <md-nav-item md-nav-href="/recipes/new">
+            Create New Recipe
+        </md-nav-item>
+    </md-nav-bar> 
+
+</md-content>
 

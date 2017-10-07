@@ -4,17 +4,16 @@
             {{ message }}
         </div>
     </div>
-
+ 
     <!--  individual recipe  -->
     <form editable-form name="recipeForm" onaftersave="saveRecipe()" class="recipe-form">
 
         <div class="form-button-group">
             <!-- button to show form -->
-            <md-button type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
+            <md-button md-no-ink="" type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
                 Edit
             </md-button>
-
-            <md-button class="md-primary md-raised" ng-click="deleteConfirm($event, recipe)" >
+            <md-button md-no-link="" ng-click="deleteConfirm($event, recipe)" >
                 Delete
             </md-button>
 
