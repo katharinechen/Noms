@@ -11,9 +11,8 @@ set -a; eval "$(whisk describe)"; set +a
 
 
 targets () {
-    pushd deployment > /dev/null
-    find -maxdepth 2 -mindepth 2 -name Dockerfile -printf '%h\n' | egrep -o '[a-z].*'
-    popd > /dev/null
+    echo noms-src
+    echo noms-main
 }
 
 build() {
