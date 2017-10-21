@@ -19,7 +19,7 @@
 
             <!-- buttons to submit / cancel form -->
             <span ng-show="recipeForm.$visible">
-                <md-button type="submit" class="form-button" ng-disabled="recipeForm.$waiting">
+                <md-button md-no-link type="submit" class="form-button" ng-disabled="recipeForm.$waiting">
                     Save
                 </md-button>
                 <md-button type="button" class="form-button" ng-disabled="recipeForm.$waiting" ng-click="recipeForm.$cancel()">
