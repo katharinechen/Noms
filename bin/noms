@@ -3,4 +3,4 @@
 set -euo pipefail
 IFS=$'\t\n'
 
-exec twist noms "$@"
+exec twist --log-format=text noms "$@"
