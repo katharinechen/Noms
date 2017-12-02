@@ -58,9 +58,9 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         $scope.sendBack = $scope.tearDownRecipeObjects(modifiedRecipe);
     	return $http.post('/api/recipe/' + urlKey + '/save', $scope.sendBack).then(
     		function successCallback() {
-                $scope.message = "Your save was awesome! Thanks!"
+                $scope.saveAlert(); 
     		}, function errorCallback() {
-    			$scope.message = "Something is wrong with your save!";
+    			$scope.errorAlert(); 
     		}
     	)
     }; 
@@ -86,6 +86,32 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         $mdDialog.show(confirm).then(function() {
             $scope.deleteRecipe(recipe); 
         });
+    };
+
+    // Confirmation modal for saving a recipe 
+    $scope.saveAlert = function(ev){
+        $mdDialog.show(
+            $mdDialog.alert()
+            .parent(angular.element(document.querySelector('#popupContainer')))
+            .clickOutsideToClose(true)
+            .title('Saved')
+            .textContent('Your recipe was successfully saved. You did it!')
+            .ok('Got it!')
+            .targetEvent(ev)
+        );
+    };
+
+    // Confirmation modal for saving a recipe 
+    $scope.errorAlert = function(ev){
+        $mdDialog.show(
+            $mdDialog.alert()
+            .parent(angular.element(document.querySelector('#popupContainer')))
+            .clickOutsideToClose(true)
+            .title('Error')
+            .textContent("There was an error with your save. Won't it have been awesome if we told you why?")
+            .ok('You suck!')
+            .targetEvent(ev)
+        );
     };
 }]);
 

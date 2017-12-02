@@ -23,7 +23,7 @@ from klein import Klein
 from noms import urlify, secret, CONFIG
 from noms.user import User, USER, Roles
 from noms.recipe import Recipe
-from noms import rendering 
+from noms import rendering
 from noms.interface import ICurrentUser
 from noms.rendering import ResponseStatus as RS, OK, ERROR
 
@@ -35,8 +35,8 @@ RECIPE_SCHEMA = 'http://schema.org/Recipe'
 
 
 ResponseMsg = enum(
-        notLoggedIn='User was not logged in.', 
-        noRecipe='There are no recipes on this page.', 
+        notLoggedIn='User was not logged in.',
+        noRecipe='There are no recipes on this page.',
         renameRecipe='You already have a recipe with the same name. Rename?',
         )
 
@@ -194,12 +194,12 @@ class APIServer(object):
     @app.route("/recipe/<string:urlKey>/save")
     def saveRecipe(self, request, urlKey):
         """
-        Save a recipe from the recipe form 
+        Save a recipe from the recipe form
         """
         data = json.load(request.content)
         recipe = Recipe.objects(urlKey=urlKey).first()
         for k in data.keys():
-            if k not in ['user']: 
+            if k not in ['user']:
                 setattr(recipe, k, data[k])
         recipe.save()
         return OK()
@@ -207,7 +207,7 @@ class APIServer(object):
     @app.route("/recipe/<string:urlKey>/delete")
     def deleteRecipe(self, request, urlKey):
         """
-        Delete a recipe from the recipe form 
+        Delete a recipe from the recipe form
         """
         recipe = Recipe.objects(urlKey=urlKey).first()
         recipe.delete()
@@ -276,7 +276,7 @@ class APIServer(object):
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
- 
+
         items = microdata.get_items(pageSource)
         recipesSaved = []
 
@@ -286,12 +286,12 @@ class APIServer(object):
                 recipe = i
                 saveItem = Recipe.fromMicrodata(recipe, u.email)
                 Recipe.saveOnlyOnce(saveItem)
-                recipesSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey}) 
-                break 
-        
+                recipesSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey})
+                break
+
         if len(recipesSaved) == 0:
             defer.returnValue(
-                    ClipResponse(status=RS.error, message=ResponseMsg.noRecipe)) 
+                    ClipResponse(status=RS.error, message=ResponseMsg.noRecipe))
 
         defer.returnValue(
                 ClipResponse(status=RS.ok, recipes=recipesSaved))
