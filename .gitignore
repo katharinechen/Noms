@@ -22,3 +22,6 @@ Gemfile.lock
 /proximation.yml
 /docs/_build
 /node_modules
+/package-lock.json
+/deployment/build
+/env
