@@ -13,16 +13,13 @@
               </md-input-container>
             </div>
 
-
-
-
-
             <div layout-gt-xs="row">
               <md-input-container class="md-block" flex-gt-xs="">
                 <label>Recipe Name</label>
                 <input ng-model="recipe.name" required="">
               </md-input-container>
             </div>
+
 
             <div layout-gt-xs="row">
               <md-input-container class="md-block" flex-gt-xs="">
@@ -47,7 +44,7 @@
             </md-input-container>
         </form>
 
-        <md-button type="button" class="form-button" ng-click="update(recipe)" value="Save">
+        <md-button type="button" class="form-button" ng-click="saveNewRecipe(recipe)" value="Save">
             Submit
         </md-button>
 
