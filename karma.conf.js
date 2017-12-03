@@ -1,59 +1,78 @@
 'use strict';
 
 // Karma configuration
-// Generated on Wed Feb 12 2014 12:46:59 GMT-0800 (PST)
+// Generated on Sat Dec 02 2017 15:17:00 GMT-0800 (PST)
 
 module.exports = function(config) {
   config.set({
 
-    // base path, that will be used to resolve files and exclude
+    // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
+
+
+    // frameworks to use
+    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['mocha', 'chai', 'sinon'],
 
+
+    // list of files / patterns to load in the browser
     files: [
-      // 'static/3p/angular.js',
-      // 'static/3p/jquery.min.js',
-      // 'static/3p/*.js',
-      // {'pattern': 'noms/templates/application.html', 'watched': true, 'included': false, 'served': true},
-      // {'pattern': 'noms/templates/universal-header.html', 'watched': true, 'included': false, 'served': true},
-      {'pattern': 'static/js/*.js', 'watched': true, 'included': true, 'served': true},
-      {'pattern': 'static/js/controllers/*.js', 'watched': true, 'included': true, 'served': true},
-      {'pattern': 'static/js/partials/*.html', 'watched': true, 'included': false, 'served': true},
-      'static/js/test/**/*.js',
+      'node_modules/angular/angular.min.js',
+      'static/js/*.js',
+      'static/js/controllers/*.js',
+      'static/js/partials/*.html',
+      'static/js/test/*.js'
     ],
-    // list of files to exclude - please add a comment explaining why you added something here
+
+
+    // list of files to exclude
     exclude: [],
 
-    // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
+
+    // preprocess matching files before serving them to the browser
+    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+    preprocessors: {
+      'static/js/*.js': ['coverage'],
+      'static/js/test/**/*.js': ['coverage'],
+      'static/js/partials/*.html': ['html2js'],
+      'noms/templates/*.html': ['html2js'],
+    },
+
+
+    // test results reporter to use
+    // possible values: 'dots', 'progress'
+    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['mocha', 'coverage'],
 
-    preprocessors: {
-        'static/js/*.js': ['coverage'],
-        'static/js/test/**/*.js': ['coverage'],
-        },
 
-    // // used by tests of directives that use partials, when you can't use an HTTP request to get the partial
-    // ngHtml2JsPreprocessor: {
-    //     moduleName: "partials"
-    // },
-
+    // web server port
     port: 9876,
+
 
     // enable / disable colors in the output (reporters and logs)
     colors: true,
 
+
+    // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
+
 
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
 
+
+    // start these browsers
+    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['ChromeHeadless'],
 
-    // If browser does not capture in given timeout [ms], kill it
-    captureTimeout: 60000,
 
-    // if true, it capture browsers, run tests and exit
-    singleRun: true
-  });
-};
+    // Continuous Integration mode
+    // if true, Karma captures browsers, runs the tests and exits
+    singleRun: true,
+
+    // Concurrency level
+    // how many browser should be started simultaneous
+    concurrency: Infinity
+  })
+}

@@ -1,5 +1,5 @@
 # vim:set ft=dockerfile:
-FROM corydodt/circus-base:0.1
+FROM corydodt/circus-base:0.2
 
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin

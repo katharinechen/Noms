@@ -1,6 +1,8 @@
-===============
-Getting Started
-===============
+.. _devgettingstarted:
+
+==============================
+Getting Started as a Developer
+==============================
 
 This document will show you how to get up and running with Noms.
 
@@ -14,7 +16,7 @@ following steps to get Noms running in your local environment.
 
 First, download Noms source files from Github: ::
 
-	$ git clone git@github.com:corydodt/Noms.git
+    $ git clone git@github.com:corydodt/Noms.git
 
 Set up a virtualenv
 ~~~~~~~~~~~~~~~~~~~
@@ -66,8 +68,7 @@ It is easiest to run Noms inside of a preconfigured container. You can build
 the container locally.
 
 **As a prerequisite, you must have installed Docker already. If you are using
-a Mac for development, you should install** `Docker for Mac`_
-**in preference to the other Docker packages.**
+a Mac for development, you should install** `Docker for Mac`_.
 
 .. _Docker for Mac: https://docs.docker.com/docker-for-mac/install/
 
@@ -129,6 +130,25 @@ You can ALSO restart noms by running::
 
     docker kill -s HUP deployment_noms-main_1
 
+Running Tests
+~~~~~~~~~~~~~
+Noms uses ``pytest`` as its backend test runner, and all tests are written in the ``pytest`` style.
+
+To run test on your local machine, use ``pytest``. To see whether or not your
+test passes on the CI server, you can go to ``github`` and view ``travis``.
+``pytest`` is a tool to run tests, it also have a style of writing test.
+
+There are a few different ways to use pytest:
+
+- To run a specific test, use: ``pytest noms/test/test_rendering.py``
+- To run all of the test, use: ``pytest``
+- To run only the failing test, use: ``pytest --lf``
+
+The foreground test runner is ``karma``. To run these tests, run::
+
+.. code-block:: bash
+
+    karma start
 
 Noms Extension
 ~~~~~~~~~~~~~~
@@ -142,7 +162,6 @@ extension:
   and select the folder Noms/chrome. This should create a new chrome extension
   called ``Noms``.
 - You should be able to see it in your chrome extension bar!
-
 
 
 Ongoing Steps
