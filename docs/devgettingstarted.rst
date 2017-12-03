@@ -27,7 +27,7 @@ Install ``virtualenvwrapper``.
 
     $ sudo pip install virtualenvwrapper
 
-In your ``~/.bash-profile`` add::
+In your ``~/.bash_profile`` add::
 
     source /usr/local/bin/virtualenvwrapper.sh
 
