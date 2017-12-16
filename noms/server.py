@@ -172,7 +172,7 @@ class APIServer(object):
             recipe.instructions.append(i)
 
         recipe.save()
-        return OK()
+        return OK(message=recipe.urlKey)
 
     @app.route("/sethash/<string:hash>")
     @roles([Roles.localapi])
