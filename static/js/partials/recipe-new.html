@@ -29,6 +29,11 @@
             </div>
 
             <md-input-container class="md-block">
+              <label>Tags</label>
+              <textarea ng-model="recipe.tags" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
+            </md-input-container>
+
+            <md-input-container class="md-block">
               <label>Ingredients</label>
               <textarea ng-model="recipe.ingredients" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
             </md-input-container>
@@ -36,11 +41,6 @@
             <md-input-container class="md-block">
               <label>Instructions</label>
               <textarea ng-model="recipe.instructions" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
-            </md-input-container>
-
-            <md-input-container class="md-block">
-              <label>Tags</label>
-         <!--      <textarea ng-model="recipe.instructions" md-maxlength="150" rows="5" md-select-on-focus=""></textarea> -->
             </md-input-container>
         </form>
 

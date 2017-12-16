@@ -4,10 +4,19 @@
 app.controller('NewRecipeCtrl', ['$scope', '$http', '$mdDialog', '$mdToast', '$window', function($scope, $http,  $mdDialog, $mdToast, $window) {
 $scope.recipe = {};
 
+// ingredients and instructions are entered in large textboxes 
+// items could be seperated by either commas or newlines
+// insert all items into an array 
+$scope.parseTextBox = function(content) { 
+    return content.split(/[\n,]+/) 
+}; 
+
 $scope.saveNewRecipe = function(recipe) {
     recipe = Object.assign({}, recipe);
-    recipe.ingredients = [recipe.ingredients];
-    recipe.instructions = [recipe.instructions];
+
+    recipe.ingredients = $scope.parseTextBox(recipe.ingredients); 
+    recipe.instructions = $scope.parseTextBox(recipe.instructions);
+    recipe.tags = $scope.parseTextBox(recipe.tags); 
 
     $http.post('/api/recipe/create', recipe).success(function(data) {
         if (data.status === "error") {

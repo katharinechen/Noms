@@ -166,10 +166,9 @@ class APIServer(object):
             return ERROR(message=ResponseMsg.renameRecipe)
 
         recipe.author = data.get('author', USER().anonymous.givenName)
-        for i in data['ingredients']:
-            recipe.ingredients.append(i)
-        for i in data['instructions']:
-            recipe.instructions.append(i)
+        for field in ['tags', 'ingredients', 'instructions']: 
+            for i in data[field]:
+                recipe[field].append(i)
 
         recipe.save()
         return OK(message=recipe.urlKey)
