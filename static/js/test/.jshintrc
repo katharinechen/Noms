@@ -6,12 +6,11 @@
     "expr": true,
     "funcscope": true,
     "globals": {
-        "$": true,
-        "_": true,
-        "angular": true,
-        "inject": true,
-        "module": true,
-        "app": true
+        "beforeEach": true,
+        "describe": true,
+        "expect": true,
+        "it": true,
+        "module": true
     },
     "globalstrict": true,
     "immed": true,

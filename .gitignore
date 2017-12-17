@@ -27,3 +27,6 @@ Gemfile.lock
 /env
 /coverage
 /.vscode
+
+yarn.lock
+yarn-error.log

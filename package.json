@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "angular": "^1.6.7",
+    "angular-mocks": "^1.6.7",
     "chai": "^4.1.2",
     "html2js": "^0.2.0",
     "karma": "^1.7.1",
@@ -40,7 +41,6 @@
   "devDependencies": {
     "jshint": "^2.8.0",
     "karma-html2js-preprocessor": "",
-    "karma-mocha-reporter": "^1.0.2",
-    "package.json": "^2.0.1"
+    "karma-mocha-reporter": "^1.0.2"
   }
 }
