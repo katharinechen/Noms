@@ -1,10 +1,10 @@
 "use strict";
 
 
-describe("static/js/controllers/recipelist.js : RecipeListCtrl", () => {
+describe("static/js/controllers/app.js : Preload", () => {
     beforeEach(module("noms"));
 
-    beforeEach(inject(($injector, $controller, $rootScope, $window) => {
+    beforeEach(inject(($controller, $rootScope, $window) => {
         this.scope = $rootScope;
         this.window_ = $window;
         this.$controller = $controller;
