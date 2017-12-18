@@ -7,7 +7,7 @@ describe("static/js/controllers/recipelist.js : RecipeListCtrl", () => {
     beforeEach(inject(($injector, $controller, $rootScope) => {
         this.$httpBackend = $injector.get('$httpBackend');
         this.scope = $rootScope;
-        this.ctrl = $controller('RecipeListCtrl', {$scope: $rootScope});
+        $controller('RecipeListCtrl', {$scope: $rootScope});
     }));
 
     it("should get a list", () => {

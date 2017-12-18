@@ -1,4 +1,3 @@
-// jshint -W097
 'use strict';
 
 // root angular app
