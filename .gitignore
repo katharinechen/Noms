@@ -25,3 +25,5 @@ Gemfile.lock
 /package-lock.json
 /deployment/build
 /env
+.tox
+*.egg-info

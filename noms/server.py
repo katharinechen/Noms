@@ -7,7 +7,7 @@ from functools import wraps
 import attr
 
 from codado import enum
-from codado.kleinish.tree import enter
+from crosscap.tree import enter
 
 import microdata
 
