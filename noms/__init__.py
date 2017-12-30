@@ -5,12 +5,8 @@ import re
 import os
 
 from codado import fromdir, enum
-from codado._version import __version__
 
 from pymongo.uri_parser import parse_uri
-
-
-(__version__,) # for pyflakes
 
 
 fromNoms = fromdir(__file__, '..')

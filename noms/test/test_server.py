@@ -15,11 +15,11 @@ from werkzeug.exceptions import Forbidden
 from klein.app import KleinRequest
 from klein.interfaces import IKleinRequest
 
-import attr
-
 from mock import patch, ANY
 
 from pytest import fixture, inlineCallbacks, raises
+
+from crosscap.testing import EZServer
 
 from noms import (
         server, fromNoms,
@@ -50,37 +50,6 @@ def test_querySet(mockConfig):
     User(email='hello').save()
     configsFn = server.querySet(_configs)
     assert configsFn(None) == '[{"email": "hello", "familyName": null, "givenName": null, "roles": []}]'
-
-
-@attr.s(init=False)
-class EZServer(object):
-    """
-    Convenience abstraction over Server/APIServer to simplify test code
-    """
-    cls = attr.ib()
-    inst = attr.ib(default=None)
-
-    def __init__(self, cls):
-        self.cls = cls
-        self.inst = cls()
-
-    def handler(self, handlerName, req=None, *a, **kw):
-        """
-        Convenience method, call a Server.app endpoint with a request
-        """
-        if req is None:
-            # postpath is empty by default because we're directly executing the
-            # endpoint, so there should be nothing left to consume in the url
-            # path. In other words, we've already found the final resource when
-            # execute_endpoint is called.
-            postpath = kw.pop('postpath', [])
-            req = request(postpath)
-
-        d = defer.maybeDeferred(
-                self.inst.app.execute_endpoint,
-                handlerName, req, *a, **kw
-                )
-        return d
 
 
 @fixture
