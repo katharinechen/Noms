@@ -10,9 +10,16 @@
 
         <div class="form-button-group">
             <!-- button to show form -->
+            <!-- old edit form  -->
             <md-button md-no-ink="" type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
                 Edit
             </md-button>
+
+            <!-- new edit attempt  -->
+            <md-button type=button ng-click="showTabDialog($event)">
+                New Edit attempt 
+            </md-button>
+
             <md-button md-no-link="" ng-click="deleteConfirm($event, recipe)" >
                 Delete
             </md-button>
