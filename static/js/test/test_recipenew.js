@@ -26,10 +26,28 @@ describe("static/js/controllers/recipenew.js : NewRecipeCtrl", () => {
         response = {message: 'whatevers', status: 'yup'};
         this.$httpBackend.expectPOST('/api/recipe/create').respond(response);
         this.$httpBackend.flush();
+        expect(this.scope.message).to.equal('Done');
     });
 
     it("should show an error if save fails", () => {
-        expect(false).to.be.true;
+        var response = {
+            status: 'error',
+            message: 'ono'
+        };
+        this.scope.update({ingredients: [], instructions: []});
+        this.$httpBackend.expectPOST('/api/recipe/create').respond(response);
+        this.$httpBackend.flush();
+        expect(this.scope.message).to.equal('Error: ono');
     });
 
+    it("should show a different error if there's a server error", () => {
+        var response = {
+            status: 'error',
+            message: 'ono'
+        };
+        this.scope.update({ingredients: [], instructions: []});
+        this.$httpBackend.expectPOST('/api/recipe/create').respond(403, response);
+        this.$httpBackend.flush();
+        expect(this.scope.message).to.equal('Server error with this request');
+    });
 });

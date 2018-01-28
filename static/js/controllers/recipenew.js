@@ -12,13 +12,14 @@ app.controller('NewRecipeCtrl', ['$scope', '$http', function($scope, $http) {
         recipe.instructions = [recipe.instructions];
 
         $http.post('/api/recipe/create', recipe).then(
-            (data) => {
+            (response) => {
+                var data = response.data;
                 $scope.ok = true;
                 if (data.status === "error") {
                     $scope.message = 'Error: ' + data.message;
                 } else {
                     $scope.message = "Done";
-                };
+                }
             },
 
             (err) => {
