@@ -52,7 +52,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         catObj.push(inserted);
     };
 
-    // save editted recipe 
+    // save edited recipe 
     $scope.saveRecipe = function() {
         var modifiedRecipe = JSON.parse(JSON.stringify($scope.recipe)); 
         $scope.sendBack = $scope.tearDownRecipeObjects(modifiedRecipe);
@@ -75,10 +75,10 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         )
     };
 
-    $scope.showTabDialog = function(ev) {
+    $scope.showEditModal = function(ev) {
         $mdDialog.show({
           controller: DialogController,
-          templateUrl: 'tabDialog.tmpl.html',
+          templateUrl: '/static/js/partials/tabDialog.tmpl.html',
           parent: angular.element(document.body),
           targetEvent: ev,
           clickOutsideToClose:true
