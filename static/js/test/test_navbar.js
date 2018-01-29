@@ -16,8 +16,23 @@ describe("static/js/controllers/navbar.js : NavbarCtrl", () => {
         $controller('NavbarCtrl', {$scope: $rootScope});
     }));
 
+    beforeEach(() => {
+        var user = {
+            email: 'unittest@example.com',
+            givenName: 'Unit',
+            familyName: 'Test',
+            roles: ['user']
+        };
+        this.$httpBackend.expectGET('/api/user').respond(user
+            );
+        this.$httpBackend.flush();
+        expect(this.scope.user.email).to.equal("unittest@example.com");
+    });
+
     it("should show an auth0 lock", () => {
-        expect("me").to.equal("figure out how to do mocks");
+        this.scope.showLogin();
+        $httpBackend.expectGET('asdf').respond('idk');
+        $httpBackend.flush();
     });
 
 });

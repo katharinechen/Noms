@@ -1,6 +1,7 @@
 /* globals Auth0Lock: false */
 'use strict';
 
+
 // login and other top-screen controls
 app.controller('NavbarCtrl', ['$scope', '$http', function($scope, $http) {
 
@@ -8,7 +9,7 @@ app.controller('NavbarCtrl', ['$scope', '$http', function($scope, $http) {
         $scope.user = user.data;
     });
 
-    $scope.showLogin = function _a_showLogin() {
+    $scope.showLogin = () => {
         var lock = new Auth0Lock(
                 $scope.preload.auth0Public,
                 'nomsbook.auth0.com');
