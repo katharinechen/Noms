@@ -13,6 +13,7 @@ describe("static/js/controllers/navbar.js : NavbarCtrl", () => {
                 apparentURL: "https://unittests.noms.com",
             }
         );
+        $controller('Preload', {$scope: $rootScope, $window: $window});
         $controller('NavbarCtrl', {$scope: $rootScope});
     }));
 
@@ -30,9 +31,8 @@ describe("static/js/controllers/navbar.js : NavbarCtrl", () => {
     });
 
     it("should show an auth0 lock", () => {
-        this.scope.showLogin();
-        $httpBackend.expectGET('asdf').respond('idk');
-        $httpBackend.flush();
+        var lck = this.scope.showLogin();
+        expect(1).to.equal(0);
     });
 
 });
