@@ -75,6 +75,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         )
     };
 
+    // show recipe edit modal
     $scope.showEditModal = function(ev) {
         $mdDialog.show({
           controller: DialogController,
@@ -94,17 +95,15 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         $scope.hide = function() {
           $mdDialog.hide();
         };
-    
         $scope.cancel = function() {
           $mdDialog.cancel();
         };
-    
         $scope.answer = function(answer) {
           $mdDialog.hide(answer);
         };
     }; 
 
-    // Confirmation modal for deleting a recipe
+    // confirmation modal for deleting a recipe
     $scope.deleteConfirm = function(ev, recipe) {
         var confirm = $mdDialog.confirm()
               .title('Would you like to delete this recipe?')
@@ -117,7 +116,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         });
     };
 
-    // Confirmation modal for saving a recipe 
+    // confirmation modal for saving a recipe 
     $scope.saveAlert = function(ev){
         $mdDialog.show(
             $mdDialog.alert()
@@ -130,7 +129,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         );
     };
 
-    // Confirmation modal for saving a recipe 
+    // confirmation modal for saving a recipe 
     $scope.errorAlert = function(ev){
         $mdDialog.show(
             $mdDialog.alert()
@@ -143,4 +142,3 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         );
     };
 }]);
-
