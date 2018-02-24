@@ -8,11 +8,11 @@ from pytest import fixture
 
 from mock import patch
 
-from twisted.web.test.requesthelper import DummyRequest
-
 from mongoengine import connect, Document
 
 from codado import fromdir
+
+from crosscap.testing import DEFAULT_HEADERS, request
 
 from noms import DBAlias, DBHost, documentutil, user
 from noms.whisk import describe
@@ -187,33 +187,6 @@ def localapi(mockConfig):
 @fixture
 def recipePageHTML():
     return open(fromdir(__file__)('recipe_page_source.html')).read()
-
-
-DEFAULT_HEADERS = (
-    ('user-agent', ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0)']),
-    ('cookie', ['']),
-    )
-
-
-def request(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
-    """
-    Build a fake request for tests
-    """
-    req = DummyRequest(postpath)
-    for hdr, val in requestHeaders:
-        req.requestHeaders.setRawHeaders(hdr, val)
-
-    for hdr, val in responseHeaders:
-        req.setHeader(hdr, val)
-
-    for k, v in kwargs.items():
-        if k.startswith('session_'):
-            ses = req.getSession()
-            setattr(ses, k[8:], v)
-        else:
-            setattr(req, k, v)
-
-    return req
 
 
 def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
