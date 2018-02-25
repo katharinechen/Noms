@@ -119,7 +119,7 @@ def mockConfig(mockDatabase):
 
     try:
         cols = mockDatabase.collection_names()
-        for c in cols:
+        for c in cols: # pragma: nocover
             assert mockDatabase[c].count() == 0, c + " not empty"
 
         cfg = noms.Config()
@@ -138,7 +138,7 @@ def mockConfig(mockDatabase):
     finally:
         # despite dropping the database we have to do this, because it's
         # still an object in memory
-        for c in cols:
+        for c in cols: # pragma: nocover
             col = mockDatabase[c]
             col.remove()
             assert col.count() == 0, "%r not empty" % c
