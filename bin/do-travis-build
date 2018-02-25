@@ -12,6 +12,7 @@ eval "$(whisk describe)"
 set +a
 
 # run tests
+karma start
 pytest --cov-fail-under=100
 
 # if tests pass, build & push images
