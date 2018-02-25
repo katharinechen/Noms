@@ -3,7 +3,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-PATH="$PATH:./bin"
+PATH="$PATH:./bin:./node_modules/.bin"
 export PYTHONPATH=`pwd`
 
 # set environment variables for the build from whisk describe
