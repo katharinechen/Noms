@@ -12,6 +12,7 @@ eval "$(whisk describe)"
 set +a
 
 # run tests
+jshint static && echo "jshint ok 👌"
 karma start
 pytest --cov-fail-under=100
 
