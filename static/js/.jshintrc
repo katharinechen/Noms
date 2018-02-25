@@ -11,7 +11,10 @@
         "expect": true,
         "inject": true,
         "it": true,
-        "module": true
+        "module": true,
+        "angular": true,
+        "sinon": true,
+        "app": true
     },
     "globalstrict": true,
     "immed": true,
