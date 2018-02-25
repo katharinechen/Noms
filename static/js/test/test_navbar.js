@@ -31,8 +31,10 @@ describe("static/js/controllers/navbar.js : NavbarCtrl", () => {
     });
 
     it("should show an auth0 lock", () => {
-        var lck = this.scope.showLogin();
-        expect(1).to.equal(0);
+        var lockThing = {'show': sinon.spy()};
+        var lockClass = sinon.stub(window, 'Auth0Lock').returns(lockThing);
+        this.scope.showLogin();
+        expect(lockThing.show.called).to.be.true;
     });
 
 });
