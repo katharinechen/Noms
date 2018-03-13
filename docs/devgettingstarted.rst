@@ -132,7 +132,13 @@ You can ALSO restart noms by running::
 
 Running Tests
 ~~~~~~~~~~~~~
-Noms uses ``pytest`` as its backend test runner, and all tests are written in the ``pytest`` style.
+Noms uses several test runners. All tools listed here are run by travis during
+the build, and must pass 100% for the build to succeed, including code coverage
+where appropriate.
+
+*For Python:*
+- ``pytest`` as its backend test runner, and all tests are written in the ``pytest`` style.
+- Python also uses ``pyflakes`` to catch common errors.
 
 To run test on your local machine, use ``pytest``. To see whether or not your
 test passes on the CI server, you can go to ``github`` and view ``travis``.
@@ -144,11 +150,22 @@ There are a few different ways to use pytest:
 - To run all of the test, use: ``pytest``
 - To run only the failing test, use: ``pytest --lf``
 
-The foreground test runner is ``karma``. To run these tests, run::
+To run ``pyflakes``, just run::
 
-.. code-block:: bash
+    pyflakes
+
+*For ECMAScript*
+
+- The foreground test runner is ``karma``. To run these tests, run::
+- We also run ``eslint`` to catch common errors.
+
+To run unit tests::
 
     karma start
+
+To run ``eslint``, just run::
+
+    eslint .
 
 Noms Extension
 ~~~~~~~~~~~~~~
