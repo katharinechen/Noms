@@ -22,7 +22,7 @@ app.controller('NewRecipeCtrl', ['$scope', '$http', function($scope, $http) {
                 }
             },
 
-            (err) => {
+            () => { // errors
                 $scope.ok = true;
                 $scope.message = "Server error with this request";
             }

@@ -5,7 +5,7 @@ describe("static/js/controllers/navbar.js : NavbarCtrl", () => {
     beforeEach(module("noms"));
 
     beforeEach(inject(($injector, $controller, $rootScope, $window) => {
-        this.$httpBackend = $injector.get('$httpBackend');
+        this.$httpBackend = $injector.get("$httpBackend");
         this.scope = $rootScope;
         $window.nomsPreload = JSON.stringify(
             {
@@ -13,27 +13,27 @@ describe("static/js/controllers/navbar.js : NavbarCtrl", () => {
                 apparentURL: "https://unittests.noms.com",
             }
         );
-        $controller('Preload', {$scope: $rootScope, $window: $window});
-        $controller('NavbarCtrl', {$scope: $rootScope});
+        $controller("Preload", {$scope: $rootScope, $window: $window});
+        $controller("NavbarCtrl", {$scope: $rootScope});
     }));
 
     beforeEach(() => {
         var user = {
-            email: 'unittest@example.com',
-            givenName: 'Unit',
-            familyName: 'Test',
-            roles: ['user']
+            email: "unittest@example.com",
+            givenName: "Unit",
+            familyName: "Test",
+            roles: ["user"]
         };
-        this.$httpBackend.expectGET('/api/user').respond(user
-            );
+        this.$httpBackend.expectGET("/api/user").respond(user
+        );
         this.$httpBackend.flush();
         expect(this.scope.user.email).to.equal("unittest@example.com");
     });
 
     it("should show an auth0 lock", () => {
         window.Auth0Lock = () => {};
-        var lockThing = {'show': sinon.spy()};
-        var lockClass = sinon.stub(window, 'Auth0Lock').returns(lockThing);
+        var lockThing = {"show": sinon.spy()};
+        sinon.stub(window, "Auth0Lock").returns(lockThing);
         this.scope.showLogin();
         expect(lockThing.show.called).to.be.true;
     });

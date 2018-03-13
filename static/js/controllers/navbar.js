@@ -11,8 +11,8 @@ app.controller('NavbarCtrl', ['$scope', '$http', function($scope, $http) {
 
     $scope.showLogin = () => {
         var lock = new Auth0Lock(
-                $scope.preload.auth0Public,
-                'nomsbook.auth0.com');
+            $scope.preload.auth0Public,
+            'nomsbook.auth0.com');
         lock.show({
             // This is the smallest possible transparent GIF image; in effect
             // hiding the icon

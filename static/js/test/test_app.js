@@ -11,9 +11,9 @@ describe("static/js/controllers/app.js : Preload", () => {
     }));
 
     it("should use the value of nomsPreload", () => {
-        this.window.nomsPreload = '{"hello": "world"}';
+        this.window.nomsPreload = "{\"hello\": \"world\"}";
         expect(this.scope.preload).to.be.undefined;
-        this.$controller('Preload', {
+        this.$controller("Preload", {
             $scope: this.scope, $window: this.window_
         });
         expect(this.scope.preload.hello).to.equal("world");
