@@ -2,7 +2,9 @@
   "engines": {
     "node": ">= 0.10.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "node-sass": "^4.7.2"
+  },
   "name": "Noms",
   "description": "Noms is a recipe thing",
   "version": "0.0.1",

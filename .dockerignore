@@ -18,3 +18,5 @@ _pytest_temp
 .coverage
 coverage
 .sass-cache
+node_modules
+secret_pair.json
