@@ -11,8 +11,7 @@ set -a; eval "$(whisk describe)"; set +a
 
 
 targets () {
-    echo noms-src
-    echo noms-main
+    echo noms-base
 }
 
 build() {

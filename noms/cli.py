@@ -40,7 +40,7 @@ class Run(tap.Options):
         CONFIG.staticHash = digest(staticPath)
 
         # get secrets from aws and store them in mongo
-        secret.loadFromS3()
+        secret.loadFromFile()
 
         # store an internally-shared secret
         if not secret.get('localapi', None):

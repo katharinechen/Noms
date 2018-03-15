@@ -1,6 +1,4 @@
 attrs
-awscli
-boto3
 characteristic
 circus
 codado>=0.5.0

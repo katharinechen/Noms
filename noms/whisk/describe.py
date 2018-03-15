@@ -6,7 +6,6 @@ from __future__ import print_function
 
 from cStringIO import StringIO
 import re
-import json
 import os
 from inspect import cleandoc
 import pipes
@@ -67,10 +66,7 @@ class Description(object):
     """
     NOMS_VERSION = attr.ib(default=('cli', None))
     NOMS_DB_HOST = attr.ib(default=('cli', 'mongo'))
-    certbot_flags = attr.ib(default=('cli', ''))
-    certbot_email = attr.ib(default=('cli', 'corydodt@gmail.com'))
     public_hostname = attr.ib(default=('cli', 'dev.nomsbook.com'))
-    proxy_hostname = attr.ib(default=('cli', 'noms-main'))
     proxy_port = attr.ib(default=('cli', '8080'))
 
     @classmethod
@@ -102,18 +98,6 @@ class Description(object):
             v = os.environ.get(k, None)
             if v is not None:
                 setattr(self, k, ('process environment', v))
-
-        # 5. structured nomstag
-        try:
-            mess = os.environ.get('TRAVIS_COMMIT_MESSAGE', '')
-            loaded = json.loads(mess)
-            if 'nomstag' in loaded:
-                for k, v in loaded.items():
-                    setattr(self, k, ('nomstag', v))
-            else:
-                raise ValueError("JSON-like commit body was not a nomstag")
-        except ValueError:
-            "Not a structured tag"
 
         return self
 
@@ -151,7 +135,6 @@ class Describe(Main):
     2. stdin; which is assumed to be coming from `git describe --all --long`
     3. the file local.env;
     4. the process environment variables;
-    5. the json data loaded from the git tag, if any such JSON data exists
 
     This data is prioritized from last to first; so JSON data is used, unless
     it is missing; then environment variables unless they are missing; then

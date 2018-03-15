@@ -2,19 +2,18 @@
 Passwords, intended to be stored in the database
 """
 import os
-import StringIO
 
-from bson import json_util  
-
-import boto3 
+from bson import json_util
 
 from mongoengine import fields
 
-from noms import documentutil, CONFIG
+from noms import documentutil
 
 
 NO_DEFAULT = object()
 SECRET_EXPIRATION = 600 # 10 minutes
+
+LOCAL_SECRET_FILE = 'secret_pair.json'
 
 
 class SecretPair(documentutil.NomsDocument):
@@ -57,29 +56,15 @@ def randomPassword(n=32):
     return ''.join('%02x' % ord(c) for c in os.urandom(n))
 
 
-def loadFromS3(): 
+def loadFromFile():
     """
-    Fetch secrets from config file held in S3, and load them in mongo
-
-    If a bucket matching 'config.' + public_hostname exists, get secrets file
-    from there. Otherwise, get them from config.dev.nomsbook.com
+    Fetch secrets from a file
 
     Does nothing if the secret_pair collection already exists; to force, drop
     the secret_pair collection.
     """
-    if SecretPair.objects.count() == 0: 
-        # get the secret_pair.json file from AWS 
-        s3 = boto3.resource('s3')
-        for b in s3.buckets.all():
-            if b.name == 'config.%s' % CONFIG.public_hostname:
-                bucket = b
-                break
-        else:
-            bucket = s3.Bucket("config.dev.nomsbook.com")
-
-        output = StringIO.StringIO() 
-        bucket.download_fileobj('secret_pair/secret_pair.json', output)
-
+    if SecretPair.objects.count() == 0:
+        fl = open(LOCAL_SECRET_FILE)
         # save it to mongo
-        print("Piping hot fresh secrets from bucket %r" % bucket.name)
-        SecretPair._get_collection().insert(json_util.loads(output.getvalue())) 
+        print("Piping hot fresh secrets from file %r" % LOCAL_SECRET_FILE)
+        SecretPair._get_collection().insert(json_util.loads(fl.read()))

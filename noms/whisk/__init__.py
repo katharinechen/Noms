@@ -42,8 +42,6 @@ class BaseWhisk(Main):
             ("digester", None, Digester, doc(Digester)),
             ("docker", None, makeCommand('docker.whisk'), 
                 'Run docker to build images'),
-            ("cloudform", None, makeCommand('cloudform.whisk'), 
-                'Run cloudform to deploy service'),
             ]
 
     def postOptions(self):

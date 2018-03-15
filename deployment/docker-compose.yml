@@ -1,7 +1,7 @@
 version: '3'
 services:
-    noms-main:
-        image: "corydodt/noms-main:latest"
+    noms-base:
+        image: "corydodt/noms-base:latest"
         env_file: ../env
         ports:
             - "8080:8080"
@@ -9,8 +9,6 @@ services:
             - mongo
         depends_on:
             - mongo
-        volumes:
-            - noms-src:/opt/Noms
         stdin_open: true
         tty: true
 
@@ -18,8 +16,3 @@ services:
         image: mongo:3.4
         ports:
             - "27017:27017"
-
-
-volumes:
-    noms-src:
-        external: true
