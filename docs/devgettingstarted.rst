@@ -189,3 +189,18 @@ need to do the following to set be ready to work on Noms:
 - ``workon noms`` will automatically drop you into your virtual environment.
 - ``docker-compose -f deployment/docker-compose.yml up`` will run the
   application in the foreground.
+
+
+
+
+UPDATED 2018-03-13
+------------------
+
+- Install `gcloud SDK`_
+
+.. _gcloud SDK: https://cloud.google.com/sdk/downloads
+
+- Do this stuff::
+
+    gcloud init   # and log in, us-west1-b zone, noms-197618 project
+    gcloud components install kubectl
