@@ -5,6 +5,7 @@ import os
 import shlex
 import subprocess
 
+from twisted.internet import reactor
 from twisted.web import tap
 
 from mongoengine import connect
@@ -39,8 +40,8 @@ class Run(tap.Options):
         staticPath = '%s/static' % os.getcwd()
         CONFIG.staticHash = digest(staticPath)
 
-        # get secrets from aws and store them in mongo
-        secret.loadFromFile()
+        # get secrets from kubernetes and store them in mongo 
+        reactor.callWhenRunning(secret.loadFromK8s)
 
         # store an internally-shared secret
         if not secret.get('localapi', None):

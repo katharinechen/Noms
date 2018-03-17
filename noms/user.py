@@ -123,7 +123,7 @@ class User(RenderableDocument):
 registerAdapter(User.fromRequest, Request, ICurrentUser)
 
 
-_USERS = enum(
+USERS = enum(
     anonymous=User(
         email='anonymous@example.com',
         roles=[Roles.anonymous],
@@ -143,7 +143,7 @@ def USER():
     
     => enum of those users
     """
-    for k, _U in _USERS.items():
+    for k, _U in USERS.items():
         if getattr(_U, 'id', None):
             "Already created and saved these users"
             continue
@@ -153,7 +153,7 @@ def USER():
             _U.save(force_insert=True)
         else: # pragma: nocover
             "Swapping in-mem user object with one we found on disk"
-            _USERS[k] = _U = u
+            USERS[k] = _U = u
         assert _U.id
 
-    return _USERS
+    return USERS

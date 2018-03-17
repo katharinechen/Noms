@@ -22,7 +22,7 @@ whisk docker --build --push
 
 # if this build is a PR build in travis, we are done (no deployment)
 if [[ "${TRAVIS_EVENT_TYPE:-}" == "pull_request" ]]; then
-    echo "xxxxxxx PR build, no stack will be deployed"
+    echo "xxxxxxx PR build, no pod will be deployed"
     exit 0
 fi
 
