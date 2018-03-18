@@ -107,6 +107,8 @@ def loadFromK8s():
     for item in lst.items:
         if item.metadata.name in user.USERS:
             continue
+        # recreate all available secrets from cluster every boot
+        SecretPair.objects(name=item.metadata.name).delete()
         secpair = SecretPair(
             name=item.metadata.name, 
             public=item.data['public'], 
