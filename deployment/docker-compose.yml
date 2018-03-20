@@ -11,6 +11,7 @@ services:
             - mongo
         volumes:
             - noms-src:/opt/Noms-host
+            - kube:/root/.kube
         stdin_open: true
         tty: true
 
@@ -22,4 +23,6 @@ services:
 
 volumes:
     noms-src:
+        external: true
+    kube:
         external: true

@@ -84,6 +84,7 @@ a Mac for development, you should install** `Docker for Mac`_.
 
     # create a volume of your local source files
     docker volume create -o type=none -o device=$(pwd) -o o=bind noms-src
+    docker volume create -o type=none -o device=$HOME/.kube -o o=bind kube
     # set some environment variables inside the container
     whisk describe > env
 
