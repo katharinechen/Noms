@@ -29,4 +29,5 @@ sphinx-autobuild
 sphinx_rtd_theme
 treq
 twisted
+txk8s
 watchdog

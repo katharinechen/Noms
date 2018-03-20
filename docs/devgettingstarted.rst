@@ -38,29 +38,32 @@ Build a virtual environment with ``virtualenvwrapper``.
     . /usr/local/bin/virtualenvwrapper.sh
     mkvirtualenv -a Noms noms
     cat <<'EOF' | tee -a ~/.virtualenvs/noms/bin/postactivate
-    export PATH=$PATH:~/Noms/bin
+    export PATH=$PATH:~/Noms/bin:~/Noms/node_modules/.bin
     export PYTHONPATH=$PYTHONPATH:~/Noms
     EOF
 
 When you wish to use this virtual environment, run ``workon noms``.
 
-Get AWS Credentials
-~~~~~~~~~~~~~~~~~~~
+Set up a NodeJS environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You will need a project maintainer to set up AWS account credentials for you.
-When you have them, run ``aws configure`` and follow the prompts, as in the
+TODO
+
+
+Get Gcloud Credentials
+~~~~~~~~~~~~~~~~~~~~~~
+
+You will need a project maintainer to set up gcloud account credentials for you.
+When you have them, run ``gcloud init`` and follow the prompts, as in the
 example below.
 
-If you already have working AWS credentials for the noms project, you do not
+If you already have working gcloud credentials for the noms project, you do not
 need to do this.
 
 .. code-block:: bash
 
-    $ aws configure
-    AWS Access Key ID: AKIAUSEAREALAUTHKEYY
-    AWS Secret Access Key: Use/your/actual/secret/key/here/pleaseee
-    Default region name: us-west-2
-    Default output format [text]:
+    $ gcloud init
+    TODO
 
 Build Container Images
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -83,10 +86,6 @@ a Mac for development, you should install** `Docker for Mac`_.
     docker volume create -o type=none -o device=$(pwd) -o o=bind noms-src
     # set some environment variables inside the container
     whisk describe > env
-    cat <<EOF | tee -a env
-    AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
-    AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
-    EOF
 
 Run Localhost
 ~~~~~~~~~~~~~
