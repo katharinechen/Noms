@@ -11,7 +11,8 @@ from mongoengine import connect
 
 def before_start(watcher, arbiter, hook_name):
     time.sleep(0.5)
-    return importSample() and installSecretPairJSON()
+    return importSample()
+
 
 def importSample():
     """
@@ -29,12 +30,3 @@ def importSample():
     except errors.ServerSelectionTimeoutError:
         print "No mongo server available (tried %r)" % DBHost['noms']['host']
         return False
-
-def installSecretPairJSON():
-    shutil.copy('/opt/Noms-host/secret_pair.json', '.')
-    print "Copied secret_pair.json"
-    return True
-
-# def bindMount():
-#     os.system("mount --bind /node_modules {p}/node_modules".format(p=os.getcwd()))
-#     print "remounted node_modules"
