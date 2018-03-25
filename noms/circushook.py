@@ -2,7 +2,6 @@
 Hooks for circusd to control startup
 """
 import time
-import shutil
 
 from pymongo import errors
 
