@@ -29,3 +29,8 @@
     ```
 
     - ensure the right hostname for the mongodb instance is set by editing that file
+
+- one-time only: enable corydodt@gmail.com to act as a cluster admin and create roles
+    ```
+    kubectl create clusterrolebinding cluster-1-admin-binding --clusterrole=cluster-admin --user=corydodt@gmail.com                  
+    ```
