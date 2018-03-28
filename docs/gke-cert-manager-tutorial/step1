@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+x() {
+    ( set -x; $@ )
+}
+
+
+x kubectl apply -f sample-web-app-1.yml
+echo "~~ Create pod/helloweb and svc/helloweb-backend ~~"
+echo "~~ Wait for the Cluster-IP to appear next to NodePort ~~"
+x kubectl get svc -w

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+x() {
+    ( set -x; $@ )
+}
+
+
+x kubectl apply -f sample-web-app-4-ingress.yml
+echo "~~ Update ingress/helloweb to use tls ~~"
+
+x kubectl get -o json ingress/helloweb | jq .status
+
+echo "~~ Now test https://dev.nomsbook.com ~~"
+

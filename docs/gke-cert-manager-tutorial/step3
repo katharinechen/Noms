@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+x() {
+    ( set -x; $@ )
+}
+
+
+x kubectl apply -f sample-web-app-3-cert.yml
+echo "~~ Create certificate/dev-nomsbook-com-tls ~~"
+x kubectl get -o json ingress/helloweb | jq .metadata.annotations
+
+echo "~~ You should see a forwarding rule, target proxy, and url map ~~"

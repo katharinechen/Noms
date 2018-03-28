@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+x() {
+    ( set -x; $@ )
+}
+
+
+x kubectl apply -f sample-web-app-2-ingress.yml
+echo "~~ Create ingress/helloweb. Bind noms-base-1-ip to svc/helloweb-backend ~~"
+echo "~~ Wait for the IP address to appear"
+x kubectl get ingress/helloweb
+sleep 5
+x kubectl get ingress/helloweb
+
+echo "~~ Now test http://dev.nomsbook.com ~~"
