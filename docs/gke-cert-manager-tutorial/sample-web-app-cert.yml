@@ -1,0 +1,19 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: dev-nomsbook-com-tls
+  namespace: dev-nomsbook-com
+spec:
+  secretName: dev-nomsbook-com-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: dev.nomsbook.com
+  dnsNames:
+  - dev.nomsbook.com
+  acme:
+    config:
+    - http01:
+        ingress: helloweb
+      domains:
+      - dev.nomsbook.com
