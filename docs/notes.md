@@ -60,16 +60,16 @@
         1. a serviceaccount for noms-base apps to bind permissions to
         1. a role/secrets-reader that grants some permissions to secrets
         1. rolebinding that associates sa/noms-base with role/secrets-reader
-    - `kubectl apply -f deployment/noms-base-a-no-tls.yml` creates all required k8s resources:
+    - `kubectl apply -f deployment/noms-base-a.yml` creates required pod and backend service
         1. the configmap built from the env file
         1. a deployment to start some pods
-        1. an hpa to run more pods as needed (having one of these is SOP but probably will not get used for dev)
         1. svc/noms-base-1-backend make noms port 8080 available in the cluster
-        1. ingress/noms-base-1 to make the service available to the outside world (NO TLS)
-# FIXME THIS DOESN'T FUCKING COME ONLINE AND I DON'T KNOW WHY
-    - wait for the ingress to come online, check it with a web browser. then,
+    - `kubectl apply -f deployment/noms-base-b-ingress.yml` creates
+        1. ingress/noms-base-1 with NO tls (we are staging it so letsencrypt can do an http challenge)
+    - wait for the ingress to come online, check it with a web browser at http://dev.nomsbook.com. then,
         ```
-        kubectl apply -f deployment/noms-base-b-cert.yml
+        kubectl apply -f deployment/noms-base-c-cert.yml
         ```
         wait for the cert to be ready (check with `kubectl get secrets -n dev-nomsbook-com` and look for `dev-nomsbook-com-tls`)
-    - Update the ingress with: `kubectl apply -f deployment/noms-base-c-tls.yml`
+    - Update the ingress with: `kubectl apply -f deployment/noms-base-d-tls.yml`
+    - wait several minutes, then check https://dev.nomsbook.com

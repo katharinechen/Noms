@@ -1,0 +1,47 @@
+---
+# TODO - in helm, set these values up in a chart
+apiVersion: v1
+data:
+  NOMS_DB_HOST: mongodb-0-servers-vm-0
+  public_hostname: dev.nomsbook.com
+kind: ConfigMap
+metadata:
+  name: nomsbook-com
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: noms-base-1
+  labels:
+    app: noms-base-1
+spec:
+  template:
+    metadata:
+      labels:
+        app: noms-base-1
+        tier: web
+    spec:
+      containers:
+      - name: noms-base-1
+        image: corydodt/noms-base
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: nomsbook-com
+      serviceAccountName: noms-base
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noms-base-1-backend
+  labels:
+    app: noms-base-1
+spec:
+  type: NodePort
+  selector:
+    app: noms-base-1
+    tier: web
+  ports:
+  - port: 8080
+    targetPort: 8080

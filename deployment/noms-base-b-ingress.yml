@@ -1,0 +1,15 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: noms-base-1
+  # namespace: dev-nomsbook-com
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: noms-base-1-ip
+  labels:
+    app: noms-base-1
+spec:
+  backend:
+    serviceName: noms-base-1-backend
+    servicePort: 8080
+---
