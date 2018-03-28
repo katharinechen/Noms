@@ -23,9 +23,53 @@
     - create a firewall rule in [the VPC firewall ingress list](https://console.cloud.google.com/networking/firewalls/list?project=noms-197618&tab=INGRESS) with configuration:
         - direction **ingress**, source ip range **10.20.0.0/14** (confirm this matches your gke container range), **Allow**, port **tcp:27017**
 
-- create a configmap object
+- create a secret object by running a script in noms:
     ```
-    kubectl create configmap nomsbook-com --from-env-file=deployment/configmap/env
+    docs/experimental/savesecrets.py
+    ```
+    (You must have some secrets, such as the `auth0` secret, in your db already, for this to work)
+
+- one-time only: enable corydodt@gmail.com to act as a cluster admin and create roles
+    ```
+    kubectl create clusterrolebinding cluster-1-admin-binding --clusterrole=cluster-admin --user=corydodt@gmail.com
     ```
 
-    - ensure the right hostname for the mongodb instance is set by editing that file
+- install helm's tiller component
+    ```
+    kubectl create serviceaccount -n kube-system tiller
+    kubectl create clusterrolebinding tiller-binding --clusterrole=cluster-admin --serviceaccount kube-system:tiller
+    helm init --service-account tiller
+    ```
+
+- install cert-manager with helm
+    - https://github.com/ahmetb/gke-letsencrypt/blob/master/README.md
+    - use
+        ```
+        helm install --name cert-manager --namespace kube-system stable/cert-manager --set ingressShim.extraArgs='{--default-issuer-name=letsencrypt-prod,--default-issuer-kind=ClusterIssuer}'
+        ```
+
+- Create noms resources using cert-manager to acquire TLS and associate it with an ingress
+    - I followed this tutorial to get an idea https://github.com/ahmetb/gke-letsencrypt to learn how to do it
+    - `gcloud compute addresses create noms-base-1-ip --global`
+    - `kubectl apply -f deployment/cluster-cert-manager-issuers.yml` creates cluster-wide resources needed
+      by `cert-manager` to talk to letsencrypt
+        1. issuer/letsencrypt-staging
+        1. issuer/letsencrypt-prod
+    - `kubectl apply -f deployment/dev-nomsbook-com.yml` creates all 1-time k8s resources for the namespace:
+        1. the namespace (you PROBABLY needed to create this early on, but having it here will not hurt)
+        1. a serviceaccount for noms-base apps to bind permissions to
+        1. a role/secrets-reader that grants some permissions to secrets
+        1. rolebinding that associates sa/noms-base with role/secrets-reader
+    - `kubectl apply -f deployment/noms-base-a-no-tls.yml` creates all required k8s resources:
+        1. the configmap built from the env file
+        1. a deployment to start some pods
+        1. an hpa to run more pods as needed (having one of these is SOP but probably will not get used for dev)
+        1. svc/noms-base-1-backend make noms port 8080 available in the cluster
+        1. ingress/noms-base-1 to make the service available to the outside world (NO TLS)
+# FIXME THIS DOESN'T FUCKING COME ONLINE AND I DON'T KNOW WHY
+    - wait for the ingress to come online, check it with a web browser. then,
+        ```
+        kubectl apply -f deployment/noms-base-b-cert.yml
+        ```
+        wait for the cert to be ready (check with `kubectl get secrets -n dev-nomsbook-com` and look for `dev-nomsbook-com-tls`)
+    - Update the ingress with: `kubectl apply -f deployment/noms-base-c-tls.yml`

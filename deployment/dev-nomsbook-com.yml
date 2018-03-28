@@ -1,0 +1,37 @@
+# global resources used by the dev-nomsbook-com namespace, potentially shared by deployments
+---
+apiVersion: "v1"
+kind: "Namespace"
+metadata:
+  name: "dev-nomsbook-com"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: "dev-nomsbook-com"
+  name: noms-base
+---
+# This role binding allows "noms-base" to read secrets
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: noms-base-read-secrets
+  namespace: dev-nomsbook-com
+subjects:
+- kind: ServiceAccount
+  name: noms-base
+roleRef:
+  kind: Role
+  name: secret-reader
+  apiGroup: ""
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: dev-nomsbook-com
+  name: secret-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]
+---

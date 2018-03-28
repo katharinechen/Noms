@@ -116,4 +116,5 @@ def loadFromK8s():
         secpair.save()
         added.append(secpair)
     print("Piping hot fresh secrets from %r: %r" % (K8S_NS, [n.name for n in added]))
+    defer.returnValue(added)
 

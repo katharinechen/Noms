@@ -75,8 +75,6 @@ def nomsTag():
                 created='2017-04-04T10:28:12.522496',
                 message='we built this city',
                 tag='asdf-10-g0g4v39x',
-                certbot_flags='--staging',
-                certbot_email='woohoo@looneytunes.com',
                 )
     return json.dumps(attr.asdict(nt), indent=2, sort_keys=1)
 
@@ -115,10 +113,7 @@ def description():
     return describe.Description(
             NOMS_VERSION=('git describe', 'asdf-10-g0g4v39x'),
             NOMS_DB_HOST=('process environment', 'manga'),
-            certbot_flags=('nomstag', '--staging'),
-            certbot_email=('nomstag', 'woohoo@looneytunes.com'),
             public_hostname=('local.env', 'hello.world'),
-            proxy_hostname=('cli', 'noms-main'),
             proxy_port=('cli', '9090'),
             )
 
@@ -171,8 +166,6 @@ def test_buildDescriptionBadNomsTag(
 
     (i.e. nomstag:true is not part of the json)
     """
-    description.certbot_flags = ('cli', '')
-    description.certbot_email = ('cli', 'corydodt@gmail.com')
     description.NOMS_DB_HOST = ('cli', 'mongo')
     description.public_hostname = ('local.env', 'hello.world')
     description.proxy_port = ('cli', '8080')
@@ -209,7 +202,6 @@ def test_postOptions(description,
 
     expectedOut = cleandoc('''
         # from cli
-        proxy_hostname=noms-main
         proxy_port=9090
 
         # from git describe
@@ -217,10 +209,6 @@ def test_postOptions(description,
 
         # from local.env
         public_hostname=hello.world
-
-        # from nomstag
-        certbot_email=woohoo@looneytunes.com
-        certbot_flags=--staging
 
         # from process environment
         NOMS_DB_HOST=manga

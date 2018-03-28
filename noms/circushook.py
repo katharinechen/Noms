@@ -2,7 +2,6 @@
 Hooks for circusd to control startup
 """
 import time
-import shutil
 
 from pymongo import errors
 
@@ -12,6 +11,7 @@ from mongoengine import connect
 def before_start(watcher, arbiter, hook_name):
     time.sleep(0.5)
     return importSample()
+
 
 def importSample():
     """
@@ -29,8 +29,3 @@ def importSample():
     except errors.ServerSelectionTimeoutError:
         print "No mongo server available (tried %r)" % DBHost['noms']['host']
         return False
-
-
-# def bindMount():
-#     os.system("mount --bind /node_modules {p}/node_modules".format(p=os.getcwd()))
-#     print "remounted node_modules"

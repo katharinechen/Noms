@@ -3,11 +3,76 @@ Tests of the secret data
 """
 import re
 
-from pytest import raises, mark, fixture
+from twisted.internet import defer
 
-from mock import patch, MagicMock
+import txk8s
+
+from pytest import raises, fixture, inlineCallbacks
+
+from mock import patch, MagicMock as MM
 
 from noms import secret
+
+
+@fixture
+def txk8sClientLoad():
+    """
+    A substitute client for txkubernetes
+    """
+    one = MM(data={'public': '1', 'secret': '1s'})
+    one.metadata.name = 'one'
+    two = MM(data={'public': '2', 'secret': '2s'})
+    two.metadata.name = 'two'
+    three = MM(data={'public': '3', 'secret': '3s'})
+    three.metadata.name = 'localapi'
+    cli = MM()
+    d = defer.succeed(MM(items=[one, two, three]))
+    cli.call.return_value = d
+    return cli
+
+
+@fixture
+def txk8sClientLoadEmpty():
+    """
+    A substitute client for txkubernetes, returning no secrets
+    """
+    cli = MM()
+    d = defer.succeed(MM(items=[]))
+    cli.call.return_value = d
+    return cli
+
+
+@fixture
+def txk8sPutClient():
+    """
+    A substitute client for txkubernetes, configured for creating a secret
+    """
+    cli = MM()
+    ret = MM()
+    ret.metadata.self_link = 'foo.com/bar'
+    ret.data = 'serkit'
+    d = defer.succeed(ret)
+    cli.call.return_value = d
+    return cli
+
+
+@inlineCallbacks
+def test_loadFromK8s(mockDatabase, txk8sClientLoad, txk8sClientLoadEmpty):
+    """
+    Do we interpret the API response from k8s as data correctly?
+    """
+    pClient = patch.object(txk8s, 'TxKubernetesClient', return_value=txk8sClientLoad)
+    # try normally
+    with pClient:
+        res = yield secret.loadFromK8s()
+        assert len(res) == 2
+        assert (res[0].public, res[1].public) == ('1', '2')
+
+    # test with empty response
+    pClient = patch.object(txk8s, 'TxKubernetesClient', return_value=txk8sClientLoadEmpty)
+    with pClient:
+        res = yield secret.loadFromK8s()
+        assert res is None
 
 
 def test_get(mockDatabase):
@@ -39,6 +104,25 @@ def test_put(mockDatabase):
     assert secret.SecretPair.objects.get(name='grover').secret == 'muppet'
 
 
+@inlineCallbacks
+def test_putK8s(mockDatabase, txk8sPutClient):
+    """
+    Do I invoke the k8s API to store this secret?
+    """
+    pClient = patch.object(txk8s, 'TxKubernetesClient', return_value=txk8sPutClient)
+    with pClient as mClient:
+        fn = mClient.return_value.coreV1.create_namespaced_secret
+        k8sSecretObj = mClient.return_value.V1Secret.return_value
+        sp = secret.SecretPair(name='one', public='1', secret='1s')
+        res = yield sp.putK8s()
+        mClient.return_value.call.assert_called_once_with(
+            fn,
+            'dev-nomsbook-com',
+            k8sSecretObj
+            )
+        assert res.data == 'serkit'
+
+
 def test_randomPassword():
     """
     Is it random enough?
@@ -51,56 +135,3 @@ def test_randomPassword():
     sec3 = secret.randomPassword(10)
     assert re.match('[0-9abcdef]{20}', sec3)
 
-
-@fixture
-def s3client():
-    """
-    An s3 resource with appropriate mocks
-    """
-    devBucket = MagicMock(name='Bucket Dev')
-    devBucket.name = 'config.dev.nomsbook.com'
-    devJSON = '{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"devnomsbookcom_auth0_key","secret":"debnomsbookcom_auth0_secret"}'
-    devBucket.download_fileobj = MagicMock(name='download_fileobj',
-            side_effect=lambda s, io: io.write(devJSON))
-
-    coryBucket = MagicMock(name='Bucket Cory')
-    coryBucket.name = 'config.cory.ngrok.io'
-    coryJSON = '{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"coryngrokio_auth0_key","secret":"coryngrokio_auth0_secret"}'
-    coryBucket.download_fileobj = MagicMock(name='download_fileobj', 
-            side_effect=lambda s, io: io.write(coryJSON))
-
-    ret = MagicMock(name='S3 Resource')
-    ret.Bucket = MagicMock()
-    ret.Bucket.return_value = devBucket
-    ret.buckets.all.return_value = [devBucket, coryBucket]
-
-    with patch.object(secret.boto3, 'resource', return_value=ret):
-        yield ret
-
-
-@mark.parametrize('public_hostname,expected', [
-        ['app.nomsbook.com', 'devnomsbookcom_auth0_key'],
-        ['dev.nomsbook.com', 'devnomsbookcom_auth0_key'],
-        ['cory.ngrok.io', 'coryngrokio_auth0_key'],
-        ])
-def test_loadFromS3(public_hostname, expected, mockConfig, s3client):
-    """
-    Do I get secrets from the right bucket, given a set of buckets and a
-    certain hostname?
-    """
-    with patch.object(secret, 'CONFIG', mockConfig):
-        # purge the secrets our test fixture normally adds
-        secret.SecretPair.objects.delete()
-
-        mockConfig.public_hostname = public_hostname
-        secret.loadFromS3()
-        assert secret.get('auth0')[0] == expected
-
-
-def test_loadFromS3Skipped(mockConfig, s3client):
-    """
-    I should be a no-op if secrets already exists
-    """
-    assert secret.SecretPair.objects.count() > 0
-    secret.loadFromS3()
-    assert s3client.call_args_list == []
