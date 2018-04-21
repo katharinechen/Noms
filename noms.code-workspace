@@ -1,0 +1,19 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/*.pyc": true,
+            "coverage": true,
+            ".tox": true,
+            "build": true
+        },
+        // search.exclude: inherited from files.exclude
+        "files.insertFinalNewline": true,
+        "editor.insertSpaces": true,
+        "python.linting.pylintEnabled": false
+    }
+}
