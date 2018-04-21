@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: noms-base-1
-        image: corydodt/noms-base
+        image: gcr.io/noms-197618/noms-base
         ports:
         - containerPort: 8080
         envFrom:
