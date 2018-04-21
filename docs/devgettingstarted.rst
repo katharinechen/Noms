@@ -50,8 +50,8 @@ Set up a NodeJS environment
 TODO
 
 
-Get Gcloud Credentials
-~~~~~~~~~~~~~~~~~~~~~~
+Get Gcloud Credentials and Tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You will need a project maintainer to set up gcloud account credentials for you.
 When you have them, run ``gcloud init`` and follow the prompts, as in the
@@ -60,10 +60,31 @@ example below.
 If you already have working gcloud credentials for the noms project, you do not
 need to do this.
 
+*Install the google cloud SDK*:
+
+1. Find your download at https://cloud.google.com/sdk/downloads
+2. Install it by following the instructions (usually running ``./google-cloud-sdk/install.sh``)
+3. Authorize a gcloud environment with the following command:
+
 .. code-block:: bash
 
     $ gcloud init
-    TODO
+    # - When it asks you to log in, use the authorized Google account associated with Noms
+    #   This will pop up the browser.
+    # - Choose the project noms-197618
+    # - Choose "yes" to configure zone, and choose "us-west1-b"
+
+*Install the kubernetes components*::
+
+    $ gcloud components install kubectl
+    $ gcloud container clusters get-credentials cluster-1
+
+*Confirm that it works*::
+
+    $ kubectl get nodes                
+    NAME                                       STATUS    ROLES     AGE       VERSION
+    gke-cluster-1-default-pool-62a91304-kp4v   Ready     <none>    24d       v1.9.4-gke.1
+
 
 Build Container Images
 ~~~~~~~~~~~~~~~~~~~~~~
