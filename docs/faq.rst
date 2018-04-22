@@ -2,9 +2,10 @@ Frequently Asked Questions
 ==========================
 
 **How do I see a list of all of the urls in ``Noms``?**
+
 Run ``urltool`` in the terminal. You can filter for all API urls by doing ``urltool /api``. 
 
-**Where does our 3rd party libraries live?**
+**Where do our 3rd party libraries live?**
 
 We have a s3 bucket called ``cloudfront.nomsbook.com``. In the s3 bucket, we are going to put all the cloudfront 3rd party javascript files we need (e.g. font-awesome).
 

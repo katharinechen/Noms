@@ -4,7 +4,7 @@
 // root angular app
 var app = angular.module("clipper", []);
 
-var Clipper = app.controller("Clipper", ['$scope', '$http', function ($scope, $http) {
+app.controller("Clipper", ['$scope', '$http', function ($scope, $http) {
     var nomsbook = "http://localhost:8080/api/bookmarklet?uri=";
     $scope.saved = false;
     $scope.showButton = true;
@@ -29,7 +29,7 @@ var Clipper = app.controller("Clipper", ['$scope', '$http', function ($scope, $h
                     $scope.showButton = false;
                     $scope.recipes = data.recipes;
                 }
-            }, function errorCallback(response) {
+            }, function errorCallback() {
                 // traceback occur on the server 404, 500
                 $scope.message = 'error';
                 $scope.showButton = false;
