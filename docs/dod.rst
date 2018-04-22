@@ -8,7 +8,6 @@ Definition of Done for a noms case:
 
 - There should be 100% test coverage for both python and javascript.
 - All automated tests pass. See :doc:`devgettingstarted` for details on writing and running tests.
--
 - Case has been code reviewed and approved by another developer.
 - Appropriate documentation is written for the case.
 

@@ -171,9 +171,11 @@ There are a few different ways to use pytest:
 - To run all of the test, use: ``pytest``
 - To run only the failing test, use: ``pytest --lf``
 
-To run ``pyflakes``, just run::
+To run ``pyflakes`` directly, just run::
 
-    pyflakes
+    pyflakes noms
+
+(Pyflakes is run automatically by pytest.)
 
 *For ECMAScript*
 
