@@ -157,13 +157,10 @@ To run ``pyflakes``, just run::
 *For ECMAScript*
 
 - The foreground test runner is ``karma``. To run these tests, run::
-- We also run ``eslint`` to catch common errors.
-
-To run unit tests::
 
     karma start
 
-To run ``eslint``, just run::
+- We also run ``eslint`` to catch common errors. To run ``eslint``, just run::
 
     eslint .
 
