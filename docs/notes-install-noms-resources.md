@@ -56,7 +56,7 @@ This [tutorial](https://github.com/ahmetb/gke-letsencrypt) gives an outline of t
     ```
     Resources built:
       1. the configmap built from the env file
-      1. a deployment to start some pods
+      1. a deployment to start some pods **(This is the actual Noms application!)**
       1. svc/noms-base-1-backend make noms port 8080 available in the cluster
 
 
