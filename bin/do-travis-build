@@ -3,7 +3,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-PATH="$PATH:./bin"
+PATH="$PATH:./bin:./node_modules/.bin"
 export PYTHONPATH=`pwd`
 
 # set environment variables for the build from whisk describe
@@ -12,6 +12,8 @@ eval "$(whisk describe)"
 set +a
 
 # run tests
+eslint . && echo "eslint ok 👌"
+karma start
 pytest --cov-fail-under=100
 
 # if tests pass, build & push images

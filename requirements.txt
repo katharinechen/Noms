@@ -3,9 +3,10 @@ awscli
 boto3
 characteristic
 circus
-codado>=0.3.3
+codado>=0.5.0
 contextdecorator
 coverage
+crosscap
 docker>=2.2.0
 docker-compose
 gitpython

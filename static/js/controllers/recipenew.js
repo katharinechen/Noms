@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // controls the list of recipes
 app.controller('NewRecipeCtrl', ['$scope', '$http', '$mdDialog', '$mdToast', '$window', function($scope, $http,  $mdDialog, $mdToast, $window) {
@@ -18,18 +18,18 @@ $scope.saveNewRecipe = function(recipe) {
     recipe.instructions = $scope.parseTextBox(recipe.instructions);
     recipe.tags = $scope.parseTextBox(recipe.tags); 
 
-    $http.post('/api/recipe/create', recipe).success(function(data) {
-        if (data.status === "error") {
-            $scope.errorAlert(data.message); 
-        } else {
+    $http.post('/api/recipe/create', recipe).then(
+        (response) => {
+            var data = response.data;
             // when it is successfully, need to send the user to the right link 
             // when applicable 
             $scope.saveAlert(); 
             $window.location.href = '/recipes/' + data.message;
+        },
+        () => { // errors
+            $scope.errorAlert(data.message); 
         }
-    }).error(function (err) {
-        $scope.errorAlert(err); 
-    });
+    );
 };
 
 // Confirmation modal for saving a recipe 
@@ -55,4 +55,3 @@ $scope.errorAlert = function(err){
         .ok('You suck!')
     );
 };
-}]);

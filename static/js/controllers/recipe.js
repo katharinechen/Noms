@@ -1,7 +1,8 @@
 'use strict';
 
 // controls the display of a single recipe
-app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast', function($scope, $http, $window, $mdDialog, $mdToast) {
+
+app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast', '$location', function($scope, $http, $window, $mdDialog, $mdToast) {
     $scope.message = ''; 
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];  
 
