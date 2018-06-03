@@ -1,53 +1,38 @@
-<div ng-controller="Recipe"> <!-- alert  -->
+<div ng-controller="Recipe">
+    <!-- alert  -->
     <div>
         <div class="alert-message">
             {{ message }}
         </div>
     </div>
- 
-    <!--  individual recipe  -->
+
+    <!-- Single Recipe  -->
     <form editable-form name="recipeForm" onaftersave="saveRecipe()" class="recipe-form">
 
+        <!-- Button Sections  -->
         <div class="form-button-group">
-            <!-- button to show form -->
-            <!-- old edit form  -->
-            <md-button md-no-ink="" type="button" class="form-button" ng-click="recipeForm.$show()" ng-show="!recipeForm.$visible">
+            <md-button ng-click="showEditModal($event)">
                 Edit
             </md-button>
-
-            <!-- new edit attempt  -->
-            <md-button type=button ng-click="showEditModal($event)">
-                New Edit attempt 
-            </md-button>
-
-            <md-button md-no-link="" ng-click="deleteConfirm($event, recipe)" >
+            <md-button ng-click="deleteConfirm($event, recipe)">
                 Delete
             </md-button>
-
-            <!-- buttons to submit / cancel form -->
-            <span ng-show="recipeForm.$visible">
-                <md-button md-no-link type="submit" class="form-button" ng-disabled="recipeForm.$waiting">
-                    Save
-                </md-button>
-                <md-button type="button" class="form-button" ng-disabled="recipeForm.$waiting" ng-click="recipeForm.$cancel()">
-                    Cancel
-                </md-button>
-            </span>
         </div>
 
+        <!-- Recipe Body  -->
         <div class="recipe-header">
-            <div class="recipe-description"> 
-                <h2 href="#" editable-text="recipe.name" class="recipe-name" e-required>{{ recipe.name }}</h2> 
+            <div class="recipe-description">
+                <h2 href="#" class="recipe-name" e-required>{{ recipe.name }}</h2>
                 <div class="row-section">
                     <div>
                         <span class="section-title">Author:</span>
-                        <span href="#" editable-text="recipe.author" class="section-text" e-required>{{ recipe.author }}</span>
+                        <span href="#" class="section-text" e-required>{{ recipe.author }}</span>
                     </div>
                     <div>
                         <span class="section-title">User:</span>
                         <span href="#" class="section-text">{{ recipe.user.givenName }}</span>
-                        <span href="#" class="section-text">{{ recipe.user.familyName }}</span> 
-                        <span href="#" class="section-text">({{ recipe.user.email }})</span> 
+                        <span href="#" class="section-text">{{ recipe.user.familyName }}</span>
+                        <span href="#" class="section-text">({{ recipe.user.email }})</span>
                     </div>
                     <div>
                         <span class="section-title">Last Modified:</span>
@@ -69,7 +54,7 @@
                     <br/>
 
                 </div>
-            </div> 
+            </div>
         </div>
 
         <div class="recipe-section">
@@ -97,7 +82,7 @@
                         <button ng-show="recipeForm.$visible" ng-click="remove(recipe.instructions, $index)">x</button>
                     </li>
                 </ul>
-                <button type=button ng-show="recipeForm.$visible" ng-click="add(recipe.instructions)">Add Instructions</button>
+                <button ng-show="recipeForm.$visible" ng-click="add(recipe.instructions)">Add Instructions</button>
             </div>
         </div>
     </form>

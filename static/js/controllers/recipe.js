@@ -1,7 +1,6 @@
 'use strict';
 
 // controls the display of a single recipe
-
 app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast', '$location', function($scope, $http, $window, $mdDialog, $mdToast) {
     $scope.message = ''; 
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];  
@@ -57,13 +56,13 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
     $scope.saveRecipe = function() {
         var modifiedRecipe = JSON.parse(JSON.stringify($scope.recipe)); 
         $scope.sendBack = $scope.tearDownRecipeObjects(modifiedRecipe);
-    	return $http.post('/api/recipe/' + urlKey + '/save', $scope.sendBack).then(
-    		function successCallback() {
+        return $http.post('/api/recipe/' + urlKey + '/save', $scope.sendBack).then(
+            function successCallback() {
                 $scope.saveAlert(); 
-    		}, function errorCallback() {
-    			$scope.errorAlert(); 
-    		}
-    	)
+            }, function errorCallback() {
+                $scope.errorAlert(); 
+            }
+        )
     }; 
 
     // delete recipe and redirect to recipe list page 
@@ -91,6 +90,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
               $scope.status = 'You cancelled the dialog.';
             });
     };
+    
 
     function DialogController($scope, $mdDialog) {
         $scope.hide = function() {

@@ -106,6 +106,17 @@ a Mac for development, you should install** `Docker for Mac`_.
     AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
     EOF
 
+Localenv
+~~~~~~~~
+Create the following file in your Noms directory:
+
+    local.env 
+
+Inside this file, input the following. Sub katharine.ngrok.io with an appropriate path.  
+
+    public_hostname=katharine.ngrok.io 
+
+
 Run Localhost
 ~~~~~~~~~~~~~
 
