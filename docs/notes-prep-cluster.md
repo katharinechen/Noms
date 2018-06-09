@@ -69,7 +69,7 @@ Our mongodb will live outside the cluster on a dedicated instance.
 
     Make the following selections for your settings:
       - instance type small (1.7GB mem)
-      - reguib us-west1-b
+      - region us-west1-b
       - add a 100gb extra disk
 
 2. Make note of the VM hostname shown [here](https://console.cloud.google.com/compute/instances?project=noms-197618)
