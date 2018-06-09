@@ -1,6 +1,5 @@
 attrs
 characteristic
-circus
 codado>=0.5.0
 contextdecorator
 coverage

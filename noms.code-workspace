@@ -7,13 +7,31 @@
     "settings": {
         "files.exclude": {
             "**/*.pyc": true,
-            "coverage": true,
+            "coverage/": true,
             ".tox": true,
             "build": true
         },
         // search.exclude: inherited from files.exclude
         "files.insertFinalNewline": true,
         "editor.insertSpaces": true,
-        "python.linting.pylintEnabled": false
+        "editor.tabSize": 4,
+        "python.linting.pylintEnabled": false,
+        "python.pythonPath": "~/.virtualenvs/noms/bin/python",
+        "python.venvPath": "~/.virtualenvs",
+        "search.exclude": {
+            "**/*.pyc": true,
+            "**/node_modules": true,
+            "coverage/*": true
+        },
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "terminal.integrated.shell.osx": "/bin/bash",
+        "terminal.integrated.env.linux": {
+            "PATH": "~/Brightmd/Aorta/bin:~/Brightmd/Aorta/node_modules/.bin:/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin",
+            "PYTHONPATH": "~/Brightmd/Aorta"
+        },
+        "terminal.integrated.env.osx": {
+            "PATH": "~/Brightmd/Aorta/bin:~/Brightmd/Aorta/node_modules/.bin:/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin",
+            "PYTHONPATH": "~/Brightmd/Aorta"
+        }
     }
 }
