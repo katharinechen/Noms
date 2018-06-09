@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-I used this script to dump and existing secret collection to kubernetes
+I used this script to dump an existing secret collection to kubernetes
 """
 
 from __future__ import print_function
