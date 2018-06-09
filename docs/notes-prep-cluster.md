@@ -17,7 +17,7 @@ off-the-shelf open source software. We will not install any Noms-specific softwa
     you're starting over, install the GCE SDK, do this step, **then** finish local setup with
     `gcloud container clusters get-credentials cluster-1`
 
-3. Download ths certificates that you need to run `kubectl` on our cluster.
+3. Download the certificates that you need to run `kubectl` on our cluster.
     ```bash
     gcloud container clusters get-credentials cluster-1
     ```
