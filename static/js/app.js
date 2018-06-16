@@ -14,3 +14,7 @@ app.controller("Preload", ['$rootScope', '$window', function ($rootScope, $windo
         $rootScope.preload = JSON.parse($window.nomsPreload);
     }
 }]);
+
+app.config(function($mdThemingProvider){
+    $mdThemingProvider.theme('docs-dark');
+});
