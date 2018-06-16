@@ -166,7 +166,7 @@ class APIServer(object):
             return ERROR(message=ResponseMsg.renameRecipe)
 
         recipe.author = data.get('author', USER().anonymous.givenName)
-        for field in ['tags', 'ingredients', 'instructions']: 
+        for field in ['tags', 'ingredients', 'instructions']:
             for i in data[field]:
                 recipe[field].append(i)
 

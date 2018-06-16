@@ -25,6 +25,16 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         return data;
     };
 
+    // delete recipe and redirect to recipe list page
+    $scope.deleteRecipe = function(recipe) {
+        return $http.post('/api/recipe/' + urlKey + '/delete').then(
+            function successCallback() {
+                $window.location.href = '/recipes';
+            }, function errorCallback() {
+            }
+        )
+    };
+
     // teardown recipe object transformations
     // array with objects are transformed back into array with strings
     $scope.tearDownRecipeObjects = function(data) {
@@ -52,27 +62,17 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         catObj.push(inserted);
     };
 
-    // save edited recipe
-    $scope.saveRecipe = function() {
-        var modifiedRecipe = JSON.parse(JSON.stringify($scope.recipe));
-        $scope.sendBack = $scope.tearDownRecipeObjects(modifiedRecipe);
-        return $http.post('/api/recipe/' + urlKey + '/save', $scope.sendBack).then(
-            function successCallback() {
-                $scope.saveAlert();
-            }, function errorCallback() {
-                $scope.errorAlert();
-            }
-        )
-    };
-
-    // delete recipe and redirect to recipe list page
-    $scope.deleteRecipe = function(recipe) {
-        return $http.post('/api/recipe/' + urlKey + '/delete').then(
-            function successCallback() {
-                $window.location.href = '/recipes';
-            }, function errorCallback() {
-            }
-        )
+    // confirmation modal for deleting a recipe
+    $scope.deleteConfirm = function(ev, recipe) {
+        var confirm = $mdDialog.confirm()
+                .title('Would you like to delete this recipe?')
+                .textContent('This is a permanent change. You will not be able to restore this recipe after delection.')
+                .targetEvent(ev)
+                .ok('Yes')
+                .cancel('No');
+        $mdDialog.show(confirm).then(function() {
+            $scope.deleteRecipe(recipe);
+        });
     };
 
     // show recipe edit modal
@@ -92,56 +92,51 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
         });
     };
 
-    function DialogController($scope, $mdDialog, recipe) {
+    function DialogController($scope, $http, $mdDialog, recipe) {
         $scope.recipe = recipe;
-        $scope.hide = function() {
-          $mdDialog.hide();
-        };
         $scope.cancel = function() {
           $mdDialog.cancel();
         };
-        $scope.answer = function(answer) {
-          $mdDialog.hide(answer);
+
+        // save edited recipe
+        $scope.saveRecipe = function(recipe) {
+            // var modifiedRecipe = JSON.parse(JSON.stringify($scope.recipe));
+            // $scope.sendBack = $scope.tearDownRecipeObjects(modifiedRecipe);
+            return $http.post('/api/recipe/' + urlKey + '/save', recipe).then(
+                function successCallback() {
+                    $scope.saveAlert();
+                }, function errorCallback() {
+                    $scope.errorAlert();
+                }
+            )
+            $mdDialog.hide()
+        };
+
+        // confirmation modal for saving a recipe
+        $scope.saveAlert = function(ev){
+            $mdDialog.show(
+                $mdDialog.alert()
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title('Saved')
+                .textContent('Your recipe was successfully saved. You did it!')
+                .ok('Got it!')
+                .targetEvent(ev)
+            );
+        };
+
+        // confirmation modal for saving a recipe
+        $scope.errorAlert = function(ev){
+            $mdDialog.show(
+                $mdDialog.alert()
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title('Error')
+                .textContent("There was an error with your save. Won't it have been awesome if we told you why?")
+                .ok('You suck!')
+                .targetEvent(ev)
+            );
         };
     };
 
-
-    // confirmation modal for deleting a recipe
-    $scope.deleteConfirm = function(ev, recipe) {
-        var confirm = $mdDialog.confirm()
-              .title('Would you like to delete this recipe?')
-              .textContent('This is a permanent change. You will not be able to restore this recipe after delection.')
-              .targetEvent(ev)
-              .ok('Yes')
-              .cancel('No');
-        $mdDialog.show(confirm).then(function() {
-            $scope.deleteRecipe(recipe);
-        });
-    };
-
-    // confirmation modal for saving a recipe
-    $scope.saveAlert = function(ev){
-        $mdDialog.show(
-            $mdDialog.alert()
-            .parent(angular.element(document.querySelector('#popupContainer')))
-            .clickOutsideToClose(true)
-            .title('Saved')
-            .textContent('Your recipe was successfully saved. You did it!')
-            .ok('Got it!')
-            .targetEvent(ev)
-        );
-    };
-
-    // confirmation modal for saving a recipe
-    $scope.errorAlert = function(ev){
-        $mdDialog.show(
-            $mdDialog.alert()
-            .parent(angular.element(document.querySelector('#popupContainer')))
-            .clickOutsideToClose(true)
-            .title('Error')
-            .textContent("There was an error with your save. Won't it have been awesome if we told you why?")
-            .ok('You suck!')
-            .targetEvent(ev)
-        );
-    };
 }]);

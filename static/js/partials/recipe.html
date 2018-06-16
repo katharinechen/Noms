@@ -7,7 +7,7 @@
     </div>
 
     <!-- Single Recipe  -->
-    <form editable-form name="recipeForm" onaftersave="saveRecipe()" class="recipe-form">
+    <form editable-form name="recipeForm" class="recipe-form">
 
         <!-- Button Sections  -->
         <div class="form-button-group">
@@ -47,7 +47,6 @@
                         <ul ng-repeat="tag in recipe.tags">
                             <li>
                                 <span editable-text="tag.description">{{ tag.description }}</span>
-                                <button type=button ng-show="recipeForm.$visible" ng-click="remove(recipe.tags, $index)">x</button>
                             </li>
                         </ul>
                     </div>
