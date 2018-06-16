@@ -22,17 +22,17 @@
 
                 <md-input class="md-block">
                     <label>Tags</label>
-                    <ul ng-repeat="tag in recipe.tags">
-                        <li>
-                            <input ng-model="tag.description"></input>
-                        </li>
-                    </ul>
+                    <md-chips ng-model="recipe.tags"
+                        placeholder="Enter a tag"
+                        secondary-placeholder="+Tag">
+                    </md-chips>
                 </md-input>
+
                 <md-input class="md-block">
                     <label>Ingredients</label>
                     <ul ng-repeat="ingredient in recipe.ingredients">
                         <li>
-                            <input ng-model="ingredient.description"></input>
+                            <input ng-model="ingredient"></input>
                         </li>
                     </ul>
                 </md-input>
@@ -40,7 +40,7 @@
                     <label>Instructions</label>
                     <ul ng-repeat="instruction in recipe.instructions">
                         <li>
-                            <input ng-model="instruction.description"></input>
+                            <input ng-model="instruction"></input>
                         </li>
                     </ul>
                 </md-input>

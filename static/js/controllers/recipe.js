@@ -7,23 +7,8 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
 
     var urlKey = $scope.preload.urlKey;
     $http({method: 'GET', url: '/api/recipe/' + urlKey}).then(function(recipe) {
-        $scope.recipe = $scope.buildRecipeObjects(recipe.data);
+        $scope.recipe = recipe.data;
     });
-
-    // create a recipe object that is easy for the front-end to use
-    // to use angular-xeditable, array with strings must be transformed into array with objects
-    $scope.buildRecipeObjects = function(data) {
-        for (var a=0; a < $scope.arraySections.length; a++) {
-            var section = data[$scope.arraySections[a]];
-            var newArray = [];
-            for (var i=0; i < section.length; i++) {
-                var newObj = {"description": section[i]};
-                newArray.push(newObj);
-            }
-            data[$scope.arraySections[a]] = newArray;
-        };
-        return data;
-    };
 
     // delete recipe and redirect to recipe list page
     $scope.deleteRecipe = function(recipe) {
@@ -33,33 +18,6 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
             }, function errorCallback() {
             }
         )
-    };
-
-    // teardown recipe object transformations
-    // array with objects are transformed back into array with strings
-    $scope.tearDownRecipeObjects = function(data) {
-        for (var a=0; a < $scope.arraySections.length; a++) {
-            var section = data[$scope.arraySections[a]];
-            var newArray = [];
-            for (var i=0; i < section.length; i++) {
-                newArray.push(section[i]['description']);
-            }
-            data[$scope.arraySections[a]] = newArray;
-        };
-        return data;
-    };
-
-    // remove an item to an array
-    $scope.remove = function(catObj, index) {
-        catObj.splice(index, 1);
-    };
-
-    // add an item to an array
-    $scope.add = function(catObj) {
-        var inserted = {
-            "description": ''
-        };
-        catObj.push(inserted);
     };
 
     // confirmation modal for deleting a recipe
@@ -100,8 +58,6 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
 
         // save edited recipe
         $scope.saveRecipe = function(recipe) {
-            // var modifiedRecipe = JSON.parse(JSON.stringify($scope.recipe));
-            // $scope.sendBack = $scope.tearDownRecipeObjects(modifiedRecipe);
             return $http.post('/api/recipe/' + urlKey + '/save', recipe).then(
                 function successCallback() {
                     $scope.saveAlert();

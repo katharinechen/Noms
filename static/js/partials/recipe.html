@@ -42,16 +42,12 @@
                         <span class="section-title">Recipe Yield:</span>
                         <span href="#" editable-text="recipe.recipeYield" class="section-text" e-required>{{ recipe.recipeYield }}</span>
                     </div>
+
                     <div>
                         <span class="section-title">Tags:</span>
-                        <ul ng-repeat="tag in recipe.tags">
-                            <li>
-                                <span editable-text="tag.description">{{ tag.description }}</span>
-                            </li>
-                        </ul>
+                        <md-chips ng-model="recipe.tags" readonly="true"></md-chips>
                     </div>
                     <br/>
-
                 </div>
             </div>
         </div>
@@ -64,11 +60,9 @@
                 <ul ng-repeat="ingredient in recipe.ingredients">
                     <li>
                         <i class="fa fa-check" aria-hidden="true"></i>
-                        <span editable-text="ingredient.description">{{ ingredient.description }}</span>
-                        <button type=button ng-show="recipeForm.$visible" ng-click="remove(recipe.ingredients, $index)">x</button>
+                        <span> {{ ingredient }}</span>
                     </li>
                 </ul>
-                <button type=button ng-show="recipeForm.$visible" ng-click="add(recipe.ingredients)">Add Ingredient</button>
             </div>
 
             <!-- Directions -->
@@ -77,11 +71,9 @@
                 <ul ng-repeat="instruction in recipe.instructions">
                     <li>
                         <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-                        <span editable-text="instruction.description">{{ instruction.description }}</span>
-                        <button ng-show="recipeForm.$visible" ng-click="remove(recipe.instructions, $index)">x</button>
+                        <span> {{ instruction }}</span>
                     </li>
                 </ul>
-                <button ng-show="recipeForm.$visible" ng-click="add(recipe.instructions)">Add Instructions</button>
             </div>
         </div>
     </form>
