@@ -77,7 +77,6 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
 
     // show recipe edit modal
     $scope.showEditModal = function(ev, recipe) {
-        console.log(recipe);
         $mdDialog.show({
           controller: DialogController,
           templateUrl: '/static/js/partials/edit.html',

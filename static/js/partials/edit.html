@@ -20,22 +20,30 @@
                     </md-input-container>
                 </div>
 
-                <md-input-container class="md-block">
+                <md-input class="md-block">
                     <label>Tags</label>
-                    <textarea ng-model="recipe.tags" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
-                </md-input-container>
-
-                <md-input-container class="md-block">
+                    <ul ng-repeat="tag in recipe.tags">
+                        <li>
+                            <input ng-model="tag.description"></input>
+                        </li>
+                    </ul>
+                </md-input>
+                <md-input class="md-block">
                     <label>Ingredients</label>
-                    <textarea ng-model="recipe.ingredients" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
-                </md-input-container>
-
-                <md-input-container class="md-block">
+                    <ul ng-repeat="ingredient in recipe.ingredients">
+                        <li>
+                            <input ng-model="ingredient.description"></input>
+                        </li>
+                    </ul>
+                </md-input>
+                <md-input class="md-block">
                     <label>Instructions</label>
-                    <textarea ng-model="recipe.instructions" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
-                </md-input-container>
-            </md-dialog-content>
-
+                    <ul ng-repeat="instruction in recipe.instructions">
+                        <li>
+                            <input ng-model="instruction.description"></input>
+                        </li>
+                    </ul>
+                </md-input>
         </div>
 
         <md-dialog-actions layout="row">
@@ -46,15 +54,5 @@
                 Cancel
             </md-button>
         </md-dialog-actions>
-
   </form>
 </md-dialog>
-
-<!-- <span ng-show="recipeForm.$visible">
-                <md-button ng-disabled="recipeForm.$waiting" ng-click="recipeForm.$cancel()">
-                    Cancel
-                </md-button>
-                <md-button ng-disabled="recipeForm.$waiting">
-                    Save
-                </md-button>
-            </span> -->
