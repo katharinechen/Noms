@@ -35,12 +35,12 @@ class Run(tap.Options):
         alias = self['alias']
         assert alias in DBAlias
         connect(**DBHost[alias])
-        
+
         # compute the current static digest hash
         staticPath = '%s/static' % os.getcwd()
         CONFIG.staticHash = digest(staticPath)
 
-        # get secrets from kubernetes and store them in mongo 
+        # get secrets from kubernetes and store them in mongo
         reactor.callWhenRunning(secret.loadFromK8s)
 
         # store an internally-shared secret
