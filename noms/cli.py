@@ -62,7 +62,7 @@ class Run(tap.Options):
         subprocess.Popen(shlex.split(watchCL), stdout=subprocess.PIPE)
 
         # run Sass
-        sassCL = "bundle exec sass --watch static/scss/base.scss:static/css/base.css --trace"
+        sassCL = "node-sass -w static/scss/base.scss -o static/css"
 
         subprocess.Popen(shlex.split(sassCL), stdout=subprocess.PIPE)
 
