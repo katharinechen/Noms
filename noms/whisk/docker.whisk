@@ -10,7 +10,6 @@ buildd=./deployment/build
 set -a; eval "$(whisk describe)"; set +a
 
 targets () {
-    echo noms-src
     echo noms-main
 }
 

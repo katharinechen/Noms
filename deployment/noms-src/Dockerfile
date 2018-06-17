@@ -1,8 +1,0 @@
-# vim:set ft=dockerfile:
-FROM tianon/true
-
-ENV noms /opt/Noms
-
-WORKDIR $noms
-COPY . .
-VOLUME $noms
