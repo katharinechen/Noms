@@ -1,6 +1,7 @@
 """
 Hooks for circusd to control startup
 """
+import os
 import time
 
 from pymongo import errors
@@ -10,7 +11,19 @@ from mongoengine import connect
 
 def before_start(watcher, arbiter, hook_name):
     time.sleep(0.5)
-    return importSample()
+    return importSample() and cleanDevEnvironment()
+
+
+def cleanDevEnvironment():
+    """
+    Fix problems doing development inside a container:
+
+    When doing development inside a container, where we are editing our local source files
+    (e.g. a Mac host running the noms service inside a Linux docker container with),
+    there are certain issues that have to be cleaned up/rebuilt before running Noms.
+    """
+    os.system("npm rebuild node-sass")
+    return True
 
 
 def importSample():

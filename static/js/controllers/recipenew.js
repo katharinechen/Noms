@@ -1,31 +1,59 @@
 "use strict";
 
-
 // controls the list of recipes
-app.controller('NewRecipeCtrl', ['$scope', '$http', function($scope, $http) {
+app.controller('NewRecipeCtrl', ['$scope', '$http', '$mdDialog', '$mdToast', '$window', function($scope, $http,  $mdDialog, $mdToast, $window) {
     $scope.recipe = {};
 
-    $scope.update = function(recipe) {
-        // temporary
+    // ingredients and instructions are entered in large textboxes 
+    // items could be seperated by either commas or newlines
+    // insert all items into an array 
+    $scope.parseTextBox = function(content) { 
+        return content.split(/[\n,]+/) 
+    }; 
+
+    $scope.saveNewRecipe = function(recipe) {
         recipe = Object.assign({}, recipe);
-        recipe.ingredients = [recipe.ingredients];
-        recipe.instructions = [recipe.instructions];
+
+        recipe.ingredients = $scope.parseTextBox(recipe.ingredients); 
+        recipe.instructions = $scope.parseTextBox(recipe.instructions);
+        recipe.tags = $scope.parseTextBox(recipe.tags); 
 
         $http.post('/api/recipe/create', recipe).then(
             (response) => {
                 var data = response.data;
-                $scope.ok = true;
-                if (data.status === "error") {
-                    $scope.message = 'Error: ' + data.message;
-                } else {
-                    $scope.message = "Done";
-                }
+                // when it is successfully, need to send the user to the right link 
+                // when applicable 
+                $scope.saveAlert(); 
+                $window.location.href = '/recipes/' + data.message;
             },
-
-            () => { // errors
-                $scope.ok = true;
-                $scope.message = "Server error with this request";
+            (err) => { // errors
+                $scope.errorAlert(err.message); 
             }
         );
+
     };
-}]);
+
+    // Confirmation modal for saving a recipe 
+    $scope.saveAlert = function(){
+        $mdDialog.show(
+            $mdDialog.alert()
+            .parent(angular.element(document.querySelector('#popupContainer')))
+            .clickOutsideToClose(true)
+            .title('Saved')
+            .textContent('Your recipe was successfully saved. You did it!')
+            .ok('Got it!')
+        );
+    };
+
+    // Confirmation modal for saving a recipe 
+    $scope.errorAlert = function(err){
+        $mdDialog.show(
+            $mdDialog.alert()
+            .parent(angular.element(document.querySelector('#popupContainer')))
+            .clickOutsideToClose(true)
+            .title('Error')
+            .textContent(err)
+            .ok('You suck!')
+        );
+    }; 
+}]); 

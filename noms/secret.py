@@ -1,6 +1,7 @@
 """
 Passwords, intended to be stored in the database
 """
+import base64
 import os
 import base64
 
@@ -83,7 +84,7 @@ def randomPassword(n=32):
     """
     Produce a string n*2 bytes long, of hex digits
     """
-    return ''.join('%02x' % ord(c) for c in os.urandom(n))
+    return base64.b64encode(os.urandom(n))
 
 
 @defer.inlineCallbacks

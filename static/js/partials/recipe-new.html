@@ -2,31 +2,54 @@
     <h1>New Recipe</h1>
 </div>
 
-<div class="form" ng-controller="NewRecipeCtrl">
-    
-    <!-- All the rows of the survey -->
-    <div class="form-row"> 
-        <label>Name</label>  
-        <input type="text" ng-model="recipe.name" />
-    </div> 
-    <div class="form-row"> 
-        <label>Author</label>
-        <input type="text" ng-model="recipe.author" />
-    </div> 
-    <div class="form-row"> 
-        <label>Ingredients</label>
-        <textarea ng-model="recipe.ingredients"></textarea>
-    </div> 
-    <div class="form-row"> 
-        <label>Instructions</label>
-        <textarea ng-model="recipe.instructions"></textarea>
-    </div> 
+<md-content layout-padding="" ng-controller="NewRecipeCtrl">
+    <div>
+        <form name="userForm">
+            
+            <div layout-gt-xs="row">
+              <md-input-container class="md-block" flex-gt-xs="">
+                <label>Author's Full Name</label>
+                <input ng-model="recipe.author" required="">
+              </md-input-container>
+            </div>
 
-    <!-- button -->
-    <div class="form-row">
-       <input type="submit" ng-click="update(recipe)" value="Save" />
-    </div> 
+            <div layout-gt-xs="row">
+              <md-input-container class="md-block" flex-gt-xs="">
+                <label>Recipe Name</label>
+                <input ng-model="recipe.name" required="">
+              </md-input-container>
+            </div>
 
-    <!-- ok message -->
-    <div class="alert-message" ng-show="ok">{{ message }}</div> 
-</div>
+
+            <div layout-gt-xs="row">
+              <md-input-container class="md-block" flex-gt-xs="">
+                <label>Yield</label>
+                <input ng-model="recipe.recipeYield" required="" type="number" min="1">
+              </md-input-container>
+            </div>
+
+            <md-input-container class="md-block">
+              <label>Tags</label>
+              <textarea ng-model="recipe.tags" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label>Ingredients</label>
+              <textarea ng-model="recipe.ingredients" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+              <label>Instructions</label>
+              <textarea ng-model="recipe.instructions" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
+            </md-input-container>
+            
+        </form>
+
+        <md-button type="button" class="form-button" ng-click="saveNewRecipe(recipe)" value="Save">
+            Submit
+        </md-button>
+
+        <!-- ok message -->
+        <div class="alert-message" ng-show="ok">{{ message }}</div> 
+    </div>
+</md-content>

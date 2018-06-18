@@ -86,6 +86,24 @@ need to do this.
     gke-cluster-1-default-pool-62a91304-kp4v   Ready     <none>    24d       v1.9.4-gke.1
 
 
+Get Ngrok Credentials
+~~~~~~~~~~~~~~~~~~~
+
+Download ``ngrok`` and save it in your ``env/noms/bin`` directory. Make this file executable. 
+
+You will need a project maintainer to provide you with a Ngrok auth key. 
+When you have them, run ``ngrok`` with the keys. This will create a config file that you edit. 
+
+.. code-block:: bash
+
+    tunnels: 
+      noms: 
+        proto: http 
+        addr: 8080
+        hostname: [get from project maintainer]
+
+To start ``ngrok`` you have to type the following in the terminal: ``ngrok start noms``. 
+
 Build Container Images
 ~~~~~~~~~~~~~~~~~~~~~~
 It is easiest to run Noms inside of a preconfigured container. You can build
@@ -108,6 +126,17 @@ a Mac for development, you should install** `Docker for Mac`_.
     docker volume create -o type=none -o device=$HOME/.kube -o o=bind kube
     # set some environment variables inside the container
     whisk describe > env
+
+Localenv
+~~~~~~~~
+Create the following file in your Noms directory:
+
+    local.env 
+
+Inside this file, input the following. Sub katharine.ngrok.io with an appropriate path.  
+
+    public_hostname=katharine.ngrok.io 
+
 
 Run Localhost
 ~~~~~~~~~~~~~
@@ -138,6 +167,18 @@ inside the container, because all of your local source files are already
 mounted in the container you started when you ran ``docker-compose``. This is
 accomplished using the named volume ``noms-src`` that you created at the end
 of `Build Container Images`.
+
+Running PDB
+************
+To run pdb, you have ``docker attach`` your ``noms-main:latest`` container. To see what your containers are::
+
+    docker ps 
+
+Grab the container id for your ``noms-main:latest`` image. In a new tab::
+
+    docker attach <noms-main id>
+
+Here you should be able to interact with pdb. 
 
 Restarting
 **********

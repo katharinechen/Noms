@@ -21,11 +21,17 @@ RUN apt update \
   && apt clean \
   && apt autoclean
 
+# Ubuntu's mongodb is also too old, prepare to install newer
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5 \
+    && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | \
+      tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+
 # install deb (OS) packages - required files at runtime
 RUN apt -y update \
     && apt -y install \
        git \
-       mongodb-clients \
+       mongodb-org-shell \
+       mongodb-org-tools \
        netcat \
        nodejs \
        python-pip \
