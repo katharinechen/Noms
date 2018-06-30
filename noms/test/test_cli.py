@@ -32,7 +32,7 @@ def test_postOptions(mockConfig):
 
     calls = mPopen.call_args_list
     assert calls[0][0][0][0] == 'watchmedo'
-    assert calls[1][0][0][:3] == ['bundle', 'exec', 'sass']
+    assert calls[1][0][0][:3] == ['node-sass', '-w', 'static/scss/base.scss']
 
     # did postOptions recreate the localapi secret?
     assert secret.get('localapi')[0] == 'localapi'

@@ -1,6 +1,7 @@
 """
 Passwords, intended to be stored in the database
 """
+import base64
 import os
 import StringIO
 
@@ -54,7 +55,7 @@ def randomPassword(n=32):
     """
     Produce a string n*2 bytes long, of hex digits
     """
-    return ''.join('%02x' % ord(c) for c in os.urandom(n))
+    return base64.b64encode(os.urandom(n))
 
 
 def loadFromS3(): 
@@ -68,6 +69,7 @@ def loadFromS3():
     the secret_pair collection.
     """
     if SecretPair.objects.count() == 0: 
+        print("Want secrets from bucket config.%s" % CONFIG.public_hostname)
         # get the secret_pair.json file from AWS 
         s3 = boto3.resource('s3')
         for b in s3.buckets.all():
@@ -75,7 +77,9 @@ def loadFromS3():
                 bucket = b
                 break
         else:
-            bucket = s3.Bucket("config.dev.nomsbook.com")
+            defaultBucket = "config.dev.nomsbook.com"
+            bucket = s3.Bucket(defaultBucket)
+            print("... switching to default secrets from %s" % defaultBucket)
 
         output = StringIO.StringIO() 
         bucket.download_fileobj('secret_pair/secret_pair.json', output)
@@ -83,3 +87,5 @@ def loadFromS3():
         # save it to mongo
         print("Piping hot fresh secrets from bucket %r" % bucket.name)
         SecretPair._get_collection().insert(json_util.loads(output.getvalue())) 
+    else:
+        print("Secrets are already loaded for %s" % CONFIG.public_hostname)
