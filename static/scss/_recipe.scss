@@ -11,7 +11,7 @@
     padding: 20px;
     margin-bottom: 20px;
     overflow: hidden; // need to if you have aligned items
-    color: black;
+    color: $color5;
 
     // first section
     .recipe-description {
@@ -21,7 +21,7 @@
             margin-top: 0px;
             font-size: 150%;
             text-align: center;
-            color: black;
+            color: $color5;
         }
     }
     // second section
@@ -32,11 +32,7 @@
         width: 240px;
     }
     .section-title {
-        font-size: 80%;
         font-weight: bold;
-    }
-    .section-text {
-        font-size: 80%;
     }
 }
 

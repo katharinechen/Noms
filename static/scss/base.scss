@@ -1,45 +1,44 @@
 // top-level SASS
 @import 'mediaquery';
-@import 'color-scheme'; 
+@import 'color-scheme';
 
 body {
-  // typical font things 
-  font-family: $old-standard-tt; 
+  // typical font things
+  font-family: $old-standard-tt;
   font-size: $standard-font-size;
 
-  background-color: #FCF8F2; 
-  // background-image: url('../images/purty-wood.png'); 
-  margin: 0px; 
-  padding: 0px; 
+  background-color: #FCF8F2;
+  margin: 0px;
+  padding: 0px;
 }
 
-h1 { 
-  font-size: 3*$standard-font-size; 
-  font-family: $glory; 
-  margin-bottom: 0; 
+h1 {
+  font-size: 3*$standard-font-size;
+  font-family: $glory;
+  margin-bottom: 0;
 }
 
-h2 { 
-  font-size: 2*$standard-font-size; 
-  color: $color5; 
+h2 {
+  font-size: 2*$standard-font-size;
+  color: $color5;
 }
 
-p { 
-  font-size: $standard-font-size; 
-  color: $color5; 
+p {
+  font-size: $standard-font-size;
+  color: $color5;
 }
 
 a {
     text-decoration: none;
     &:visited, &:link, &:active {
-        color: $color5; 
-    } 
-    &:hover,  { 
-        color: $color4; 
+        color: $color5;
+    }
+    &:hover,  {
+        color: $color4;
     }
 }
 
-// imports 
+// imports
 @import 'home';
 @import 'form';
 @import 'navbar';
