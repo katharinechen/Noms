@@ -8,7 +8,7 @@ app.controller('NewRecipeCtrl', ['$scope', '$http', '$mdDialog', '$mdToast', '$w
     // items could be seperated by either commas or newlines
     // insert all items into an array
     $scope.parseTextBox = function(content) {
-        return content.split(/[\n,]+/)
+        return content.split(/[\n,]+/);
     };
 
     $scope.saveNewRecipe = function(recipe) {
@@ -40,11 +40,11 @@ app.controller('NewRecipeCtrl', ['$scope', '$http', '$mdDialog', '$mdToast', '$w
     $scope.saveAlert = function(){
         $mdDialog.show(
             $mdDialog.alert()
-            .parent(angular.element(document.querySelector('#popupContainer')))
-            .clickOutsideToClose(true)
-            .title('Saved')
-            .textContent('Your recipe was successfully saved. You did it!')
-            .ok('Got it!')
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title('Saved')
+                .textContent('Your recipe was successfully saved. You did it!')
+                .ok('Got it!')
         );
     };
 
@@ -52,11 +52,11 @@ app.controller('NewRecipeCtrl', ['$scope', '$http', '$mdDialog', '$mdToast', '$w
     $scope.errorAlert = function(err){
         $mdDialog.show(
             $mdDialog.alert()
-            .parent(angular.element(document.querySelector('#popupContainer')))
-            .clickOutsideToClose(true)
-            .title('Error')
-            .textContent(err)
-            .ok('Ok')
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title('Error')
+                .textContent(err)
+                .ok('Ok')
         );
     };
 }]);
