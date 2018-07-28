@@ -103,6 +103,7 @@ class Server(object):
                 preload={'urlKey': urlKey}
                 )
 
+    # do we even use this function anymore? Should definitely check again
     @app.route("/ingredients/new")
     def createIngredient(self, request):
         return rendering.HumanReadable("application.html",
@@ -160,6 +161,7 @@ class APIServer(object):
         data = {k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
+        recipe.recipeYield = str(data['recipeYield'])
         recipe.user = ICurrentUser(request)
         recipe.urlKey = urlify(recipe.user.email, recipe.name)
         if Recipe.objects(urlKey=recipe.urlKey).first():

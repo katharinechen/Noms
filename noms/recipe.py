@@ -2,7 +2,7 @@
 Recipe Collection
 """
 import datetime
-import re 
+import re
 
 from mongoengine import fields
 
@@ -11,7 +11,7 @@ from noms.user import User, USER
 from noms import urlify
 
 
-def clean(string): 
+def clean(string):
     res = re.sub('\s+', ' ', string)
     return res.strip()
 
@@ -58,11 +58,11 @@ class Recipe(RenderableDocument):
                 #"modified": self.modified (date is currently not going to work)
             }
 
-    @classmethod 
-    def fromMicrodata(cls, microdata, userEmail): 
-        """ 
+    @classmethod
+    def fromMicrodata(cls, microdata, userEmail):
+        """
         Create a recipe object from microdata
-        """ 
+        """
         self = cls()
         self.name = clean(microdata.name)
         if microdata.author:
@@ -71,20 +71,20 @@ class Recipe(RenderableDocument):
             self.author = USER().anonymous.givenName
         self.user = User.objects.get(email=userEmail)
         self.urlKey = urlify(self.user.email, self.name)
-        for i in microdata.props['ingredients']: 
+        for i in microdata.props['ingredients']:
             self.ingredients.append(clean(i))
 
         array = microdata.props['recipeInstructions'][0].split('\n')
-        for i in array: 
+        for i in array:
             i = clean(i)
-            if i: 
+            if i:
                 self.instructions.append(i)
-        return self 
+        return self
 
-    def saveOnlyOnce(self): 
+    def saveOnlyOnce(self):
         """
         Save recipe from website
         """
-        if Recipe.objects(urlKey=self.urlKey): 
+        if Recipe.objects(urlKey=self.urlKey):
             return
-        self.save() 
+        self.save()
