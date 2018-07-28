@@ -31,23 +31,23 @@
                         <input ng-model="recipe.recipeYield" required=""  min="1">
                     </md-input-container>
 
-                    <md-input-container class="md-block">
-                        <label>Ingredients</label>
-                        <ul ng-repeat="ingredient in recipe.ingredients">
-                            <li>
-                                <input ng-model="ingredient"></input>
-                            </li>
-                        </ul>
-                    </md-input-container>
+                    <div class="md-block">
+                        <label>Ingredients are delicious</label>
+                        <div class=md-block ng-repeat="ingredient in recipe.ingredients track by $index">
+                            <md-input-container>
+                                <input ng-model="recipe.ingredients[$index]"></input>
+                            </md-input-container>
+                        </div>
+                    </div>
 
-                    <md-input-container class="md-block">
+                    <div class="md-block">
                         <label>Instructions</label>
-                        <ul ng-repeat="instruction in recipe.instructions">
-                            <li>
-                                <input ng-model="instruction"></input>
-                            </li>
-                        </ul>
-                    </md-input-container>
+                        <div ng-repeat="instruction in recipe.instructions track by $index">
+                            <md-input-container>
+                                <input ng-model="recipe.instructions[$index]"></input>
+                            </md-input-container>
+                        </div>
+                    </div>
                 </div>
             <md-content>
         </div>
