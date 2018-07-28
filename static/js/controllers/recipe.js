@@ -1,7 +1,7 @@
 'use strict';
 
 // controls the display of a single recipe
-app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast', '$location', function($scope, $http, $window, $mdDialog, $mdToast) {
+app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location', function($scope, $http, $window, $mdDialog) {
     $scope.message = '';
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];
 
@@ -11,7 +11,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
     });
 
     // delete recipe and redirect to recipe list page
-    $scope.deleteRecipe = function(recipe) {
+    $scope.deleteRecipe = function() {
         return $http.post('/api/recipe/' + urlKey + '/delete').then(
             function successCallback() {
                 $window.location.href = '/recipes';
@@ -65,7 +65,6 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$mdToast',
                     $scope.errorAlert();
                 }
             );
-            $mdDialog.hide();
         };
 
         // confirmation modal for saving a recipe
