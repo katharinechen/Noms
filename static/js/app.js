@@ -1,11 +1,7 @@
 'use strict';
 
 // root angular app
-var app = angular.module("noms", ["xeditable", "ngMaterial", "ngMessages"]);
-
-app.run(function(editableOptions) {
-    editableOptions.theme = 'default'; // bootstrap3 theme. Can be also 'bs2', 'default'
-});
+var app = angular.module("noms", ["ngMaterial", "ngMessages"]);
 
 app.controller("Preload", ['$rootScope', '$window', function ($rootScope, $window) {
     // the nomsPreload object on the window is used by jinja templates to pass
