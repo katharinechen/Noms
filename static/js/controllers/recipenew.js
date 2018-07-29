@@ -1,7 +1,7 @@
 "use strict";
 
 // controls the list of recipes
-app.controller('NewRecipeCtrl', ['$scope', '$http', '$mdDialog', '$mdToast', '$window', function($scope, $http,  $mdDialog, $mdToast, $window) {
+app.controller('NewRecipeCtrl', ['$scope', '$http', '$mdDialog', '$window', function($scope, $http,  $mdDialog, $window) {
     $scope.recipe = {};
 
     // ingredients and instructions are entered in large textboxes
