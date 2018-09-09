@@ -1,9 +1,17 @@
-'use strict'; 
+'use strict';
 
+app.controller('RecipeListCtrl', ['$scope', 'recipeFactory', function($scope, recipeFactory) {
+    // Initialize Variables
+    $scope.recipes;
+    $scope.status;
 
-// controls the list of recipes
-app.controller('RecipeListCtrl', ['$scope', '$http', function($scope, $http) {
-    $http({method: 'GET', url: '/api/recipe/list'}).then(function(recipelist) {
-        $scope.recipes = recipelist.data; 
-    }); 
-}]); 
+    // Read all recipes
+    $scope.showList = function() {
+        recipeFactory.listRecipes()
+            .then(function(response) {
+                $scope.recipes = response.data;
+            }), function (error) {
+                $scope.status = "Unable to load customer data: " + error.message;
+            }
+    };
+}]);

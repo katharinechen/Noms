@@ -1,26 +1,27 @@
 'use strict';
 
-// controls the display of a single recipe
-app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location', function($scope, $http, $window, $mdDialog) {
+// Controller for a single recipe
+app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory', function($scope, $window, $mdDialog, recipeFactory) {
+
+    // Initalize Variables
+    $scope.status;
     $scope.message = '';
+    $scope.recipe;
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];
-
     var urlKey = $scope.preload.urlKey;
-    $http({method: 'GET', url: '/api/recipe/' + urlKey}).then(function(recipe) {
-        $scope.recipe = recipe.data;
-    });
 
-    // delete recipe and redirect to recipe list page
-    $scope.deleteRecipe = function() {
-        return $http.post('/api/recipe/' + urlKey + '/delete').then(
-            function successCallback() {
-                $window.location.href = '/recipes';
-            }, function errorCallback() {
+    // Read
+    $scope.readRecipe = function(urlKey) {
+        recipeFactory.read(urlKey)
+            .then(function(response) {
+                $scope.recipe = response.data;
+            }), function (error) {
+                $scope.status = "Unable to read the recipe data: " + error.message;
             }
-        );
     };
+    $scope.readRecipe(urlKey);
 
-    // confirmation modal for deleting a recipe
+    // Delete
     $scope.deleteConfirm = function(ev, recipe) {
         var confirm = $mdDialog.confirm()
             .title('Would you like to delete this recipe?')
@@ -31,9 +32,19 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location'
         $mdDialog.show(confirm).then(function() {
             $scope.deleteRecipe(recipe);
         });
+
+        //Delete a single recipe
+        $scope.deleteRecipe = function() {
+            recipeFactory.delete(urlKey)
+                .then(function(response) {
+                    $window.location.href = '/recipes';
+                }), function (error) {
+                    $scope.status = "Unable to delete customer data: " + error.message;
+                }
+        };
     };
 
-    // show recipe edit modal
+    // Show recipe edit modal
     $scope.showEditModal = function(ev, recipe) {
         $mdDialog.show({
             controller: DialogController,
@@ -94,4 +105,43 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location'
         };
     }
 
+    //     // testing stuff
+    //     $scope.editComment = function(event, recipe, ingredientIndex) {
+
+    //         console.log("I am here");
+    //         console.log("recipe: " + recipe);
+    //         console.log("ingredientIndex:" + ingredientIndex);
+
+    //         var editDialog = {
+    //           modelValue: recipe.ingredients[ingredientIndex],
+    //           placeholder: 'Add a comment',
+    //           save: function (input) {
+    //             dessert.comment = input.$modelValue;
+    //           },
+    //           targetEvent: event,
+    //           title: 'Add a comment',
+    //         //   validators: {
+    //         //     'md-maxlength': 30
+    //         //   }
+    //         };
+
+    //         // how do I make mdEditDialog work????
+    //         var promise;
+    //         promise = $mdEditDialog.small(editDialog);
+    //         promise.then(function (ctrl) {
+    //           var input = ctrl.getInput();
+    //          // not sure what this does
+    //           input.$viewChangeListeners.push(function () {
+    //             input.$setValidity('test', input.$modelValue !== 'test');
+    //           });
+    //         });
+    //       };
+    // }
+
+
+
+
 }]);
+
+
+
