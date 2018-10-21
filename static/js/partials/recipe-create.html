@@ -1,0 +1,53 @@
+<div class="jumbo">
+    <h1>New Recipe</h1>
+</div>
+
+<md-content layout-padding="" ng-controller="CreateRecipeCtrl">
+    <div>
+        <form>
+            <div layout-gt-xs="row">
+                <md-input-container class="md-block" flex-gt-xs="">
+                    <label>Author's Full Name</label>
+                    <input ng-model="recipe.author" required="">
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="md-block" flex-gt-xs="">
+                    <label>Recipe Name</label>
+                    <input ng-model="recipe.name" required="">
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="md-block" flex-gt-xs="">
+                    <label>Yield</label>
+                    <input ng-model="recipe.recipeYield" required="" type="number" min="1">
+                </md-input-container>
+            </div>
+
+            <md-input-container class="md-block">
+                <label>Tags</label>
+                <textarea ng-model="recipe.tags" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Ingredients</label>
+                <textarea ng-model="recipe.ingredients" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Instructions</label>
+                <textarea ng-model="recipe.instructions" md-maxlength="150" rows="5" md-select-on-focus=""></textarea>
+            </md-input-container>
+
+        </form>
+
+        <md-button type="button" class="form-button" ng-click="saveNewRecipe(recipe)" value="Save">
+            Submit
+        </md-button>
+
+        <!-- ok message -->
+        <div class="alert-message" ng-show="ok">{{ message }}</div>
+    </div>
+</md-content>

@@ -127,7 +127,7 @@ def test_createRecipe(mockConfig, rootServer, req):
     Does /recipes/new show the creation page?
     """
     r = yield rootServer.handler('createRecipe', req)
-    assert re.search(r'partials/recipe-new.html', r.render(req))
+    assert re.search(r'partials/recipe-create.html', r.render(req))
 
 
 @inlineCallbacks
@@ -146,7 +146,7 @@ def test_showRecipe(mockConfig, rootServer, req):
     """
     r = yield rootServer.handler('showRecipe', req, 'foo-gmail-com-honeyed-cream-cheese-pear-pie-')
     rendered = r.render(req)
-    assert re.search(r'partials/recipe.html', rendered)
+    assert re.search(r'partials/recipe-read.html', rendered)
     assert re.search(r'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-',
         rendered)
 

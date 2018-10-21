@@ -90,7 +90,7 @@ class Server(object):
     @app.route("/recipes/new")
     def createRecipe(self, request):
         return rendering.HumanReadable('application.html',
-                partial='recipe-new.html')
+                partial='recipe-create.html')
 
     @app.route("/recipes/<string:urlKey>")
     def showRecipe(self, request, urlKey):
@@ -99,7 +99,7 @@ class Server(object):
         """
         # urlKey = unique id made up of author's email + recipe name
         return rendering.HumanReadable('application.html',
-                partial='recipe.html',
+                partial='recipe-read.html',
                 preload={'urlKey': urlKey}
                 )
 

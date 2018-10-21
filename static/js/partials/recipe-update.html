@@ -1,6 +1,6 @@
 <md-dialog>
-
     <form name="recipeForm" layout="column" ng-cloak class="md-inline-form">
+        <h1>General Information</h1>
         <div>
             <md-content layout-gt-sm="row" layout-padding>
                 <div>
@@ -31,39 +31,39 @@
                         <input ng-model="recipe.recipeYield" required=""  min="1">
                     </md-input-container>
 
+                    <h1>Ingredients</h1>
                     <md-card>
-                    <!-- how table works: https://codepen.io/anon/pen/BjvLVJ?editors=1010 -->
-                    <md-table-container>
-                        <table md-table>
-                            <tbody md-body>
-                                <tr md-row ng-repeat="ingredient in recipe.ingredients track by $index">
-                                    <td md-cell>
-                                        <span>
-                                            <!-- will make pretty later -->
-                                            <input ng-model="recipe.ingredients[$index]"></input>
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </md-table-container>
+                        <md-table-container>
+                            <table md-table>
+                                <tbody md-body>
+                                    <tr md-row ng-repeat="ingredient in recipe.ingredients track by $index">
+                                        <td md-cell>
+                                            <span>
+                                                <!-- will make pretty later -->
+                                                <input ng-model="recipe.ingredients[$index]"></input>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </md-table-container>
                     </md-card>
 
+                    <h1>Instruction</h1>
                     <md-card>
-                    <md-table-container>
-                        <table md-table>
-                            <tbody md-body>
-                                <tr md-row ng-repeat="instruction in recipe.instructions track by $index">
-                                    <td md-cell>
-                                        <span>
-                                            <!-- will make pretty later -->
-                                            <input ng-model="recipe.instructions[$index]"></input>
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </md-table-container>
+                        <md-table-container>
+                            <table md-table>
+                                <tbody md-body >
+                                    <tr md-row  ng-repeat="instructions in recipe.instructions track by $index">
+                                        <td md-cell>
+                                            <span>
+                                                <input ng-model="recipe.instructions[$index]">
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </md-table-container>
                     </md-card>
                 </div>
             <md-content>
@@ -77,6 +77,5 @@
                 Cancel
             </md-button>
         </md-dialog-actions>
-  </form>
-
+    </form>
 </md-dialog>

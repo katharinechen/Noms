@@ -1,26 +1,26 @@
 'use strict';
 
-// controls the display of a single recipe
-app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location', function($scope, $http, $window, $mdDialog) {
+// Controller for a single recipe
+app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory', function($scope, $window, $mdDialog, recipeFactory) {
+    // Initalize Variables
+    $scope.status;
     $scope.message = '';
+    $scope.recipe;
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];
-
     var urlKey = $scope.preload.urlKey;
-    $http({method: 'GET', url: '/api/recipe/' + urlKey}).then(function(recipe) {
-        $scope.recipe = recipe.data;
-    });
 
-    // delete recipe and redirect to recipe list page
-    $scope.deleteRecipe = function() {
-        return $http.post('/api/recipe/' + urlKey + '/delete').then(
-            function successCallback() {
-                $window.location.href = '/recipes';
-            }, function errorCallback() {
+    // Read
+    $scope.readRecipe = function(urlKey) {
+        recipeFactory.read(urlKey)
+            .then(function(response) {
+                $scope.recipe = response.data;
+            }), function (error) {
+                $scope.status = "Unable to read the recipe data: " + error.message;
             }
-        );
     };
+    $scope.readRecipe(urlKey);
 
-    // confirmation modal for deleting a recipe
+    // Delete
     $scope.deleteConfirm = function(ev, recipe) {
         var confirm = $mdDialog.confirm()
             .title('Would you like to delete this recipe?')
@@ -31,23 +31,33 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location'
         $mdDialog.show(confirm).then(function() {
             $scope.deleteRecipe(recipe);
         });
+
+        //Delete a single recipe
+        $scope.deleteRecipe = function() {
+            recipeFactory.delete(urlKey)
+                .then(function(response) {
+                    $window.location.href = '/recipes';
+                }), function (error) {
+                    $scope.status = "Unable to delete customer data: " + error.message;
+                }
+        };
     };
 
-    // show recipe edit modal
+    // Show recipe edit modal
     $scope.showEditModal = function(ev, recipe) {
         $mdDialog.show({
             controller: DialogController,
-            templateUrl: '/static/js/partials/edit.html',
+            templateUrl: '/static/js/partials/recipe-update.html',
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose:true,
             locals: {recipe: recipe},
         })
-            .then(function(answer) {
-                $scope.status = 'You said the information was "' + answer + '".';
-            }, function() {
-                $scope.status = 'You cancelled the dialog.';
-            });
+        .then(function(answer) {
+            $scope.status = 'You said the information was "' + answer + '".';
+        }, function() {
+            $scope.status = 'You cancelled the dialog.';
+        });
     };
 
     function DialogController($scope, $http, $mdDialog, recipe) {
@@ -56,7 +66,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location'
             $mdDialog.cancel();
         };
 
-        // save edited recipe
+        // Save edited recipe
         $scope.saveRecipe = function(recipe) {
             return $http.post('/api/recipe/' + urlKey + '/save', recipe).then(
                 function successCallback() {
@@ -67,7 +77,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location'
             );
         };
 
-        // confirmation modal for saving a recipe
+        // Confirmation modal for saving a recipe
         $scope.saveAlert = function(ev){
             $mdDialog.show(
                 $mdDialog.alert()
@@ -80,7 +90,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location'
             );
         };
 
-        // confirmation modal for saving a recipe
+        // Confirmation modal for saving a recipe
         $scope.errorAlert = function(ev){
             $mdDialog.show(
                 $mdDialog.alert()
@@ -93,5 +103,7 @@ app.controller('Recipe', ['$scope', '$http', '$window', '$mdDialog', '$location'
             );
         };
     }
-
 }]);
+
+
+
