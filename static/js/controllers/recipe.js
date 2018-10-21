@@ -48,7 +48,7 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
     $scope.showEditModal = function(ev, recipe) {
         $mdDialog.show({
             controller: DialogController,
-            templateUrl: '/static/js/partials/edit.html',
+            templateUrl: '/static/js/partials/recipe-update.html',
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose:true,

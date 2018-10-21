@@ -7,7 +7,7 @@
     </div>
 
     <!-- Single Recipe  -->
-    <form editable-form name="recipeForm" class="recipe-form">
+    <form name="recipeForm" class="recipe-form">
 
         <!-- Button Sections  -->
         <div>
@@ -22,11 +22,11 @@
         <!-- Recipe Body  -->
         <div class="recipe-header">
             <div class="recipe-description">
-                <h2 href="#" class="recipe-name" e-required>{{ recipe.name }}</h2>
+                <h2 href="#" class="recipe-name">{{ recipe.name }}</h2>
                 <div class="row-section">
                     <div>
                         <span class="section-title">Author:</span>
-                        <span href="#" class="section-text" e-required>{{ recipe.author }}</span>
+                        <span href="#" class="section-text">{{ recipe.author }}</span>
                     </div>
                     <div>
                         <span class="section-title">User:</span>
@@ -40,7 +40,7 @@
                     </div>
                     <div>
                         <span class="section-title">Recipe Yield:</span>
-                        <span href="#" editable-text="recipe.recipeYield" class="section-text" e-required>{{ recipe.recipeYield }}</span>
+                        <span href="#" class="section-text">{{ recipe.recipeYield }}</span>
                     </div>
 
                     <div>

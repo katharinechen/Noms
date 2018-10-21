@@ -1,7 +1,7 @@
 "use strict";
 
 
-describe("static/js/controllers/recipenew.js : NewRecipeCtrl", () => {
+describe("static/js/controllers/recipe-new.js : NewRecipeCtrl", () => {
     beforeEach(module("noms"));
 
     beforeEach(inject(($injector, $controller, $rootScope, $window) => {
