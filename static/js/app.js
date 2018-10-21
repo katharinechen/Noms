@@ -14,6 +14,11 @@ app.controller("Preload", ['$rootScope', '$window', function ($rootScope, $windo
 app.factory('recipeFactory', ['$http', function($http) {
     var recipeFactory = {};
 
+    // Create a new recipe
+    recipeFactory.create = function(recipe) {
+        return $http.post('/api/recipe/create', recipe);
+    };
+
     // Read a single recipe
     recipeFactory.read = function(urlKey) {
         return $http.get('/api/recipe/' + urlKey);
