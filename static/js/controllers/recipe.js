@@ -2,7 +2,6 @@
 
 // Controller for a single recipe
 app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory', function($scope, $window, $mdDialog, recipeFactory) {
-
     // Initalize Variables
     $scope.status;
     $scope.message = '';
@@ -67,7 +66,7 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
             $mdDialog.cancel();
         };
 
-        // save edited recipe
+        // Save edited recipe
         $scope.saveRecipe = function(recipe) {
             return $http.post('/api/recipe/' + urlKey + '/save', recipe).then(
                 function successCallback() {
@@ -78,7 +77,7 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
             );
         };
 
-        // confirmation modal for saving a recipe
+        // Confirmation modal for saving a recipe
         $scope.saveAlert = function(ev){
             $mdDialog.show(
                 $mdDialog.alert()
@@ -91,7 +90,7 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
             );
         };
 
-        // confirmation modal for saving a recipe
+        // Confirmation modal for saving a recipe
         $scope.errorAlert = function(ev){
             $mdDialog.show(
                 $mdDialog.alert()
@@ -104,43 +103,6 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
             );
         };
     }
-
-    //     // testing stuff
-    //     $scope.editComment = function(event, recipe, ingredientIndex) {
-
-    //         console.log("I am here");
-    //         console.log("recipe: " + recipe);
-    //         console.log("ingredientIndex:" + ingredientIndex);
-
-    //         var editDialog = {
-    //           modelValue: recipe.ingredients[ingredientIndex],
-    //           placeholder: 'Add a comment',
-    //           save: function (input) {
-    //             dessert.comment = input.$modelValue;
-    //           },
-    //           targetEvent: event,
-    //           title: 'Add a comment',
-    //         //   validators: {
-    //         //     'md-maxlength': 30
-    //         //   }
-    //         };
-
-    //         // how do I make mdEditDialog work????
-    //         var promise;
-    //         promise = $mdEditDialog.small(editDialog);
-    //         promise.then(function (ctrl) {
-    //           var input = ctrl.getInput();
-    //          // not sure what this does
-    //           input.$viewChangeListeners.push(function () {
-    //             input.$setValidity('test', input.$modelValue !== 'test');
-    //           });
-    //         });
-    //       };
-    // }
-
-
-
-
 }]);
 
 
