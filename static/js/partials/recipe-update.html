@@ -33,70 +33,37 @@
 
                     <h1>Ingredients</h1>
                     <md-card>
-                    <md-table-container>
-                        <table md-table>
-                            <tbody md-body>
-                                <tr md-row ng-repeat="ingredient in recipe.ingredients track by $index">
-                                    <td md-cell>
-                                        <span>
-                                            <!-- will make pretty later -->
-                                            <input ng-model="recipe.ingredients[$index]"></input>
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </md-table-container>
+                        <md-table-container>
+                            <table md-table>
+                                <tbody md-body>
+                                    <tr md-row ng-repeat="ingredient in recipe.ingredients track by $index">
+                                        <td md-cell>
+                                            <span>
+                                                <!-- will make pretty later -->
+                                                <input ng-model="recipe.ingredients[$index]"></input>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </md-table-container>
                     </md-card>
 
                     <h1>Instruction</h1>
                     <md-card>
-                            <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
-                              <div class="md-toolbar-tools">
-                                <span>Instructions</span>
-                                <div flex></div>
-                              </div>
-                            </md-toolbar>
-
-                            <md-table-container>
-                              <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected" md-progress="promise">
-
-                                <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
-                                  <tr md-row>
-                                    <th md-column md-order-by="name"><span>Index</span></th>
-                                    <th md-column md-order-by="type"><span>Instruction</span></th>
-                                  </tr>
-                                </thead>
-
-                                <tbody md-body>
-                                  <tr md-row ng-repeat="instruction in recipe.instructions track by $index">
-                                    <td md-cell>{{ $index }}</td>
-                                    <!-- <td md-cell>{{ instruction }}</td> -->
-
-                                    <td md-cell ng-click="editComment($event, recipe, $index)" ng-class="{'md-placeholder': !instruction}">
-                                            {{instruction || 'Add a comment'}}
-                                    </td>
-                                  </tr>
+                        <md-table-container>
+                            <table md-table>
+                                <tbody md-body >
+                                    <tr md-row  ng-repeat="instructions in recipe.instructions track by $index">
+                                        <td md-cell>
+                                            <span>
+                                                <input ng-model="recipe.instructions[$index]">
+                                            </span>
+                                        </td>
+                                    </tr>
                                 </tbody>
-                              </table>
-                            </md-table-container>
-                    </md-card>
-
-                    <md-card>
-                    <md-table-container>
-                        <table md-table>
-                            <tbody md-body>
-                                <tr md-row ng-repeat="instruction in recipe.instructions track by $index">
-                                    <td md-cell>
-                                        <span>
-                                            <!-- will make pretty later -->
-                                            <input ng-model="recipe.instructions[$index]"></input>
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </md-table-container>
+                            </table>
+                        </md-table-container>
                     </md-card>
                 </div>
             <md-content>
