@@ -1,37 +1,24 @@
-<!-- Universal Header -->
-
 <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
 
-<!-- Angular Material style sheet -->
+<!-- Angular  -->
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
 
-<!-- Angular Material Library -->
+<!-- Angular Material -->
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-animate.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-aria.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-messages.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angular_material/1.1.6/angular-material.min.js"></script>
 
-<!-- angular-material-data-table -->
-<!-- <script src="//rawgit.com/daniel-nagy/md-data-table/master/dist/md-data-table.js"></script>
--->
-<!-- FIXME - we gotta rehost this -->
-<link rel="stylesheet" href="//rawgit.com/daniel-nagy/md-data-table/master/dist/md-data-table.css"></link>
-
+<!-- Design Libraries -->
 <link rel="stylesheet" type="text/css" href= "//cdn.jsdelivr.net/bootstrap-social/4.12.0/bootstrap-social.css"></link>
 <link href="//d2my2c6k7ufqsm.cloudfront.net/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
-<!-- imported fonts from google fonts  -->
 <link href="//fonts.googleapis.com/css?family=Give+You+Glory|Old+Standard+TT" rel="stylesheet">
 
 <span ng-controller="Preload">
-
-<!-- data preloaded by the server, becomes part of the Noms scope in angular -->
-<script>
-<!-- <% set nomsPreload = preload or none %> -->
-window.nomsPreload = '<< nomsPreload | json >>';
-</script>
+    <!-- data preloaded by the server, becomes part of the Noms scope in angular -->
+    <script>
+        <!-- <% set nomsPreload = preload or none %> -->
+        window.nomsPreload = '<< nomsPreload | json >>';
+    </script>
 </span>
-
-
-<!-- End Universal Header -->

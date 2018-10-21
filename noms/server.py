@@ -103,12 +103,6 @@ class Server(object):
                 preload={'urlKey': urlKey}
                 )
 
-    # do we even use this function anymore? Should definitely check again
-    @app.route("/ingredients/new")
-    def createIngredient(self, request):
-        return rendering.HumanReadable("application.html",
-                partial="ingredient-new.html")
-
     @app.route("/api/", branch=True)
     @enter('noms.server.APIServer')
     def api(self, request, subKlein):
@@ -277,7 +271,6 @@ class APIServer(object):
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
-
         items = microdata.get_items(pageSource)
         recipesSaved = []
 
