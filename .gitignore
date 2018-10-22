@@ -32,3 +32,5 @@ twistd*
 twisted/plugins/*.cache
 yarn-error.log
 yarn.lock
+
+/recipe.search
