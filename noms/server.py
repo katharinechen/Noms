@@ -151,11 +151,13 @@ class APIServer(object):
         """
         Save recipes
         """
+        optional = lambda x: data(x) if data.get(x) else None
+
         data = json.load(request.content)
         data = {k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
-        recipe.recipeYield = str(data['recipeYield'])
+        recipe.recipeYield = str(optional('recipeYield'))
         recipe.user = ICurrentUser(request)
         recipe.urlKey = urlify(recipe.user.email, recipe.name)
         if Recipe.objects(urlKey=recipe.urlKey).first():
@@ -163,8 +165,9 @@ class APIServer(object):
 
         recipe.author = data.get('author', USER().anonymous.givenName)
         for field in ['tags', 'ingredients', 'instructions']:
-            for i in data[field]:
-                recipe[field].append(i)
+            if data.get(field):
+                for i in data[field]:
+                    recipe[field].append(i)
 
         recipe.save()
         return OK(message=recipe.urlKey)

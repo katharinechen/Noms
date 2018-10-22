@@ -131,15 +131,6 @@ def test_createRecipe(mockConfig, rootServer, req):
 
 
 @inlineCallbacks
-def test_createIngredient(mockConfig, rootServer, req):
-    """
-    Does /ingredients/new show the ingredient creation page?
-    """
-    r = yield rootServer.handler('createIngredient', req)
-    assert re.search(r'partials/ingredient-new.html', r.render(req))
-
-
-@inlineCallbacks
 def test_showRecipe(mockConfig, rootServer, req):
     """
     Does /recipes/xxx show recipe xxx?
@@ -343,7 +334,7 @@ def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
     """
     reqJS = requestJSON([], content=weirdSoupPOST, session_user=weirdo)
     resp = yield apiServer.handler('createRecipeSave', reqJS)
-    assert resp == OK()
+    assert resp == OK(message='weirdo-gmail-com-weird-soup-')
 
     # the second time we should get an error because it exists
     reqJS = requestJSON([], content=weirdSoupPOST, session_user=weirdo)
