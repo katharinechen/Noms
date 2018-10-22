@@ -1,8 +1,10 @@
 """
 Twisted Web Routing
 """
-import json
+from __future__ import print_function
+
 from functools import wraps
+import json
 
 import attr
 
@@ -75,7 +77,7 @@ class Server(object):
         if request.postpath and request.postpath[0].startswith('HASH-'):
             del request.postpath[0]
         else:
-            print "WARNING: request under /static/ with no HASH- cache busting"
+            print("WARNING: request under /static/ with no HASH- cache busting")
         return static.File("./static")
 
     @app.route("/")
@@ -181,7 +183,7 @@ class APIServer(object):
         Put a new static hash in the database for cache-busting
         """
         CONFIG.staticHash = hash
-        print 'New hash=%r' % CONFIG.staticHash
+        print('New hash=%r' % CONFIG.staticHash)
         return OK(message='hash=%r' % CONFIG.staticHash)
 
     @app.route("/recipe/<string:urlKey>")

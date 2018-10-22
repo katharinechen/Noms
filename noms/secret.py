@@ -1,8 +1,10 @@
 """
 Passwords, intended to be stored in the database
 """
+from __future__ import print_function
+
 import os
-import StringIO
+import io
 
 from bson import json_util  
 
@@ -77,7 +79,7 @@ def loadFromS3():
         else:
             bucket = s3.Bucket("config.dev.nomsbook.com")
 
-        output = StringIO.StringIO() 
+        output = io.StringIO() 
         bucket.download_fileobj('secret_pair/secret_pair.json', output)
 
         # save it to mongo

@@ -1,6 +1,8 @@
 """
 Produce a valid usertoken from a local user's email address
 """
+from __future__ import print_function
+
 from mongoengine import connect
 
 from codado.tx import Main
@@ -21,7 +23,7 @@ class UserToken(Main):
         alias = self.parent['alias']
         assert alias in DBAlias
         connect(**DBHost[alias])
-        print get(self['email'])
+        print(get(self['email']))
 
 
 def get(email):

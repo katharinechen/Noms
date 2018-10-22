@@ -1,8 +1,10 @@
 """
 Generate an md5 hash for a directory of files
 """
-import os
+from __future__ import print_function
+
 import hashlib
+import os
 
 from humanhash import humanize
 
@@ -35,7 +37,7 @@ class Digester(Main):
     def postOptions(self):
         dig = digest(self['directory'])
         self._digest = dig
-        print dig
+        print(dig)
         if self['update-url']:
             return task.react(self.doUpdate)
 
@@ -51,7 +53,7 @@ class Digester(Main):
 
         assert res.code == 200, 'Fail %s\n%s' % (res.code, response)
 
-        print 'update success'
+        print('update success')
 
 
 def digest(path):

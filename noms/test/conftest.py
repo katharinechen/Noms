@@ -1,8 +1,12 @@
 """
 Fixtures and common options for pytest tests
 """
-from cStringIO import StringIO
+from io import StringIO
 import json
+
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 from pytest import fixture
 
@@ -118,7 +122,7 @@ def mockConfig(mockDatabase):
     import noms
 
     try:
-        cols = mockDatabase.collection_names()
+        cols = mockDatabase.list_collection_names()
         for c in cols: # pragma: nocover
             assert mockDatabase[c].count() == 0, c + " not empty"
 

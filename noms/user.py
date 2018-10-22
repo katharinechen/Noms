@@ -33,7 +33,7 @@ class User(RenderableDocument):
     """
     email = fields.StringField(require=True, unique=True)
     passwordHash = fields.StringField()
-    roles = fields.ListField(fields.StringField(choices=Roles.keys()))
+    roles = fields.ListField(fields.StringField(choices=list(Roles.keys())))
     givenName = fields.StringField()
     familyName = fields.StringField()
 
@@ -150,7 +150,7 @@ def USER():
         u = User.objects(email=_U.email).first()
         if u is None:
             "Never saved before"
-            _U.save(force_insert=True)
+            _U.save()
         else: # pragma: nocover
             "Swapping in-mem user object with one we found on disk"
             _USERS[k] = _U = u

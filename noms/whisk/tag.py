@@ -4,8 +4,10 @@ Set a nomstag for this commit
 """
 from __future__ import print_function
 
-import json
 import datetime
+import json
+
+from builtins import object
 
 import attr
 

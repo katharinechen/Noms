@@ -1,10 +1,12 @@
 """
 Whisk subcommands implemented as shell scripts.
 """
-import sys
+from __future__ import print_function
+
 import pipes
 import re
 from subprocess import Popen, PIPE, STDOUT
+import sys
 
 import yaml
 
@@ -27,7 +29,7 @@ class BashCommand(Main):
         """
         data = {}
         for line in open(WHISK_DIR(filename)):
-            if re.match('^\s*#\s*@@', line):
+            if re.match(r'^\s*#\s*@@', line):
                 ymlText = line[line.index('@@')+2:].strip()
                 data.update(yaml.load(ymlText))
         return data
@@ -37,7 +39,7 @@ class BashCommand(Main):
         Run the command I'm wrapped around, displaying the ouptut
         """
         cmd = [WHISK_DIR(self.path)] + (self.rawArgs if self.rawArgs else [])
-        print "Running: %r" % ' '.join(pipes.quote(x) for x in cmd)
+        print("Running: %r" % ' '.join(pipes.quote(x) for x in cmd))
         proc = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1)
         while True: # this is weird, workaround to a bug in Popen that
             # makes stdout block instead of giving us data line by line
@@ -62,6 +64,6 @@ def makeCommand(scriptName):
         self.path = WHISK_DIR(scriptName)
         return self
 
-    BashMaker.func_name = scriptName.split('.whisk')[0].capitalize()
+    BashMaker.__name__ = scriptName.split('.whisk')[0].capitalize()
 
     return BashMaker

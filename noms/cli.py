@@ -1,6 +1,8 @@
 """
 Command-line interface for noms
 """
+from __future__ import print_function
+
 import os
 import shlex
 import subprocess
@@ -46,7 +48,7 @@ class Run(tap.Options):
         if not secret.get('localapi', None):
             password = secret.randomPassword()
             secret.put('localapi', 'localapi', password)
-            print "Stored new localapi password"
+            print("Stored new localapi password")
 
         # ensure that at least the special users exist
         user.USER()
