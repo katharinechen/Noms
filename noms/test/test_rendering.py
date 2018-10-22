@@ -14,7 +14,8 @@ from mongoengine import StringField, IntField
 
 from mock import patch
 
-from noms import rendering, secret, recipe, urlify, user
+import noms
+from noms import recipe, rendering, secret, urlify, user
 
 
 def test_renderHumanReadable(mockConfig):
@@ -32,7 +33,7 @@ def test_renderHumanReadable(mockConfig):
     """)
     tplTemplate = Template(tplString)
 
-    pCONFIG = patch.object(rendering, 'CONFIG', mockConfig)
+    pCONFIG = patch.object(noms, 'CONFIG', mockConfig)
     with pCONFIG:
         hrTemplate = rendering.HumanReadable(tplTemplate,
                 banana='yellow and delicious')

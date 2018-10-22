@@ -121,20 +121,20 @@ def mockConfig(mockDatabase):
     # in tests, we replace the global CONFIG without patching it
     import noms
 
+    cols = mockDatabase.collection_names()
     try:
-        cols = mockDatabase.list_collection_names()
         for c in cols: # pragma: nocover
-            assert mockDatabase[c].count() == 0, c + " not empty"
+            assert mockDatabase[c].count() == 0, c + u" not empty"
 
         cfg = noms.Config()
         descr = describe.Description()
-        descr.public_hostname = ('cli', 'app.nomsbook.com')
+        descr.public_hostname = (u'cli', u'app.nomsbook.com')
         cfg.description = descr
-        cfg.staticHash = 'asdfasdfsdaf'
+        cfg.staticHash = u'asdfasdfsdaf'
 
         from noms import secret
-        secret.put('auth0', 'abc123', 'ABC!@#')
-        secret.put('localapi', 'localapi', '!@#ABC')
+        secret.put(u'auth0', u'abc123', u'ABC!@#')
+        secret.put(u'localapi', u'localapi', u'!@#ABC')
 
         with patch.object(noms, 'CONFIG', cfg):
             yield cfg
@@ -145,7 +145,7 @@ def mockConfig(mockDatabase):
         for c in cols: # pragma: nocover
             col = mockDatabase[c]
             col.remove()
-            assert col.count() == 0, "%r not empty" % c
+            assert col.count() == 0, u"%r not empty" % c
 
 
 @fixture
@@ -168,9 +168,9 @@ def weirdo(mockConfig):
     """
     from noms import user
     return user.User(
-            email='weirdo@gmail.com', 
-            givenName='Weirdo',
-            familyName='User', 
+            email=u'weirdo@gmail.com', 
+            givenName=u'Weirdo',
+            familyName=u'User', 
             roles=[user.Roles.user]).save()
 
 
@@ -180,9 +180,9 @@ def localapi(mockConfig):
     Save a copy of localapi in the mock db
     """
     localapi = user.User(
-        email='localapi@example.com',
+        email=u'localapi@example.com',
         roles=[user.Roles.localapi],
-        givenName='Local API',
+        givenName=u'Local API',
         )
     localapi.save()
     return localapi
@@ -203,7 +203,7 @@ def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **
     """
     content = kwargs.pop('content', None)
     if isinstance(content, dict):
-        kwargs['content'] = StringIO(json.dumps(content))
+        kwargs['content'] = StringIO(json.dumps(content).decode('utf-8'))
     elif content: # pragma: nocover
         kwargs['content'] = StringIO(str(content))
     else:
@@ -213,9 +213,9 @@ def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **
     user = kwargs.pop('user', None)
     if user:
         tok = user.asToken()
-        requestHeaders = requestHeaders + (('x-token', [tok]),)
+        requestHeaders = requestHeaders + ((u'x-token', [tok]),)
 
-    responseHeaders = responseHeaders + (('content-type', ['application/json']),)
+    responseHeaders = responseHeaders + ((u'content-type', [u'application/json']),)
     req = request(postpath, requestHeaders, responseHeaders, **kwargs)
 
     return req

@@ -32,6 +32,10 @@
         "terminal.integrated.env.osx": {
             "PATH": "~/Brightmd/Aorta/bin:~/Brightmd/Aorta/node_modules/.bin:/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin",
             "PYTHONPATH": "~/Brightmd/Aorta"
-        }
+        },
+        "python.unitTest.pyTestEnabled": true,
+        "python.unitTest.pyTestArgs": [
+            "--no-cov"
+        ]
     }
 }

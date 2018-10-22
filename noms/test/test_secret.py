@@ -57,19 +57,19 @@ def s3client():
     """
     An s3 resource with appropriate mocks
     """
-    devBucket = MagicMock(name='Bucket Dev')
+    devBucket = MagicMock(name=u'Bucket Dev')
     devBucket.name = 'config.dev.nomsbook.com'
-    devJSON = '{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"devnomsbookcom_auth0_key","secret":"debnomsbookcom_auth0_secret"}'
-    devBucket.download_fileobj = MagicMock(name='download_fileobj',
+    devJSON = u'{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"devnomsbookcom_auth0_key","secret":"debnomsbookcom_auth0_secret"}'
+    devBucket.download_fileobj = MagicMock(name=u'download_fileobj',
             side_effect=lambda s, io: io.write(devJSON))
 
-    coryBucket = MagicMock(name='Bucket Cory')
-    coryBucket.name = 'config.cory.ngrok.io'
-    coryJSON = '{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"coryngrokio_auth0_key","secret":"coryngrokio_auth0_secret"}'
-    coryBucket.download_fileobj = MagicMock(name='download_fileobj', 
+    coryBucket = MagicMock(name=u'Bucket Cory')
+    coryBucket.name = u'config.cory.ngrok.io'
+    coryJSON = u'{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"coryngrokio_auth0_key","secret":"coryngrokio_auth0_secret"}'
+    coryBucket.download_fileobj = MagicMock(name=u'download_fileobj', 
             side_effect=lambda s, io: io.write(coryJSON))
 
-    ret = MagicMock(name='S3 Resource')
+    ret = MagicMock(name=u'S3 Resource')
     ret.Bucket = MagicMock()
     ret.Bucket.return_value = devBucket
     ret.buckets.all.return_value = [devBucket, coryBucket]
