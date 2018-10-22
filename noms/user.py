@@ -115,7 +115,7 @@ class User(RenderableDocument):
         """
         Create a JSON token for this user
         """
-        _, sec = secret.get('localapi')
+        _, sec = secret.get(u'localapi')
         s = Serializer(sec, expires_in=secret.SECRET_EXPIRATION)
         return s.dumps({'email': self.email})
 

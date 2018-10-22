@@ -20,7 +20,8 @@ from twisted.web import resource
 
 from codado import enum
 
-from noms import CONFIG, secret
+import noms
+from noms import secret
 from noms.documentutil import NomsDocument
 
 
@@ -81,8 +82,8 @@ class HumanReadable(object):
         else: # pragma: no cover
             assert 0, "Got %r; needed a template or a template file" % templateOrFilename
         kwargs.setdefault('preload', {}).update(
-                {'apparentURL': 'https://' + CONFIG.public_hostname,
-                 'staticHash': CONFIG.staticHash,
+                {'apparentURL': 'https://' + noms.CONFIG.public_hostname,
+                 'staticHash': noms.CONFIG.staticHash,
                 })
         kwargs['preload']['auth0Public'] = secret.get('auth0')[0]
         self.renderContext = kwargs
