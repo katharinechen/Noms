@@ -35,7 +35,7 @@ class Run(tap.Options):
         alias = self['alias']
         assert alias in DBAlias
         connect(**DBHost[alias])
-        
+
         # compute the current static digest hash
         staticPath = '%s/static' % os.getcwd()
         CONFIG.staticHash = digest(staticPath)

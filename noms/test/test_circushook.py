@@ -15,7 +15,7 @@ def test_before_start_importSample(mockConfig):
     """
     pWhisk = patch.object(whisk, 'BaseWhisk', autospec=True)
     with pWhisk as mWhisk:
-        ret = circushook.before_start_importSample(None, None, None)
+        ret = circushook.before_start(None, None, None)
     mWhisk.main.assert_called_once_with(['sample'])
     assert ret == True
 
@@ -27,5 +27,5 @@ def test_before_start_importSampleBadConnection(mockConfig):
     err = ServerSelectionTimeoutError
     pConnect = patch.object(circushook, 'connect', autospec=True, side_effect=err)
     with pConnect:
-        ret = circushook.before_start_importSample(None, None, None)
+        ret = circushook.before_start(None, None, None)
     assert ret == False

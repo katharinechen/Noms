@@ -52,6 +52,7 @@ def test_postOptionsWithUpdate(localapi, testdir, capsys, opt):
     Do I connect to a noms instance and deliver the hash to it?
     """
     opt['update-url'] = 'https://nomsbook.com/sethash/'
+    opt.parent = {'alias': 'nomsTest'}
     pReact = patch.object(task, 'react', lambda fn: fn(None))
     mContent = Mock(code=200)
     pGet = patch.object(treq, 'get',
