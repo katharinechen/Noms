@@ -11,12 +11,11 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
 
     // Read
     $scope.readRecipe = function(urlKey) {
-        recipeFactory.read(urlKey)
-            .then(function(response) {
-                $scope.recipe = response.data;
-            }), function (error) {
-                $scope.status = "Unable to read the recipe data: " + error.message;
-            }
+        recipeFactory.read(urlKey).then(function(response) {
+            $scope.recipe = response.data;
+        }), function (error) {
+            $scope.status = "Unable to read the recipe data: " + error.message;
+        };
     };
     $scope.readRecipe(urlKey);
 
@@ -34,12 +33,11 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
 
         //Delete a single recipe
         $scope.deleteRecipe = function() {
-            recipeFactory.delete(urlKey)
-                .then(function(response) {
-                    $window.location.href = '/recipes';
-                }), function (error) {
-                    $scope.status = "Unable to delete customer data: " + error.message;
-                }
+            recipeFactory.delete(urlKey).then(function() {
+                $window.location.href = '/recipes';
+            }), function (error) {
+                $scope.status = "Unable to delete customer data: " + error.message;
+            };
         };
     };
 
@@ -52,8 +50,7 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
             targetEvent: ev,
             clickOutsideToClose:true,
             locals: {recipe: recipe},
-        })
-        .then(function(answer) {
+        }).then(function(answer) {
             $scope.status = 'You said the information was "' + answer + '".';
         }, function() {
             $scope.status = 'You cancelled the dialog.';

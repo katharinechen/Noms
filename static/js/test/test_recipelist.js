@@ -1,6 +1,5 @@
 "use strict";
 
-
 describe("static/js/controllers/recipe-list.js : RecipeListCtrl", () => {
     beforeEach(module("noms"));
 
@@ -21,8 +20,7 @@ describe("static/js/controllers/recipe-list.js : RecipeListCtrl", () => {
             "recipeYield": "1 thing",
             "tags": [],
         }];
-        this.$httpBackend.expectGET("/api/recipe/list").respond(
-            expected);
+        this.$httpBackend.expectGET("/api/recipe/list").respond(expected);
         this.$httpBackend.flush();
         expect(this.scope.recipes).to.deep.equal(expected);
     });
