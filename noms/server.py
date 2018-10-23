@@ -208,8 +208,11 @@ class APIServer(object):
         Delete a recipe from the recipe form
         """
         recipe = Recipe.objects(urlKey=urlKey).first()
-        recipe.delete()
-        return OK()
+        if recipe:
+            recipe.delete()
+            return OK()
+        else:
+            return ERROR()
 
     @app.route("/sso")
     @defer.inlineCallbacks

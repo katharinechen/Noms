@@ -174,6 +174,35 @@ def test_getRecipe(mockConfig, apiServer, recipes, reqJS):
 
 
 @inlineCallbacks
+def test_saveRecipe(mockConfig, apiServer, weirdo, recipes):
+    """
+    Does /api/recipe/urlKey/save ... save a specific recipe?
+    """
+    content = dict(
+            name='Weird soup',
+            author='Weird Soup Man',
+            ingredients=['weirdness', 'soup'],
+            instructions=['mix together ingredients', 'heat through'],
+            )
+    reqJS = requestJSON([], content=content)
+    resp = yield apiServer.handler('saveRecipe', reqJS, urlKey='weird-sandwich-cory-')
+    assert resp == OK()
+
+@inlineCallbacks
+def test_deleteRecipe(mockConfig, apiServer, reqJS, recipes):
+    """
+    Does /api/recipe/urlKey/delete... delete a specific recipe?
+    """
+    # Error: recipe does not exist
+    resp = yield apiServer.handler('deleteRecipe', reqJS, urlKey="stuff")
+    assert resp == ERROR()
+
+    # Success: recipe exists
+    resp = yield apiServer.handler('deleteRecipe', reqJS, urlKey='weird-sandwich-cory-')
+    assert resp == OK()
+
+
+@inlineCallbacks
 def test_recipeList(mockConfig, apiServer, recipes):
     """
     Does /api/recipe/list return a structured list of recipes from the database?
