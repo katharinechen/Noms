@@ -39,7 +39,6 @@ ftfy==4.4.3
 funcsigs==1.0.2
 # functools32==3.2.3.post2
 future==0.16.0
-futures==3.2.0
 gitdb2==2.0.3
 GitPython==2.1.10
 google-auth==1.4.1
@@ -93,7 +92,7 @@ pytest-flakes==3.0.2
 pytest-twisted==1.8
 python-dateutil==2.4.0
 pytz==2018.4
-PyYAML==3.12
+PyYAML==3.13
 pyzmq==17.0.0
 requests==2.18.4
 rsa==3.4.2
