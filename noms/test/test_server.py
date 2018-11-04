@@ -195,7 +195,7 @@ def test_deleteRecipe(mockConfig, apiServer, reqJS, recipes):
     """
     # Error: recipe does not exist
     resp = yield apiServer.handler('deleteRecipe', reqJS, urlKey="stuff")
-    assert resp == ERROR()
+    assert resp == ERROR(message="Recipe not found")
 
     # Success: recipe exists
     resp = yield apiServer.handler('deleteRecipe', reqJS, urlKey='weird-sandwich-cory-')

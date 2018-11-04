@@ -2,15 +2,19 @@
 
 app.controller('RecipeListCtrl', ['$scope', 'recipeFactory', function($scope, recipeFactory) {
     // Initialize Variables
-    $scope.recipes;
-    $scope.status;
+    $scope.recipes = [];
+    $scope.status = null;
 
     // Read all recipes
     $scope.showList = function() {
-        recipeFactory.listRecipes().then(function(response) {
-            $scope.recipes = response.data;
-        }), function (error) {
-            $scope.status = "Unable to load customer data: " + error.message;
-        };
+        recipeFactory.listRecipes().then(
+            (response) => {
+                $scope.recipes = response.data;
+            },
+            (err) => {
+                $scope.status = "Unable to load customer data: " + err.message;
+            }
+        );
+
     };
 }]);

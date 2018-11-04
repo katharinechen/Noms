@@ -112,7 +112,7 @@ Create the following file in your Noms directory:
 
     local.env 
 
-Inside this file, input the following. Sub katharine.ngrok.io with an appropriate path.  
+Inside this file, input the following. Sub katharine.ngrok.io with an appropriate hostname.  
 
     public_hostname=katharine.ngrok.io 
 
@@ -149,7 +149,7 @@ of `Build Container Images`.
 
 Running PDB
 ************
-To run pdb, you have ``docker attach`` your ``noms-main:latest`` container. To see what your containers are::
+To run pdb, you have to ``docker attach`` your ``noms-main:latest`` container. To see what your containers are::
 
     docker ps 
 

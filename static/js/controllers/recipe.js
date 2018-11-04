@@ -2,24 +2,26 @@
 
 // Controller for a single recipe
 app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory', function($scope, $window, $mdDialog, recipeFactory) {
+
     // Initalize Variables
-    $scope.status;
     $scope.message = '';
-    $scope.recipe;
     $scope.arraySections = ['tags', 'ingredients', 'instructions'];
     var urlKey = $scope.preload.urlKey;
 
     // Read
     $scope.readRecipe = function(urlKey) {
-        recipeFactory.read(urlKey).then(function(response) {
-            $scope.recipe = response.data;
-        }), function (error) {
-            $scope.status = "Unable to read the recipe data: " + error.message;
-        };
+        recipeFactory.read(urlKey).then(
+            (response) => {
+                $scope.recipe = response.data;
+            },
+            (err) => {
+                $scope.status = "Unable to read the recipe data: " + err.message;
+            }
+        );
     };
     $scope.readRecipe(urlKey);
 
-    // Delete
+    // Delete confirmation dialog
     $scope.deleteConfirm = function(ev, recipe) {
         var confirm = $mdDialog.confirm()
             .title('Would you like to delete this recipe?')
@@ -28,79 +30,80 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
             .ok('Yes')
             .cancel('No');
         $mdDialog.show(confirm).then(function() {
-            $scope.deleteRecipe(recipe);
+            $scope.deleteRecipe(recipe.urlKey);
         });
+    };
 
-        //Delete a single recipe
-        $scope.deleteRecipe = function() {
-            recipeFactory.delete(urlKey).then(function() {
+    // Delete a single recipe
+    $scope.deleteRecipe = function(urlKey) {
+        recipeFactory.delete(urlKey).then(
+            (response) => {
                 $window.location.href = '/recipes';
-            }), function (error) {
-                $scope.status = "Unable to delete customer data: " + error.message;
-            };
-        };
+            },
+            (err) => {
+                $scope.status = "Unable to delete customer data: " + err.message;
+            }
+        );
     };
 
     // Show recipe edit modal
     $scope.showEditModal = function(ev, recipe) {
         $mdDialog.show({
-            controller: DialogController,
+            controller: 'DialogController',
             templateUrl: '/static/js/partials/recipe-update.html',
             parent: angular.element(document.body),
             targetEvent: ev,
-            clickOutsideToClose:true,
-            locals: {recipe: recipe},
-        }).then(function(answer) {
-            $scope.status = 'You said the information was "' + answer + '".';
-        }, function() {
-            $scope.status = 'You cancelled the dialog.';
+            clickOutsideToClose: true,
+            locals: {
+                dataToPass: recipe
+            },
         });
     };
-
-    function DialogController($scope, $http, $mdDialog, recipe) {
-        $scope.recipe = recipe;
-        $scope.cancel = function() {
-            $mdDialog.cancel();
-        };
-
-        // Save edited recipe
-        $scope.saveRecipe = function(recipe) {
-            return $http.post('/api/recipe/' + urlKey + '/save', recipe).then(
-                function successCallback() {
-                    $scope.saveAlert();
-                }, function errorCallback() {
-                    $scope.errorAlert();
-                }
-            );
-        };
-
-        // Confirmation modal for saving a recipe
-        $scope.saveAlert = function(ev){
-            $mdDialog.show(
-                $mdDialog.alert()
-                    .parent(angular.element(document.querySelector('#popupContainer')))
-                    .clickOutsideToClose(true)
-                    .title('Saved')
-                    .textContent('Your recipe was successfully saved. You did it!')
-                    .ok('Got it!')
-                    .targetEvent(ev)
-            );
-        };
-
-        // Confirmation modal for saving a recipe
-        $scope.errorAlert = function(ev){
-            $mdDialog.show(
-                $mdDialog.alert()
-                    .parent(angular.element(document.querySelector('#popupContainer')))
-                    .clickOutsideToClose(true)
-                    .title('Error')
-                    .textContent("There was an error with your save. Won't it have been awesome if we told you why?")
-                    .ok('You suck!')
-                    .targetEvent(ev)
-            );
-        };
-    }
 }]);
 
 
+app.controller('DialogController', ['$scope', '$mdDialog', 'recipeFactory', 'dataToPass', function($scope, $mdDialog, recipeFactory, dataToPass) {
+    var modRecipe = $scope.recipe = dataToPass;
+    $scope.cancel = function() {
+        $mdDialog.cancel();
+    };
+
+    // Update an existing recipe
+    $scope.saveRecipe = function(modRecipe) {
+        recipeFactory.update(modRecipe, modRecipe.urlKey).then(
+            (response) => {
+                $scope.saveAlert();
+            },
+            (err) => {
+                $scope.errorAlert();
+            }
+        );
+    };
+
+    // Confirmation modal for saving a recipe
+    $scope.saveAlert = function(ev){
+        $mdDialog.show(
+            $mdDialog.alert()
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title('Saved')
+                .textContent('Your recipe was successfully saved. You did it!')
+                .ok('Got it!')
+                .targetEvent(ev)
+        );
+    };
+
+    // Confirmation modal for saving a recipe
+    $scope.errorAlert = function(ev){
+        $mdDialog.show(
+            $mdDialog.alert()
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title('Error')
+                .textContent("There was an error with your save. Won't it have been awesome if we told you why?")
+                .ok('You suck!')
+                .targetEvent(ev)
+        );
+    };
+}]);
 

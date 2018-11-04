@@ -189,10 +189,10 @@ class APIServer(object):
         """
         return Recipe.objects(urlKey=urlKey).first()
 
-    @app.route("/recipe/<string:urlKey>/save")
+    @app.route("/recipe/<string:urlKey>/save", methods=['POST'])
     def saveRecipe(self, request, urlKey):
         """
-        Save a recipe from the recipe form
+        Save a recipe from the recipe edit form
         """
         data = json.load(request.content)
         recipe = Recipe.objects(urlKey=urlKey).first()
@@ -212,7 +212,7 @@ class APIServer(object):
             recipe.delete()
             return OK()
         else:
-            return ERROR()
+            return ERROR(message="Recipe not found")
 
     @app.route("/sso")
     @defer.inlineCallbacks

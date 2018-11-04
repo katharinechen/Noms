@@ -29,6 +29,10 @@ app.factory('recipeFactory', ['$http', function($http) {
         return $http.post('/api/recipe/' + urlKey + '/delete');
     };
 
+    recipeFactory.update = function(recipe, urlKey) {
+        return $http.post('/api/recipe/' + urlKey + '/save', recipe);
+    };
+
     // Read all recipes
     recipeFactory.listRecipes = function() {
         return $http.get('api/recipe/list');

@@ -68,7 +68,7 @@ def loadFromS3():
     Does nothing if the secret_pair collection already exists; to force, drop
     the secret_pair collection.
     """
-    if SecretPair.objects.count() == 0:
+    if not SecretPair.get('auth0', False):
         print("Want secrets from bucket config.%s" % CONFIG.public_hostname)
         # get the secret_pair.json file from AWS
         s3 = boto3.resource('s3')
