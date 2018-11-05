@@ -1,36 +1,55 @@
 # vim:set ft=dockerfile:
-FROM corydodt/circus-base:0.2
+############################################################
+## Begin multi-stage build
+FROM corydodt/circus-base:0.4 as nomsmainstage1
+
+ENV s1 /nomsmainstage1
+
+RUN apt update \
+    && apt -y install \
+        build-essential \
+        libffi-dev \
+        libssl-dev \
+        ruby-dev \
+        python3-dev \
+        python3-pip \
+        bundler
+
+COPY ./Gemfile ./requirements.txt $s1/
+
+RUN pip3 install -U pip wheel
+RUN /usr/local/bin/pip3 wheel --wheel-dir $s1/wheels -r $s1/requirements.txt
+RUN bundle install --gemfile $s1/Gemfile --path $s1/vendor/bundle
+
+
+############################################################
+## Stage 2
+FROM corydodt/circus-base:0.4
+ENV s1 /nomsmainstage1
+COPY --from=nomsmainstage1 $s1 $s1
 
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
 
-COPY ./Gemfile ./requirements.txt /
-
 WORKDIR $noms
 
-RUN apk update \
-    && apk add --no-cache --virtual build-dependencies \
-        make \
-        libffi-dev \
-        openssl-dev \
-        ruby-dev \
-        python-dev \
-        linux-headers \
-    && apk add --no-cache \
-        bash \
+RUN apt update \
+    && apt -y install \
         ca-certificates \
         git \
         mongodb \
         netcat-openbsd \
-        python \
+        python3 \
+        python3-pip \
         ruby \
-        ruby-bundler \
-        openssl \
-    && bundle install \
-    && pip install --no-cache-dir -U pip \
-    && pip install --no-cache-dir -U -r /requirements.txt \
-    && apk del build-dependencies
+        libssl1.0.0 \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/* \
+    && apt clean \
+    && apt autoclean
+
+RUN pip3 install --no-cache-dir -U pip \
+    && /usr/local/bin/pip3 install --force-reinstall --no-index --find-links=$s1/wheels $s1/wheels/*.whl
 
 COPY ./00-noms.ini /etc/circus.d/
 
