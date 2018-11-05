@@ -17,7 +17,7 @@ def test_urlify():
     helloThere = u'你好'
     assert urlify(u'asdf', helloThere, u'69') == 'xn--asdf--69-nm2mf94f'
     whatsUp = u"what's up"
-    assert urlify(u'asdf', whatsUp, u'69') == 'asdf-what%27s+up-69'
+    assert urlify(u'asdf', whatsUp, u'69') == 'asdf-what-s-up-69'
 
 
 def test_laziness(mockConfig):

@@ -7,8 +7,8 @@ from twisted.python.components import registerAdapter
 from twisted.web.server import Request
 
 from itsdangerous import (
-        TimedJSONWebSignatureSerializer as Serializer, 
-        BadSignature, 
+        URLSafeTimedSerializer as Serializer,
+        BadSignature,
         SignatureExpired)
 
 
@@ -96,7 +96,7 @@ class User(RenderableDocument):
         _, sec = secret.get('localapi')
         s = Serializer(sec)
         try:
-            data = s.loads(token)
+            data = s.loads(token, max_age=secret.SECRET_EXPIRATION)
         except (BadSignature, SignatureExpired):
             return None
 
@@ -116,7 +116,7 @@ class User(RenderableDocument):
         Create a JSON token for this user
         """
         _, sec = secret.get(u'localapi')
-        s = Serializer(sec, expires_in=secret.SECRET_EXPIRATION)
+        s = Serializer(sec)
         return s.dumps({'email': self.email})
 
 
@@ -140,7 +140,7 @@ _USERS = enum(
 def USER():
     """
     Ensure that the special users exist in the database
-    
+
     => enum of those users
     """
     for k, _U in _USERS.items():

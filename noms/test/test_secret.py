@@ -59,13 +59,13 @@ def s3client():
     """
     devBucket = MagicMock(name=u'Bucket Dev')
     devBucket.name = 'config.dev.nomsbook.com'
-    devJSON = u'{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"devnomsbookcom_auth0_key","secret":"debnomsbookcom_auth0_secret"}'
+    devJSON = b'{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"devnomsbookcom_auth0_key","secret":"debnomsbookcom_auth0_secret"}'
     devBucket.download_fileobj = MagicMock(name=u'download_fileobj',
             side_effect=lambda s, io: io.write(devJSON))
 
     coryBucket = MagicMock(name=u'Bucket Cory')
     coryBucket.name = u'config.cory.ngrok.io'
-    coryJSON = u'{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"coryngrokio_auth0_key","secret":"coryngrokio_auth0_secret"}'
+    coryJSON = b'{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"coryngrokio_auth0_key","secret":"coryngrokio_auth0_secret"}'
     coryBucket.download_fileobj = MagicMock(name=u'download_fileobj', 
             side_effect=lambda s, io: io.write(coryJSON))
 

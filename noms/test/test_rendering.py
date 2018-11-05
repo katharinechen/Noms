@@ -79,8 +79,8 @@ def test_renderRenderableQuerySet(mockConfig):
 
     qs = recipe.Recipe.objects()
     expected = json.dumps([
-        {"recipeYield": None, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory-", "user": {"roles": [], "givenName": None, "email": "dude@gmail.com", "familyName": None}},
-        {"recipeYield": None, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory-", "user": {"roles": [], "givenName": None, "email": "dude@gmail.com", "familyName": None}}
+        {"recipeYield": None, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory", "user": {"roles": [], "givenName": None, "email": "dude@gmail.com", "familyName": None}},
+        {"recipeYield": None, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory", "user": {"roles": [], "givenName": None, "email": "dude@gmail.com", "familyName": None}}
     ], sort_keys=True)
     assert rendering.RenderableQuerySet(qs).render(None) == expected
 
@@ -103,7 +103,7 @@ def test_render(mockDatabase):
             return {'safe': self.safeValue, 'int': self.intValue}
 
     doc = Doc(safeValue='good', badValue='no', intValue=12)
-    assert doc.render(None) == json.dumps({'safe': 'good', 'int': 12})
+    assert doc.render(None) == json.dumps({'safe': 'good', 'int': 12}, sort_keys=True)
 
 
 # this is in the style of py.test

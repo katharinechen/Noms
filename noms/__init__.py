@@ -2,7 +2,7 @@
 Noms Python library - web application
 """
 import os
-from urllib.parse import quote_plus
+import re
 
 from codado import fromdir, enum
 
@@ -53,7 +53,7 @@ def urlify(*args):
         url = url + "-" + n
     url = url.encode('idna')
 
-    return quote_plus(url)
+    return re.sub(rb'[^-a-z0-9]', b'-', url.lower()).decode('ascii')
 
 
 class Config:
