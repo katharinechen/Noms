@@ -14,7 +14,7 @@ from codado import fromdir
 from noms.whisk import digester
 
 
-TESTDIR_HASH = 'oregon-avocado-north'
+TESTDIR_HASH = 'gravity-isabel-script'
 
 
 @fixture
