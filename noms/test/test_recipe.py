@@ -64,7 +64,7 @@ def test_fromMicrodata(mockDatabase, recipeMicrodata, weirdo):
     ret = recipe.Recipe.fromMicrodata(recipeMicrodata, u'weirdo@gmail.com')
     assert ret.author == u"Cory Dodt"
     assert ret.name == u'Delicious Meatless Meatballs'
-    assert ret.urlKey == u'weirdo-gmail-com-delicious-meatless-meatballs-'
+    assert ret.urlKey == u'weirdo-gmail-com-delicious-meatless-meatballs'
 
     # again, but blank the author
     del recipeMicrodata.props['author']

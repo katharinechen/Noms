@@ -154,7 +154,6 @@ class APIServer:
         Save recipes
         """
         data = json.load(request.content)
-        data = {k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
         recipe.recipeYield = str(data.get('recipeYield'))

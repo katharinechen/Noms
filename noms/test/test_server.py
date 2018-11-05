@@ -169,7 +169,7 @@ def test_getRecipe(mockConfig, apiServer, recipes, reqJS):
     """
     Does /api/recipe/.... return a specific recipe?
     """
-    r = yield apiServer.handler('getRecipe', reqJS, 'weird-soup-cory-')
+    r = yield apiServer.handler('getRecipe', reqJS, 'weird-soup-cory')
     assert r['name'] == 'weird soup'
 
 
@@ -209,7 +209,7 @@ def test_recipeList(mockConfig, apiServer, recipes):
     """
     r = json.loads((yield apiServer.handler('recipeList')))
     keys = [x['urlKey'] for x in r]
-    assert keys == ['weird-sandwich-cory-', 'weird-soup-cory-']
+    assert keys == ['weird-sandwich-cory', 'weird-soup-cory']
 
 
 @inlineCallbacks
@@ -314,7 +314,7 @@ def test_bookmarklet(mockConfig, apiServer, specialUsers, weirdo, recipePageHTML
         assert len(recipe.Recipe.objects()) == 1
         expectedResults = server.ClipResponse(
                 status=RS.ok, message='',
-                recipes=[{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}]
+                recipes=[{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs"}]
                 )
         assert ret == expectedResults
 

@@ -3,7 +3,7 @@ Passwords, intended to be stored in the database
 """
 from __future__ import print_function
 
-import base64
+from binascii import hexlify
 import io
 import os
 
@@ -41,7 +41,7 @@ class SecretPair(documentutil.NomsDocument):
                 raise KeyError(name)
             return default
 
-        return ret.public.encode('ascii'), ret.secret.encode('ascii')
+        return ret.public, ret.secret
 
     @classmethod
     def put(cls, name, public, secret):
@@ -57,7 +57,7 @@ def randomPassword(n=32):
     """
     Produce a string n bytes long, of hex digits
     """
-    return base64.b64encode(os.urandom(n))
+    return hexlify(os.urandom(n)).decode('ascii')
 
 
 def loadFromS3():
@@ -70,8 +70,7 @@ def loadFromS3():
     Does nothing if the secret_pair collection already exists; to force, drop
     the secret_pair collection.
     """
-    if not SecretPair.get('auth0', False):
-        print("Want secrets from bucket config.%s" % CONFIG.public_hostname)
+    if SecretPair.objects.count() == 0:
         # get the secret_pair.json file from AWS
         s3 = boto3.resource('s3')
         for b in s3.buckets.all():
@@ -83,11 +82,9 @@ def loadFromS3():
             bucket = s3.Bucket(defaultBucket)
             print("... switching to default secrets from %s" % defaultBucket)
 
-        output = io.StringIO() 
+        output = io.BytesIO()
         bucket.download_fileobj('secret_pair/secret_pair.json', output)
 
         # save it to mongo
         print("Piping hot fresh secrets from bucket %r" % bucket.name)
         SecretPair._get_collection().insert(json_util.loads(output.getvalue()))
-    else:
-        print("Secrets are already loaded for %s" % CONFIG.public_hostname)

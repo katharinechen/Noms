@@ -40,7 +40,7 @@ class BashCommand(Main):
         """
         cmd = [WHISK_DIR(self.path)] + (self.rawArgs if self.rawArgs else [])
         print("Running: %r" % ' '.join(pipes.quote(x) for x in cmd))
-        proc = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1)
+        proc = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, encoding='utf-8')
         while True: # this is weird, workaround to a bug in Popen that
             # makes stdout block instead of giving us data line by line
             line = proc.stdout.readline()

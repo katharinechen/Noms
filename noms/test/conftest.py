@@ -203,7 +203,7 @@ def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **
     """
     content = kwargs.pop('content', None)
     if isinstance(content, dict):
-        kwargs['content'] = StringIO(json.dumps(content).decode('utf-8'))
+        kwargs['content'] = StringIO(json.dumps(content))
     elif content: # pragma: nocover
         kwargs['content'] = StringIO(str(content))
     else:

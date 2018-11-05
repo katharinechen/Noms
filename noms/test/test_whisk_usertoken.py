@@ -7,8 +7,9 @@ from noms import DBAlias
 from noms.whisk import usertoken
 
 
-TOKEN_RX = re.compile(r'[-a-zA-Z0-9+/_.]{120,}')
+TOKEN_RX = re.compile(r'[-a-zA-Z0-9+/_.]{73,}')
 
+'eyJlbWFpbCI6IndlaXJkb0BnbWFpbC5jb20ifQ.DsF6Bw.VjyUYDrC9iZSf3SOgjelooXoFCo'
 
 def test_get(weirdo, mockConfig):
     """
