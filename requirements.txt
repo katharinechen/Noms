@@ -63,6 +63,7 @@ livereload==2.5.1
 magic-wormhole==0.10.3
 MarkupSafe==1.0
 microdata==0.6.1
+mnemonicode>=1.4.4,<1.5
 mock==2.0.0
 mongoengine==0.15.0
 mongomock==3.10.0

@@ -15,7 +15,9 @@ def test_urlify():
     Do I produce punycode output for the inputs?
     """
     helloThere = u'你好'
-    assert urlify(u'asdf', helloThere, u'69') == 'asdf--69-nm2mf94f'
+    assert urlify(u'asdf', helloThere, u'69') == 'xn--asdf--69-nm2mf94f'
+    whatsUp = u"what's up"
+    assert urlify(u'asdf', whatsUp, u'69') == 'asdf-what%27s+up-69'
 
 
 def test_laziness(mockConfig):

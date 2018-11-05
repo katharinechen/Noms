@@ -6,7 +6,7 @@ from __future__ import print_function
 import hashlib
 import os
 
-from humanhash import humanize
+from mnemonicode import mnformat
 
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet import task
@@ -59,6 +59,12 @@ class Digester(Main):
 def digest(path):
     """
     Produce a human-readable hash of a directory of files
+
+    This only uses 32 bits of a 128-bit md5 hash, but that's
+    ok. We aren't trying for cryptographic security of the hash,
+    we just want to be pretty sure that a hash of the static
+    directory doesn't collide with another one that we've made
+    in the last few months.
     """
     result = hashlib.md5()
     last = None
@@ -70,4 +76,4 @@ def digest(path):
 
     assert last, "Did not find any files to digest at %r" % path
 
-    return humanize(result.hexdigest(), words=3)
+    return mnformat(result.hexdigest().encode('ascii')[:4])

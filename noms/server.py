@@ -65,7 +65,7 @@ def roles(allowed, forbidAction=Forbidden):
     return wrapper
 
 
-class Server(object):
+class Server:
     """
     The web server for html and miscell.
     """
@@ -136,7 +136,7 @@ def querySet(fn):
     return deco
 
 
-class APIServer(object):
+class APIServer:
     """
     The web server for JSON API
 

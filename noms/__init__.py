@@ -1,10 +1,8 @@
 """
 Noms Python library - web application
 """
-import re
 import os
-
-from builtins import object
+from urllib.parse import quote_plus
 
 from codado import fromdir, enum
 
@@ -53,12 +51,12 @@ def urlify(*args):
     url = args.pop(0)
     for n in args:
         url = url + "-" + n
-    url = url.encode('punycode')
+    url = url.encode('idna')
 
-    return re.sub(r'[^-a-z0-9]', '-', url.lower())
+    return quote_plus(url)
 
 
-class Config(object):
+class Config:
     """
     Config object using our Description class as the data.
     """
