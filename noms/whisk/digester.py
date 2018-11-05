@@ -6,7 +6,10 @@ from __future__ import print_function
 import hashlib
 import os
 
-from mnemonicode import mnformat
+try:
+    from mnemonicode import mnformat
+except ImportError:
+    mnformat = lambda s: s
 
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet import task
