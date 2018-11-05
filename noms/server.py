@@ -6,6 +6,8 @@ from __future__ import print_function
 from functools import wraps
 import json
 
+from builtins import object
+
 import attr
 
 from codado import enum
@@ -65,7 +67,7 @@ def roles(allowed, forbidAction=Forbidden):
     return wrapper
 
 
-class Server:
+class Server(object):
     """
     The web server for html and miscell.
     """
@@ -131,7 +133,7 @@ def querySet(fn):
     return deco
 
 
-class APIServer:
+class APIServer(object):
     """
     The web server for JSON API
 

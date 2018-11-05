@@ -4,6 +4,8 @@ Noms Python library - web application
 import os
 import re
 
+from builtins import object
+
 from codado import fromdir, enum
 
 from pymongo.uri_parser import parse_uri
@@ -56,7 +58,7 @@ def urlify(*args):
     return re.sub(rb'[^-a-z0-9]', b'-', url.lower()).decode('ascii')
 
 
-class Config:
+class Config(object):
     """
     Config object using our Description class as the data.
     """
