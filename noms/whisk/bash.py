@@ -13,6 +13,8 @@ import yaml
 from codado.tx import Main, CLIError
 from codado.py import fromdir
 
+from noms.const import ENCODING
+
 
 WHISK_DIR = fromdir(__file__)
 
@@ -40,7 +42,7 @@ class BashCommand(Main):
         """
         cmd = [WHISK_DIR(self.path)] + (self.rawArgs if self.rawArgs else [])
         print("Running: %r" % ' '.join(pipes.quote(x) for x in cmd))
-        proc = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, encoding='utf-8')
+        proc = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, encoding=ENCODING)
         while True: # this is weird, workaround to a bug in Popen that
             # makes stdout block instead of giving us data line by line
             line = proc.stdout.readline()

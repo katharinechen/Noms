@@ -7,13 +7,14 @@ from binascii import hexlify
 import io
 import os
 
-from bson import json_util
-
 import boto3
+
+from bson import json_util
 
 from mongoengine import fields
 
 from noms import documentutil, CONFIG
+from noms.const import ENCODING
 
 
 NO_DEFAULT = object()
@@ -84,7 +85,10 @@ def loadFromS3():
 
         output = io.BytesIO()
         bucket.download_fileobj('secret_pair/secret_pair.json', output)
+        output.seek(0)
+        ff = io.TextIOWrapper(output, encoding=ENCODING)
 
         # save it to mongo
         print("Piping hot fresh secrets from bucket %r" % bucket.name)
-        SecretPair._get_collection().insert(json_util.loads(output.getvalue()))
+        doc = json_util.loads(ff.read())
+        SecretPair._get_collection().insert_one(doc)

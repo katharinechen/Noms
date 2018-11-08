@@ -11,6 +11,7 @@ from bson import json_util
 from codado.tx import Main
 
 from noms import recipe, user, DBHost, DBAlias
+from noms.const import ENCODING
 
 
 class Sample(Main):
@@ -26,7 +27,7 @@ class Sample(Main):
         for cls in user.User, recipe.Recipe:
             cls.objects.delete()
             col = cls._get_collection()
-            data = open('sample/%s.json' % col.name).read()
+            data = open('sample/%s.json' % col.name, encoding=ENCODING).read()
             col.insert(json_util.loads(data))
             print('{name}: {count} objects inserted'.format(
                 name=col.name, count=cls.objects.count()
