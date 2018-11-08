@@ -4,6 +4,9 @@
 FROM corydodt/circus-base:0.4 as nomsmainstage1
 
 ENV s1 /nomsmainstage1
+ENV WORKON_HOME $s1/virtualenvs
+ENV VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+ENV noms /opt/Noms
 
 RUN apt update \
     && apt -y install \
@@ -17,8 +20,13 @@ RUN apt update \
 
 COPY ./Gemfile ./requirements.txt $s1/
 
-RUN pip3 install -U pip wheel
-RUN /usr/local/bin/pip3 wheel --wheel-dir $s1/wheels -r $s1/requirements.txt
+# use virutalenvwrapper to create our python3 virtualenv
+RUN pip3 install -U pip wheel virtualenvwrapper
+RUN bash -c ". /usr/local/bin/virtualenvwrapper.sh \
+    && mkdir -vp $noms \
+    && mkvirtualenv -a $noms -r $s1/requirements.txt noms \
+    && add2virtualenv $noms /opt/Circusbase \
+    && pip install -U pip"
 RUN bundle install --gemfile $s1/Gemfile --path $s1/vendor/bundle
 
 
@@ -31,8 +39,8 @@ COPY --from=nomsmainstage1 $s1 $s1
 ENV noms /opt/Noms
 ENV PATH $PATH:$noms/bin
 ENV PYTHONPATH $noms
-
-WORKDIR $noms
+ENV WORKON_HOME $s1/virtualenvs
+ENV VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 
 RUN apt update \
     && apt -y install \
@@ -48,9 +56,19 @@ RUN apt update \
     && apt clean \
     && apt autoclean
 
-RUN pip3 install --no-cache-dir -U pip \
-    && /usr/local/bin/pip3 install --force-reinstall --no-index --find-links=$s1/wheels $s1/wheels/*.whl
+RUN pip3 install virtualenvwrapper
+
+RUN bash -c ". /usr/local/bin/virtualenvwrapper.sh \
+    && mkdir -p $noms \
+    && workon noms \
+    && pip install --no-cache-dir -U circus"
+
+RUN mkdir -p $noms
 
 COPY ./00-noms.ini /etc/circus.d/
+
+ENTRYPOINT [ "/bin/bash", "-c", ". /usr/local/bin/virtualenvwrapper.sh && workon --cd noms && circusd /etc/circus.ini" ]
+
+CMD [ ]
 
 EXPOSE 8080
