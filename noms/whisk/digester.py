@@ -8,7 +8,7 @@ import os
 
 try:
     from mnemonicode import mnformat
-except ImportError:
+except ImportError: # pragma: nocover
     mnformat = lambda s: s
 
 from twisted.internet.defer import inlineCallbacks
