@@ -121,7 +121,7 @@ def mockConfig(mockDatabase):
     # in tests, we replace the global CONFIG without patching it
     import noms
 
-    cols = mockDatabase.collection_names()
+    cols = mockDatabase.list_collection_names()
     try:
         for c in cols: # pragma: nocover
             assert mockDatabase[c].count() == 0, c + u" not empty"

@@ -16,7 +16,7 @@
         "editor.insertSpaces": true,
         "editor.tabSize": 4,
         "python.linting.pylintEnabled": false,
-        "python.pythonPath": "~/.virtualenvs/noms/bin/python",
+        "python.pythonPath": "",
         "python.venvPath": "~/.virtualenvs",
         "search.exclude": {
             "**/*.pyc": true,
