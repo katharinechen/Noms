@@ -22,6 +22,7 @@ from codado import enum
 
 import noms
 from noms import secret
+from noms.const import ENCODING
 from noms.documentutil import NomsDocument
 
 
@@ -53,7 +54,7 @@ class RenderableQuerySet(object):
         Just wraps an array around the results
         """
         rr = list(self.qs)
-        return json.dumps([o.safe() for o in rr], cls=ResourceEncoder, sort_keys=True)
+        return json.dumps([o.safe() for o in rr], cls=ResourceEncoder, sort_keys=True).encode(ENCODING)
 
 
 class ResourceEncoder(json.JSONEncoder): 
@@ -92,7 +93,7 @@ class HumanReadable(object):
         """
         Return a string version of this template
         """
-        return self.template.render(**self.renderContext)
+        return self.template.render(**self.renderContext).encode(ENCODING)
 
 
 @implementer(resource.IResource)
@@ -108,7 +109,7 @@ class RenderableDocument(NomsDocument):
         """
         => JSON-encoded representation of this object's safe properties
         """
-        return json.dumps(self.safe(), cls=ResourceEncoder, sort_keys=True)
+        return json.dumps(self.safe(), cls=ResourceEncoder, sort_keys=True).encode(ENCODING)
 
     def safe(self):
         """
@@ -134,7 +135,7 @@ class ResponseData(object):
         """
         => JSON-encoded representation of this object's safe properties
         """
-        return json.dumps(attr.asdict(self), cls=ResourceEncoder)
+        return json.dumps(attr.asdict(self), cls=ResourceEncoder).encode(ENCODING)
 
 
 OK = partial(ResponseData, status=ResponseStatus.ok)
