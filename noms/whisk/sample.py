@@ -28,7 +28,7 @@ class Sample(Main):
             cls.objects.delete()
             col = cls._get_collection()
             data = open('sample/%s.json' % col.name, encoding=ENCODING).read()
-            col.insert(json_util.loads(data))
+            col.insert_many(json_util.loads(data))
             print('{name}: {count} objects inserted'.format(
                 name=col.name, count=cls.objects.count()
                 ))
