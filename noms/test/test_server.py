@@ -49,7 +49,7 @@ def test_querySet(mockConfig):
 
     User(email='hello').save()
     configsFn = server.querySet(_configs)
-    assert configsFn(None) == '[{"email": "hello", "familyName": null, "givenName": null, "roles": []}]'
+    assert configsFn(None) == b'[{"email": "hello", "familyName": null, "givenName": null, "roles": []}]'
 
 
 @fixture
@@ -92,14 +92,14 @@ def test_static(mockConfig, rootServer, capsys):
     with fromNoms:
         # first try without the hash
         r = yield rootServer.handler('static', postpath=[
-            'js', 'app.js'])
+            b'js', b'app.js'])
         assert 'app.js' in r.child('js').listdir()
         out, err = capsys.readouterr()
         assert out.startswith('WARNING:')
 
         # now try with the hash, should get the same result
         r = yield rootServer.handler('static', postpath=[
-            'HASH-hello-my-dolly', 'js', 'app.js'])
+            b'HASH-hello-my-dolly', b'js', b'app.js'])
         assert 'app.js' in r.child('js').listdir()
 
 
@@ -109,7 +109,7 @@ def test_index(mockConfig, rootServer, req):
     Does / return the home page?
     """
     r = yield rootServer.handler('index', req)
-    assert re.search(r'<title>NOM NOM NOM</title>', r.render(req))
+    assert re.search(rb'<title>NOM NOM NOM</title>', r.render(req))
 
 
 @inlineCallbacks
@@ -118,7 +118,7 @@ def test_showRecipes(mockConfig, rootServer, req):
     Does /recipes list recipes?
     """
     r = yield rootServer.handler('showRecipes', req)
-    assert re.search(r'partials/recipe-list.html', r.render(req))
+    assert re.search(rb'partials/recipe-list.html', r.render(req))
 
 
 @inlineCallbacks
@@ -127,7 +127,7 @@ def test_createRecipe(mockConfig, rootServer, req):
     Does /recipes/new show the creation page?
     """
     r = yield rootServer.handler('createRecipe', req)
-    assert re.search(r'partials/recipe-create.html', r.render(req))
+    assert re.search(rb'partials/recipe-create.html', r.render(req))
 
 
 @inlineCallbacks
@@ -137,8 +137,8 @@ def test_showRecipe(mockConfig, rootServer, req):
     """
     r = yield rootServer.handler('showRecipe', req, 'foo-gmail-com-honeyed-cream-cheese-pear-pie-')
     rendered = r.render(req)
-    assert re.search(r'partials/recipe-read.html', rendered)
-    assert re.search(r'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-',
+    assert re.search(rb'partials/recipe-read.html', rendered)
+    assert re.search(rb'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-',
         rendered)
 
 

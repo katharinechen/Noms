@@ -8,16 +8,6 @@ ENV WORKON_HOME $s1/virtualenvs
 ENV VIRTUALENVWRAPPER_PYTHON /usr/bin/python3
 ENV noms /opt/Noms
 
-# xxx - set VIRTUALENVWRAPPER_PYTHON to python3 or python as desired
-# xxx - change WORKON_HOME if desired (e.g. to put envs somewhere that stage1 can copy them to stage2)
-
-## once you have the virtual environment:
-## - set PYTHONUSERBASE to WORKON_HOME/$env
-## - invoke commands directly with PYTHONUSERBASE/bin/python (or set a VEPYTHON variable)
-## - set PATH to include PYTHONUSERBASE/$env/bin
-## - encourage the use of add2virtualenv or create pth files
-## - encourage the use of cpvirtualenv to keep circus+circusbase and pth additions
-
 RUN apt update \
     && apt -y install \
         build-essential \
@@ -35,8 +25,7 @@ RUN pip3 install -U pip virtualenvwrapper
 RUN mkdir -vp $noms \
     && bash -c ". /usr/local/bin/virtualenvwrapper.sh \
     && mkvirtualenv -a $noms -r $s1/requirements.txt noms \
-    && add2virtualenv $noms /opt/Circusbase \
-    && pip install -U pip circus"
+    && add2virtualenv $noms /opt/Circusbase"
 RUN bundle install --gemfile $s1/Gemfile --path $s1/vendor/bundle
 
 
@@ -64,8 +53,7 @@ RUN apt update \
     && apt clean \
     && apt autoclean
 
-ENV PYTHONUSERBASE ${WORKON_HOME}/noms
-ENV PATH ${PYTHONUSERBASE}/bin:${PATH}:${noms}/bin
+ENV PATH ${WORKON_HOME}/noms/bin:${PATH}:${noms}/bin
 WORKDIR $noms
 
 COPY ./00-noms.ini /etc/circus.d/

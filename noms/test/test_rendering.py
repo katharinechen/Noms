@@ -16,6 +16,7 @@ from mock import patch
 
 import noms
 from noms import recipe, rendering, secret, urlify, user
+from noms.const import ENCODING
 
 
 def test_renderHumanReadable(mockConfig):
@@ -43,7 +44,7 @@ def test_renderHumanReadable(mockConfig):
         https://app.nomsbook.com
         abc123
         yellow and delicious
-        """)
+        """).encode(ENCODING)
 
     with pCONFIG:
         assert hrTemplate.render(None) == expected
@@ -53,7 +54,7 @@ def test_renderHumanReadable(mockConfig):
         https://app.nomsbook.com
         abc123
         brown and gross
-        """)
+        """).encode(ENCODING)
 
     pGetTemplate = patch.object(rendering.env, 'get_template', return_value=tplTemplate)
     with pGetTemplate, pCONFIG:
@@ -81,7 +82,7 @@ def test_renderRenderableQuerySet(mockConfig):
     expected = json.dumps([
         {"recipeYield": None, "tags": [], "name": "delicious sandwich", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-sandwich-cory", "user": {"roles": [], "givenName": None, "email": "dude@gmail.com", "familyName": None}},
         {"recipeYield": None, "tags": [], "name": "delicious soup", "author": "cory", "instructions": [], "ingredients": [], "urlKey": "delicious-soup-cory", "user": {"roles": [], "givenName": None, "email": "dude@gmail.com", "familyName": None}}
-    ], sort_keys=True)
+    ], sort_keys=True).encode(ENCODING)
     assert rendering.RenderableQuerySet(qs).render(None) == expected
 
 
@@ -103,7 +104,7 @@ def test_render(mockDatabase):
             return {'safe': self.safeValue, 'int': self.intValue}
 
     doc = Doc(safeValue='good', badValue='no', intValue=12)
-    assert doc.render(None) == json.dumps({'safe': 'good', 'int': 12}, sort_keys=True)
+    assert doc.render(None) == json.dumps({'safe': 'good', 'int': 12}, sort_keys=True).encode(ENCODING)
 
 
 # this is in the style of py.test
@@ -114,14 +115,14 @@ def test_resourceEncoder():
     class SafeClass(object):
         def safe(self):
             return "19"
-    ret = json.dumps(SafeClass(), cls=rendering.ResourceEncoder)
-    assert ret == '"19"'
+    ret = json.dumps(SafeClass(), cls=rendering.ResourceEncoder).encode(ENCODING)
+    assert ret == b'"19"'
 
     class NotSoSafeClass(object):
         pass
 
     with raises(TypeError):
-        json.dumps(NotSoSafeClass(), cls=rendering.ResourceEncoder)
+        json.dumps(NotSoSafeClass(), cls=rendering.ResourceEncoder).encode(ENCODING)
 
 
 def test_responseData():
@@ -129,7 +130,7 @@ def test_responseData():
     Test that json encoder works on ResponseData structures
     """
     ret = rendering.OK().render(None)
-    assert ret == '{"status": "ok", "message": ""}'
+    assert ret == b'{"status": "ok", "message": ""}'
 
     ret = rendering.ERROR(message="ono!").render(None)
-    assert ret == '{"status": "error", "message": "ono!"}'
+    assert ret == b'{"status": "error", "message": "ono!"}'

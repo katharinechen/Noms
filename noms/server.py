@@ -76,7 +76,7 @@ class Server(object):
     @app.route("/static/", branch=True)
     def static(self, request):
         # remove the hash
-        if request.postpath and request.postpath[0].startswith('HASH-'):
+        if request.postpath and request.postpath[0].startswith(b'HASH-'):
             del request.postpath[0]
         else:
             print("WARNING: request under /static/ with no HASH- cache busting")
