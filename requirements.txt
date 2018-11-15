@@ -37,7 +37,6 @@ enum34==1.1.6
 execnet==1.5.0
 ftfy==4.4.3
 funcsigs==1.0.2
-# functools32==3.2.3.post2
 future==0.16.0
 gitdb2==2.0.3
 GitPython==2.1.10
@@ -61,10 +60,10 @@ livereload==2.5.1
 magic-wormhole==0.10.3
 MarkupSafe==1.0
 microdata==0.6.1
-mnemonicode>=1.4.4,<1.5
+mnemonicode==1.4.4
 mock==2.0.0
-mongoengine==0.15.0
-mongomock==3.10.0
+mongoengine==0.16.0
+mongomock==3.13.0
 more-itertools==4.2.0
 ordereddict==1.1
 packaging==17.1
@@ -80,7 +79,7 @@ pyasn1-modules==0.2.1
 pycparser==2.18
 pyflakes==1.6.0
 Pygments==2.2.0
-pymongo==3.6.1
+pymongo==3.7.2
 PyNaCl==1.1.2
 pyOpenSSL==18.0.0
 pyparsing==2.2.0
@@ -92,7 +91,7 @@ pytest-twisted==1.8
 python-dateutil==2.4.0
 pytz==2018.4
 PyYAML==3.13
-pyzmq==17.0.0
+pyzmq==16.0.4
 requests==2.18.4
 rsa==3.4.2
 s3transfer==0.1.13
@@ -107,8 +106,9 @@ Sphinx==1.7.5
 sphinx-autobuild==0.7.1
 sphinx-rtd-theme==0.4.0
 sphinxcontrib-websupport==1.0.1
+stevedore==1.30.0
 texttable==0.9.1
-tornado==5.0.2
+tornado==4.5.3
 tox==3.0.0
 tqdm==4.17.1
 treq==17.8.0
