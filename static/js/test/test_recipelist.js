@@ -12,7 +12,6 @@ describe("static/js/controllers/recipe-list.js : RecipeListCtrl", () => {
     }));
 
     it("should get a list - success", () => {
-        // add something to the list
         var expected = [{
             "name": "recipeee",
             "author": "mee",
@@ -24,21 +23,14 @@ describe("static/js/controllers/recipe-list.js : RecipeListCtrl", () => {
             "tags": [],
         }];
         // success
-        this.scope.showList();
         this.$httpBackend.expectGET("api/recipe/list").respond(expected);
         this.$httpBackend.flush();
         expect(this.scope.recipes).to.deep.equal(expected);
     });
 
     it("should get a list - fail", () => {
-        // add something to the list
-        var expected = {
-            err: "oh no"
-        };
-        // failure
-        this.scope.showList();
-        this.$httpBackend.expectGET("api/recipe/list").respond(403, expected);
+        this.$httpBackend.expectGET("api/recipe/list").respond(403, {});
         this.$httpBackend.flush();
-        expect(this.scope.status).to.equal("Unable to load customer data: undefined");
+        expect(this.scope.status).to.equal("Unable to load the recipe list");
     });
 });

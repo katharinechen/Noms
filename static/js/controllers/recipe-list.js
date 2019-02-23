@@ -12,9 +12,9 @@ app.controller('RecipeListCtrl', ['$scope', 'recipeFactory', function($scope, re
                 $scope.recipes = response.data;
             },
             (err) => {
-                $scope.status = "Unable to load customer data: " + err.message;
+                $scope.status = "Unable to load the recipe list";
             }
         );
-
     };
+    $scope.showList();
 }]);

@@ -151,13 +151,11 @@ class APIServer(object):
         """
         Save recipes
         """
-        optional = lambda x: data(x) if data.get(x) else None
-
         data = json.load(request.content)
         data = {k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
-        recipe.recipeYield = str(optional('recipeYield'))
+        recipe.recipeYield = str(data.get('recipeYield'))
         recipe.user = ICurrentUser(request)
         recipe.urlKey = urlify(recipe.user.email, recipe.name)
         if Recipe.objects(urlKey=recipe.urlKey).first():
