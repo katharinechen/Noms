@@ -21,7 +21,7 @@ pip
 pytest-flakes
 pytest-cov
 pytest-twisted
-pytest>=3.0
+pytest>=4.3
 pyOpenSSL
 pytz
 service_identity
