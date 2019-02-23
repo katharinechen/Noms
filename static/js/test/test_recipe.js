@@ -89,7 +89,6 @@ describe("static/js/controllers/recipe.js : Recipe", () => {
         this.$mdDialog = $injector.get('$mdDialog');
         this.scope = $rootScope;
         $window.nomsPreload = "{\"urlKey\": \"yummy-food\"}";
-        $window.onbeforeunload = () => 'Oh no!';
         $controller("Preload", {$scope: $rootScope, $window: $window});
         $controller("DialogController", {$scope: $rootScope, dataToPass: dataToPass});
 

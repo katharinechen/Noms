@@ -13,7 +13,6 @@ describe("static/js/controllers/recipe-create.js : CreateRecipeCtrl", () => {
                 apparentURL: "https://unittests.noms.com",
             }
         );
-        $window.onbeforeunload = () => 'Oh no!';
         $controller("CreateRecipeCtrl", {$scope: $rootScope, recipeFactory});
     }));
 
