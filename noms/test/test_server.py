@@ -127,16 +127,7 @@ def test_createRecipe(mockConfig, rootServer, req):
     Does /recipes/new show the creation page?
     """
     r = yield rootServer.handler('createRecipe', req)
-    assert re.search(r'partials/recipe-new.html', r.render(req))
-
-
-@inlineCallbacks
-def test_createIngredient(mockConfig, rootServer, req):
-    """
-    Does /ingredients/new show the ingredient creation page?
-    """
-    r = yield rootServer.handler('createIngredient', req)
-    assert re.search(r'partials/ingredient-new.html', r.render(req))
+    assert re.search(r'partials/recipe-create.html', r.render(req))
 
 
 @inlineCallbacks
@@ -146,7 +137,7 @@ def test_showRecipe(mockConfig, rootServer, req):
     """
     r = yield rootServer.handler('showRecipe', req, 'foo-gmail-com-honeyed-cream-cheese-pear-pie-')
     rendered = r.render(req)
-    assert re.search(r'partials/recipe.html', rendered)
+    assert re.search(r'partials/recipe-read.html', rendered)
     assert re.search(r'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-',
         rendered)
 
@@ -180,6 +171,35 @@ def test_getRecipe(mockConfig, apiServer, recipes, reqJS):
     """
     r = yield apiServer.handler('getRecipe', reqJS, 'weird-soup-cory-')
     assert r['name'] == 'weird soup'
+
+
+@inlineCallbacks
+def test_saveRecipe(mockConfig, apiServer, weirdo, recipes):
+    """
+    Does /api/recipe/urlKey/save ... save a specific recipe?
+    """
+    content = dict(
+            name='Weird soup',
+            author='Weird Soup Man',
+            ingredients=['weirdness', 'soup'],
+            instructions=['mix together ingredients', 'heat through'],
+            )
+    reqJS = requestJSON([], content=content)
+    resp = yield apiServer.handler('saveRecipe', reqJS, urlKey='weird-sandwich-cory-')
+    assert resp == OK()
+
+@inlineCallbacks
+def test_deleteRecipe(mockConfig, apiServer, reqJS, recipes):
+    """
+    Does /api/recipe/urlKey/delete... delete a specific recipe?
+    """
+    # Error: recipe does not exist
+    resp = yield apiServer.handler('deleteRecipe', reqJS, urlKey="stuff")
+    assert resp == ERROR(message="Recipe not found")
+
+    # Success: recipe exists
+    resp = yield apiServer.handler('deleteRecipe', reqJS, urlKey='weird-sandwich-cory-')
+    assert resp == OK()
 
 
 @inlineCallbacks
@@ -343,7 +363,7 @@ def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
     """
     reqJS = requestJSON([], content=weirdSoupPOST, session_user=weirdo)
     resp = yield apiServer.handler('createRecipeSave', reqJS)
-    assert resp == OK()
+    assert resp == OK(message='weirdo-gmail-com-weird-soup-')
 
     # the second time we should get an error because it exists
     reqJS = requestJSON([], content=weirdSoupPOST, session_user=weirdo)

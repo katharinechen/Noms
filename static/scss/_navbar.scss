@@ -1,35 +1,3 @@
-// top-level navbar, used on every page 
-
-.nav-list { // ul 
-    list-style-type: none;
-    overflow: auto; 
-
-    &:first-child { 
-        // login navbar 
-        padding: 10px 40px 10px 40px;
-        margin: 0px; 
-        background: $color5; 
-        .link { 
-            color: $color1; 
-        }
-        li {
-            float: right; 
-        }
-    }
-
-    li { 
-        float: left; 
-        margin-left: 20px; 
-
-        &:first-child { 
-            margin-left: 0; 
-        }
-    }
-}
-
-.logo { 
-    color: $color5; 
-    font-weight: 900; 
-    font-size: 1.5*$standard-font-size; 
-    font-family: $glory; 
+.logo {
+    font-family: $glory;
 }

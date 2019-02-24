@@ -1,0 +1,80 @@
+<div ng-controller="RecipeShow">
+    <!-- alert  -->
+    <div>
+        <div class="alert-message">
+            {{ message }}
+        </div>
+    </div>
+
+    <!-- Single Recipe  -->
+    <form name="recipeForm" class="recipe-form">
+
+        <!-- Button Sections  -->
+        <div>
+            <md-button ng-click='showEditModal($event, recipe)'>
+                Edit
+            </md-button>
+            <md-button ng-click="deleteConfirm($event, recipe)">
+                Delete
+            </md-button>
+        </div>
+
+        <!-- Recipe Body  -->
+        <div class="recipe-header">
+            <div class="recipe-description">
+                <h2 href="#" class="recipe-name">{{ recipe.name }}</h2>
+                <div class="row-section">
+                    <div>
+                        <span class="section-title">Author:</span>
+                        <span href="#" class="section-text">{{ recipe.author }}</span>
+                    </div>
+                    <div>
+                        <span class="section-title">User:</span>
+                        <span href="#" class="section-text">{{ recipe.user.givenName }}</span>
+                        <span href="#" class="section-text">{{ recipe.user.familyName }}</span>
+                        <span href="#" class="section-text">({{ recipe.user.email }})</span>
+                    </div>
+                    <div>
+                        <span class="section-title">Last Modified:</span>
+                        <span class="section-text">{{ recipe.modified }}</span>
+                    </div>
+                    <div>
+                        <span class="section-title">Recipe Yield:</span>
+                        <span href="#" class="section-text">{{ recipe.recipeYield }}</span>
+                    </div>
+
+                    <div>
+                        <span class="section-title">Tags:</span>
+                        <md-chips ng-model="recipe.tags" readonly="true"></md-chips>
+                    </div>
+                    <br/>
+                </div>
+            </div>
+        </div>
+
+        <div class="recipe-section">
+
+            <!-- Ingredient sections  -->
+            <div class="ingredients">
+                <span class="row-title">INGREDIENTS</span>
+                <ul ng-repeat="ingredient in recipe.ingredients">
+                    <li>
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <span> {{ ingredient }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Directions -->
+            <div class="directions">
+                <span class="row-title">DIRECTIONS</span>
+                <ul ng-repeat="instruction in recipe.instructions">
+                    <li>
+                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                        <span> {{ instruction }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </form>
+</div>

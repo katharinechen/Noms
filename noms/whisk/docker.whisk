@@ -9,18 +9,12 @@ buildd=./deployment/build
 
 set -a; eval "$(whisk describe)"; set +a
 
-
 targets () {
-    echo noms-src
     echo noms-main
 }
 
 build() {
     set -x
-    mkdir -p $buildd
-    whisk describe | tee $buildd/env
-    cp -v $(which jentemplate) $buildd
-
     for targ in $(targets); do
         repo=corydodt/$targ
         docker build -t $repo:latest -t $repo:$NOMS_VERSION -f deployment/$targ/Dockerfile .

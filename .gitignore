@@ -25,6 +25,7 @@
 /wheels
 Gemfile.lock
 config.json
+local.env
 htmlcov/
 secret_pair.json
 static/css/

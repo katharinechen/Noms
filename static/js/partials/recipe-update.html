@@ -1,0 +1,66 @@
+<md-dialog>
+    <form name="recipeForm" layout="column" ng-cloak class="md-inline-form">
+
+        <!-- Section 1  -->
+        <div>
+            <h2>General Information</h2>
+            <div>
+                <md-input-container>
+                    <label>Recipe Name</label>
+                    <input ng-model="recipe.name">
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Author's Name</label>
+                    <input ng-model="recipe.author" required="">
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Tags</label>
+                    <md-chips ng-model="recipe.tags"
+                        placeholder="Enter a tag"
+                        secondary-placeholder="+Tag">
+                    </md-chips>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Yield</label>
+                    <input ng-model="recipe.recipeYield" required=""  min="1">
+                </md-input-container>
+            </div>
+        </div>
+
+        <!-- Section 2  -->
+        <div>
+            <h2>Ingredients</h2>
+            <ul ng-repeat="ingredient in recipe.ingredients track by $index">
+                <li>
+                    <input ng-model="recipe.ingredients[$index]"></input>
+                </li>
+            </ul>
+        <div>
+
+       <!-- Section 3  -->
+       <div>
+            <h2>Instruction</h2>
+            <ul ng-repeat="instructions in recipe.instructions track by $index">
+                <li>
+                    <input ng-model="recipe.instructions[$index]">
+                </li>
+            </ul>
+        </div>
+
+        <!-- Section 4  -->
+        <div>
+            <md-dialog-actions layout="row">
+                <md-button ng-click="saveRecipe(recipe)">
+                    Save
+                </md-button>
+                <md-button ng-click="cancel()">
+                    Cancel
+                </md-button>
+            </md-dialog-actions>
+        <div>
+
+    </form>
+</md-dialog>

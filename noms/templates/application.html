@@ -5,18 +5,18 @@
     <title>NOM NOM NOM</title>
     <% include "universal-header.html" %>
     <script src="/static/HASH-<< preload.staticHash >>/js/app.js"></script>
-    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipelist.js"></script>
+    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipe-list.js"></script>
     <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipe.js"></script>
-    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipenew.js"></script>
+    <script src="/static/HASH-<< preload.staticHash >>/js/controllers/recipe-create.js"></script>
     <script src="/static/HASH-<< preload.staticHash >>/js/controllers/navbar.js"></script>
-    <link rel="stylesheet" href="../static/css/base.css">
+    <link rel="stylesheet" href="../static/HASH-<< preload.staticHash >>/css/base.css">
   </head>
   <body>
     <!-- navbar -->
     <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/navbar.html'"></div>
 
     <!--   include partial -->
-    <div class='main-container'> 
+    <div class='main-container'>
       <div ng-include="'/static/HASH-<< preload.staticHash >>/js/partials/<< partial >>'"></div>
     </div>
 

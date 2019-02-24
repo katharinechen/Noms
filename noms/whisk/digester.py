@@ -4,6 +4,8 @@ Generate an md5 hash for a directory of files
 import os
 import hashlib
 
+from mongoengine import connect
+
 from humanhash import humanize
 
 from twisted.internet.defer import inlineCallbacks
@@ -13,6 +15,7 @@ import treq
 
 from codado.tx import Main
 
+from noms import DBHost, DBAlias
 from noms.whisk import usertoken
 
 
@@ -44,6 +47,10 @@ class Digester(Main):
         """
         Make an HTTP GET to update-url with the new digest
         """
+        alias = self.parent['alias']
+        assert alias in DBAlias
+        connect(**DBHost[alias])
+
         url = self['update-url'] + self._digest
         token = usertoken.get(LOCALAPI_EMAIL)
         res = yield treq.get(url, headers={'x-token': token})

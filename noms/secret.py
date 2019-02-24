@@ -1,12 +1,13 @@
 """
 Passwords, intended to be stored in the database
 """
+import base64
 import os
 import StringIO
 
-from bson import json_util  
+from bson import json_util
 
-import boto3 
+import boto3
 
 from mongoengine import fields
 
@@ -52,12 +53,12 @@ put = SecretPair.put
 
 def randomPassword(n=32):
     """
-    Produce a string n*2 bytes long, of hex digits
+    Produce a string n bytes long, of hex digits
     """
-    return ''.join('%02x' % ord(c) for c in os.urandom(n))
+    return base64.b64encode(os.urandom(n))
 
 
-def loadFromS3(): 
+def loadFromS3():
     """
     Fetch secrets from config file held in S3, and load them in mongo
 
@@ -67,19 +68,24 @@ def loadFromS3():
     Does nothing if the secret_pair collection already exists; to force, drop
     the secret_pair collection.
     """
-    if SecretPair.objects.count() == 0: 
-        # get the secret_pair.json file from AWS 
+    if not SecretPair.get('auth0', False):
+        print("Want secrets from bucket config.%s" % CONFIG.public_hostname)
+        # get the secret_pair.json file from AWS
         s3 = boto3.resource('s3')
         for b in s3.buckets.all():
             if b.name == 'config.%s' % CONFIG.public_hostname:
                 bucket = b
                 break
         else:
-            bucket = s3.Bucket("config.dev.nomsbook.com")
+            defaultBucket = "config.dev.nomsbook.com"
+            bucket = s3.Bucket(defaultBucket)
+            print("... switching to default secrets from %s" % defaultBucket)
 
-        output = StringIO.StringIO() 
+        output = StringIO.StringIO()
         bucket.download_fileobj('secret_pair/secret_pair.json', output)
 
         # save it to mongo
         print("Piping hot fresh secrets from bucket %r" % bucket.name)
-        SecretPair._get_collection().insert(json_util.loads(output.getvalue())) 
+        SecretPair._get_collection().insert(json_util.loads(output.getvalue()))
+    else:
+        print("Secrets are already loaded for %s" % CONFIG.public_hostname)

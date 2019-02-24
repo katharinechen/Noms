@@ -1,22 +1,24 @@
-<!-- Universal Header -->
-<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+
+<!-- Angular  -->
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+
+<!-- Angular Material -->
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.css">
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular-animate.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular-aria.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular-messages.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angular_material/1.1.6/angular-material.min.js"></script>
+
+<!-- Design Libraries -->
 <link rel="stylesheet" type="text/css" href= "//cdn.jsdelivr.net/bootstrap-social/4.12.0/bootstrap-social.css"></link>
-
-<!-- cddn --> 
-<link href="//d2my2c6k7ufqsm.cloudfront.net/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet"> 
-
-<!-- imported fonts from google fomts  -->
+<link href="//d2my2c6k7ufqsm.cloudfront.net/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link href="//fonts.googleapis.com/css?family=Give+You+Glory|Old+Standard+TT" rel="stylesheet">
 
 <span ng-controller="Preload">
-  
-<!-- data preloaded by the server, becomes part of the Noms scope in angular -->
-<script>
-<!-- <% set nomsPreload = preload or none %> -->
-window.nomsPreload = '<< nomsPreload | json >>';
-</script>
+    <!-- data preloaded by the server, becomes part of the Noms scope in angular -->
+    <script>
+        <!-- <% set nomsPreload = preload or none %> -->
+        window.nomsPreload = '<< nomsPreload | json >>';
+    </script>
 </span>
-
-
-<!-- End Universal Header -->

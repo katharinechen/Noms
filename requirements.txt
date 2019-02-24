@@ -1,4 +1,4 @@
-attrs
+attrs>=18.2.0
 awscli
 boto3
 characteristic
@@ -12,7 +12,7 @@ gitpython
 humanhash
 itsdangerous
 jinja2
-klein 
+klein
 microdata
 mock
 mongoengine
@@ -21,11 +21,11 @@ pip
 pytest-flakes
 pytest-cov
 pytest-twisted
-pytest>=3.0
+pytest>=4.3
 pyOpenSSL
 pytz
 service_identity
-sphinx 
+sphinx
 sphinx-autobuild
 sphinx_rtd_theme
 treq

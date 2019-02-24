@@ -45,11 +45,9 @@ def test_randomPassword():
     """
     sec1 = secret.randomPassword()
     sec2 = secret.randomPassword()
-    assert re.match('[0-9abcdef]{64}', sec1)
-    assert re.match('[0-9abcdef]{64}', sec2)
+    assert re.match('[A-Za-z0-9+/]', sec1)
+    assert re.match('[A-Za-z0-9+/]', sec2)
     assert sec1 != sec2
-    sec3 = secret.randomPassword(10)
-    assert re.match('[0-9abcdef]{20}', sec3)
 
 
 @fixture
@@ -66,7 +64,7 @@ def s3client():
     coryBucket = MagicMock(name='Bucket Cory')
     coryBucket.name = 'config.cory.ngrok.io'
     coryJSON = '{"_id":{"$oid":"65dd13ca8a99d245c1f7fdd4"},"name":"auth0","public":"coryngrokio_auth0_key","secret":"coryngrokio_auth0_secret"}'
-    coryBucket.download_fileobj = MagicMock(name='download_fileobj', 
+    coryBucket.download_fileobj = MagicMock(name='download_fileobj',
             side_effect=lambda s, io: io.write(coryJSON))
 
     ret = MagicMock(name='S3 Resource')

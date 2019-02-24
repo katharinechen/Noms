@@ -23,7 +23,7 @@ from klein import Klein
 from noms import urlify, secret, CONFIG
 from noms.user import User, USER, Roles
 from noms.recipe import Recipe
-from noms import rendering 
+from noms import rendering
 from noms.interface import ICurrentUser
 from noms.rendering import ResponseStatus as RS, OK, ERROR
 
@@ -35,8 +35,8 @@ RECIPE_SCHEMA = 'http://schema.org/Recipe'
 
 
 ResponseMsg = enum(
-        notLoggedIn='User was not logged in.', 
-        noRecipe='There are no recipes on this page.', 
+        notLoggedIn='User was not logged in.',
+        noRecipe='There are no recipes on this page.',
         renameRecipe='You already have a recipe with the same name. Rename?',
         )
 
@@ -90,7 +90,7 @@ class Server(object):
     @app.route("/recipes/new")
     def createRecipe(self, request):
         return rendering.HumanReadable('application.html',
-                partial='recipe-new.html')
+                partial='recipe-create.html')
 
     @app.route("/recipes/<string:urlKey>")
     def showRecipe(self, request, urlKey):
@@ -99,14 +99,9 @@ class Server(object):
         """
         # urlKey = unique id made up of author's email + recipe name
         return rendering.HumanReadable('application.html',
-                partial='recipe.html',
+                partial='recipe-read.html',
                 preload={'urlKey': urlKey}
                 )
-
-    @app.route("/ingredients/new")
-    def createIngredient(self, request):
-        return rendering.HumanReadable("application.html",
-                partial="ingredient-new.html")
 
     @app.route("/api/", branch=True)
     @enter('noms.server.APIServer')
@@ -160,19 +155,20 @@ class APIServer(object):
         data = {k.encode('utf-8'): v for (k,v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
+        recipe.recipeYield = str(data.get('recipeYield'))
         recipe.user = ICurrentUser(request)
         recipe.urlKey = urlify(recipe.user.email, recipe.name)
         if Recipe.objects(urlKey=recipe.urlKey).first():
             return ERROR(message=ResponseMsg.renameRecipe)
 
         recipe.author = data.get('author', USER().anonymous.givenName)
-        for i in data['ingredients']:
-            recipe.ingredients.append(i)
-        for i in data['instructions']:
-            recipe.instructions.append(i)
+        for field in ['tags', 'ingredients', 'instructions']:
+            if data.get(field):
+                for i in data[field]:
+                    recipe[field].append(i)
 
         recipe.save()
-        return OK()
+        return OK(message=recipe.urlKey)
 
     @app.route("/sethash/<string:hash>")
     @roles([Roles.localapi])
@@ -190,6 +186,31 @@ class APIServer(object):
         Return a specific recipe from its urlKey
         """
         return Recipe.objects(urlKey=urlKey).first()
+
+    @app.route("/recipe/<string:urlKey>/save", methods=['POST'])
+    def saveRecipe(self, request, urlKey):
+        """
+        Save a recipe from the recipe edit form
+        """
+        data = json.load(request.content)
+        recipe = Recipe.objects(urlKey=urlKey).first()
+        for k in data.keys():
+            if k not in ['user']:
+                setattr(recipe, k, data[k])
+        recipe.save()
+        return OK()
+
+    @app.route("/recipe/<string:urlKey>/delete")
+    def deleteRecipe(self, request, urlKey):
+        """
+        Delete a recipe from the recipe form
+        """
+        recipe = Recipe.objects(urlKey=urlKey).first()
+        if recipe:
+            recipe.delete()
+            return OK()
+        else:
+            return ERROR(message="Recipe not found")
 
     @app.route("/sso")
     @defer.inlineCallbacks
@@ -254,7 +275,6 @@ class APIServer(object):
 
         url = request.args['uri'][0]
         pageSource = yield treq.get(url).addCallback(treq.content)
- 
         items = microdata.get_items(pageSource)
         recipesSaved = []
 
@@ -264,12 +284,12 @@ class APIServer(object):
                 recipe = i
                 saveItem = Recipe.fromMicrodata(recipe, u.email)
                 Recipe.saveOnlyOnce(saveItem)
-                recipesSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey}) 
-                break 
-        
+                recipesSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey})
+                break
+
         if len(recipesSaved) == 0:
             defer.returnValue(
-                    ClipResponse(status=RS.error, message=ResponseMsg.noRecipe)) 
+                    ClipResponse(status=RS.error, message=ResponseMsg.noRecipe))
 
         defer.returnValue(
                 ClipResponse(status=RS.ok, recipes=recipesSaved))
@@ -281,4 +301,3 @@ class ClipResponse(rendering.ResponseData):
     Response from using the chrome extension to clip
     """
     recipes = attr.ib(default=attr.Factory(list))
-
