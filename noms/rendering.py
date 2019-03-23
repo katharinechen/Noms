@@ -4,14 +4,17 @@ Object publishing
 - Render templates
 - Conversions for various types into string
 """
-import json
 from functools import partial
+import json
+
+from past.builtins import basestring
+from builtins import object
 
 import attr
 
 from jinja2 import Template, Environment, PackageLoader
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from twisted.web import resource
 
@@ -62,12 +65,12 @@ class ResourceEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+@implementer(resource.IResource)
 class HumanReadable(object):
     """
     Accepts a template and optional kwargs, returns an object that can be
     rendered to a string
     """
-    implements(resource.IResource)
     isLeaf = True
 
     def __init__(self, templateOrFilename, **kwargs):
@@ -91,13 +94,13 @@ class HumanReadable(object):
         return self.template.render(**self.renderContext).encode('utf-8')
 
 
+@implementer(resource.IResource)
 class RenderableDocument(NomsDocument):
     """
     A mongoengine Document that can be rendered as json
 
     Implement .safe() in a subclass which should return a json-dumpable value
     """
-    implements(resource.IResource)
     meta = {'abstract': True}
 
     def render(self, request):
@@ -116,12 +119,12 @@ class RenderableDocument(NomsDocument):
 ResponseStatus = enum(ok='ok', error='error')
 
 
+@implementer(resource.IResource)
 @attr.s
 class ResponseData(object):
     """
     Generic container for an API response
     """
-    implements(resource.IResource)
 
     status = attr.ib()
     message = attr.ib(default='')

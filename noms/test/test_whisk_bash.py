@@ -5,6 +5,8 @@ import os
 import re
 import sys
 
+from builtins import str
+
 from pytest import fixture, raises
 
 from mock import patch
@@ -34,7 +36,7 @@ def goodScript(whiskDir):
     open(fn, 'w').write(
             '#!/bin/bash\n# @@ synopsis: good arg\necho "hooray"\n'
             )
-    os.chmod(fn, 0770)
+    os.chmod(fn, 0o770)
 
 
 @fixture
@@ -46,7 +48,7 @@ def failScript(whiskDir):
     open(fn, 'w').write(
             '#!/bin/bash\n# @@ synopsis: fake arg\nset -e\ngrep xyz abcxyz\n'
             )
-    os.chmod(fn, 0770)
+    os.chmod(fn, 0o770)
 
 
 def test_getMetadata(whiskDir, failScript):

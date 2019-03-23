@@ -4,6 +4,8 @@ Test the facilities that support jinja rendering
 import json
 from inspect import cleandoc
 
+from builtins import object
+
 from jinja2 import Template
 
 from pytest import raises

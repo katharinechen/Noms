@@ -1,6 +1,8 @@
 """
 Hooks for circusd to control startup
 """
+from __future__ import print_function
+
 import os
 import time
 
@@ -35,10 +37,10 @@ def importSample():
         from noms import whisk
         connect(**DBHost['noms'])
         if not recipe.Recipe.objects.count():
-            print "First-time run. Installing fresh users and recipes."
+            print("First-time run. Installing fresh users and recipes.")
             whisk.BaseWhisk.main(['sample'])
-        print "%r connected" % DBHost['noms']['host']
+        print("%r connected" % DBHost['noms']['host'])
         return True
     except errors.ServerSelectionTimeoutError:
-        print "No mongo server available (tried %r)" % DBHost['noms']['host']
+        print("No mongo server available (tried %r)" % DBHost['noms']['host'])
         return False

@@ -4,12 +4,16 @@ Output the environment variables sourced by build shell scripts
 """
 from __future__ import print_function
 
-from cStringIO import StringIO
-import re
+from inspect import cleandoc
+from io import StringIO
 import json
 import os
-from inspect import cleandoc
 import pipes
+import re
+
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str, object
 
 import attr
 
@@ -30,7 +34,7 @@ def readEnvironmentFile(fl):
     ret = {}
     if os.path.exists(fl):
         for line in open(fl):
-            if re.match('^\s*#', line):
+            if re.match(r'^\s*#', line):
                 continue
             k, v = line.strip().split('=', 1)
             ret[k] = v
@@ -43,7 +47,7 @@ def parseDescribe(s):
     """
     s = s.strip()
     # some sanity checks on describe string
-    if re.match('^(.*/){2}', s):
+    if re.match(r'^(.*/){2}', s):
         s = cleandoc("""
             ** Invalid NOMS_VERSION=%r
             ** You should build from either the HEAD of this branch or a tagged revision
@@ -164,6 +168,6 @@ class Describe(Main):
     def postOptions(self):
         try:
             description = Description.build(self)
-        except ValueError, e: # pragma: nocover
+        except ValueError as e: # pragma: nocover
             raise CLIError('whisk describe', 1, e.message)
         print(description.asEnvironment())

@@ -1,6 +1,7 @@
 """
 Tests of the whisk top-level CLI
 """
+from builtins import object
 
 from twisted.python import usage
 
