@@ -11,11 +11,14 @@
 /.vscode
 /aws.env
 /build
+/.config
 /coverage
 /deployment/build
+/dist
 /docs/_build
 /ecs.yml
 /env
+/Library
 /node_modules
 /nomsite.yml
 /package-lock.json

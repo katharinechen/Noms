@@ -1,0 +1,6 @@
+mock
+mongomock
+pytest
+pytest-cov
+pytest-flakes
+pytest-twisted
