@@ -17,7 +17,8 @@ from klein.interfaces import IKleinRequest
 
 from mock import patch, ANY
 
-from pytest import fixture, inlineCallbacks, raises
+from pytest import fixture, raises
+from pytest_twisted import inlineCallbacks
 
 from crosscap.testing import EZServer
 

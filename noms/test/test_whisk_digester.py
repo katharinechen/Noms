@@ -5,7 +5,8 @@ from twisted.internet import defer, task
 
 import treq
 
-from pytest import fixture, inlineCallbacks
+from pytest import fixture
+from pytest_twisted import inlineCallbacks
 
 from mock import patch, Mock, ANY
 
