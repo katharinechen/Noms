@@ -9,8 +9,6 @@ import attr
 from codado import enum
 from crosscap.tree import enter
 
-import microdata
-
 from twisted.web import static
 from twisted.internet import defer
 
@@ -26,18 +24,18 @@ from noms.recipe import Recipe
 from noms import rendering
 from noms.interface import ICurrentUser
 from noms.rendering import ResponseStatus as RS, OK, ERROR
+from noms.webparser import retrieveRecipes
 
 
 TOKEN_URL = "https://{domain}/oauth/token".format(domain='nomsbook.auth0.com')
 USER_URL = "https://{domain}/userinfo?access_token=".format(domain='nomsbook.auth0.com')
 OAUTH_GRANT_TYPE = 'authorization_code'
-RECIPE_SCHEMA = 'http://schema.org/Recipe'
 
 
 ResponseMsg = enum(
         notLoggedIn='User was not logged in.',
         noRecipe='There are no recipes on this page.',
-        renameRecipe='You already have a recipe with the same name. Rename?',
+        renameRecipe='You already have a recipe with the same name. Rename?'
         )
 
 
@@ -264,35 +262,21 @@ class APIServer(object):
         return ICurrentUser(request)
 
     @app.route("/bookmarklet")
-    @roles([Roles.user],
-            forbidAction=lambda: ClipResponse(status=RS.error, message=ResponseMsg.notLoggedIn))
-    @defer.inlineCallbacks
     def bookmarklet(self, request):
         """
         Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension
         """
         u = ICurrentUser(request)
-
         url = request.args['uri'][0]
-        pageSource = yield treq.get(url).addCallback(treq.content)
-        items = microdata.get_items(pageSource)
-        recipesSaved = []
+        recipes = retrieveRecipes(url)
 
-        for i in items:
-            itemTypeArray = [x.string for x in i.itemtype]
-            if RECIPE_SCHEMA in itemTypeArray:
-                recipe = i
-                saveItem = Recipe.fromMicrodata(recipe, u.email)
-                Recipe.saveOnlyOnce(saveItem)
-                recipesSaved.append({"name": saveItem.name, "urlKey": saveItem.urlKey})
-                break
+        if len(recipes) == 0:
+            return ClipResponse(status=RS.error, message=ResponseMsg.noRecipe)
 
-        if len(recipesSaved) == 0:
-            defer.returnValue(
-                    ClipResponse(status=RS.error, message=ResponseMsg.noRecipe))
-
-        defer.returnValue(
-                ClipResponse(status=RS.ok, recipes=recipesSaved))
+        for r in recipes:
+            Recipe.createFromWebclipper(r, u.email).save()
+            print "Successfully created a new recipe"
+        return ClipResponse(status=RS.ok)
 
 
 @attr.s
