@@ -54,6 +54,6 @@ def test_fromToken(mockDatabase, localapi):
 
     # Create a deliberately incorrect token and see if it fails to auth
     # (failure == anonymous user)
-    rq2 = requestJSON([], requestHeaders=[('x-token', ['asdfasdf'])])
+    rq2 = requestJSON([], requestHeaders=[('x-token', [b'asdfasdf'])])
     u2 = user.User.fromRequest(rq2)
     assert u2 is user.USER().anonymous

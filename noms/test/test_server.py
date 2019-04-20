@@ -186,7 +186,7 @@ def test_saveRecipe(mockConfig, apiServer, weirdo, recipes):
             instructions=['mix together ingredients', 'heat through'],
             )
     reqJS = requestJSON([], content=content)
-    resp = yield apiServer.handler('saveRecipe', reqJS, urlKey='weird-sandwich-cory-')
+    resp = yield apiServer.handler('saveRecipe', reqJS, urlKey='weird-sandwich-cory')
     assert resp == OK()
 
 @inlineCallbacks
@@ -199,7 +199,7 @@ def test_deleteRecipe(mockConfig, apiServer, reqJS, recipes):
     assert resp == ERROR(message="Recipe not found")
 
     # Success: recipe exists
-    resp = yield apiServer.handler('deleteRecipe', reqJS, urlKey='weird-sandwich-cory-')
+    resp = yield apiServer.handler('deleteRecipe', reqJS, urlKey='weird-sandwich-cory')
     assert resp == OK()
 
 
@@ -364,7 +364,7 @@ def test_createRecipeSave(mockConfig, apiServer, weirdo, weirdSoupPOST):
     """
     reqJS = requestJSON([], content=weirdSoupPOST, session_user=weirdo)
     resp = yield apiServer.handler('createRecipeSave', reqJS)
-    assert resp == OK(message='weirdo-gmail-com-weird-soup-')
+    assert resp == OK(message='weirdo-gmail-com-weird-soup')
 
     # the second time we should get an error because it exists
     reqJS = requestJSON([], content=weirdSoupPOST, session_user=weirdo)

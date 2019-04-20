@@ -14,9 +14,10 @@ from itsdangerous import (
 
 from codado import enum
 
-from noms.rendering import RenderableDocument
-from noms.interface import ICurrentUser
 from noms import secret
+from noms.const import ENCODING
+from noms.interface import ICurrentUser
+from noms.rendering import RenderableDocument
 
 
 Roles = enum.fromkeys([
@@ -111,13 +112,13 @@ class User(RenderableDocument):
         """
         return getattr(request.getSession(), 'user', None)
 
-    def asToken(self):
+    def asToken(self, encoding=ENCODING):
         """
-        Create a JSON token for this user
+        Create a JSON token for this user, which is an encoded byte string
         """
         _, sec = secret.get(u'localapi')
         s = Serializer(sec)
-        return s.dumps({'email': self.email})
+        return s.dumps({'email': self.email}).encode(encoding)
 
 
 registerAdapter(User.fromRequest, Request, ICurrentUser)

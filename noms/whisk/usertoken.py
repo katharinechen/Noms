@@ -8,6 +8,7 @@ from mongoengine import connect
 from codado.tx import Main
 
 from noms import user, DBHost, DBAlias
+from noms.const import ENCODING
 
 
 class UserToken(Main):
@@ -28,4 +29,4 @@ class UserToken(Main):
 
 def get(email):
     u = user.User.objects.get(email=email)
-    return u.asToken()
+    return u.asToken().decode(ENCODING)

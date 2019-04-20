@@ -213,9 +213,9 @@ def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **
     user = kwargs.pop('user', None)
     if user:
         tok = user.asToken()
-        requestHeaders = requestHeaders + ((u'x-token', [tok]),)
+        requestHeaders = requestHeaders + (('x-token', [tok]),)
 
-    responseHeaders = responseHeaders + ((u'content-type', [u'application/json']),)
+    responseHeaders = responseHeaders + (('content-type', b'application/json'),)
     req = request(postpath, requestHeaders, responseHeaders, **kwargs)
 
     return req

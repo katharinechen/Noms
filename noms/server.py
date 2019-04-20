@@ -115,10 +115,10 @@ class Server(object):
 
         We memoize APIServer().app.resource() so we only have to create one.
         """
-        request.setHeader('content-type', 'application/json')
-        request.setHeader('expires', "-1")
-        request.setHeader("cache-control", "private, max-age=0, no-cache, no-store, must-revalidate")
-        request.setHeader("pragma", "no-cache")
+        request.setHeader('content-type', b'application/json')
+        request.setHeader('expires', b"-1")
+        request.setHeader("cache-control", b"private, max-age=0, no-cache, no-store, must-revalidate")
+        request.setHeader("pragma", b"no-cache")
         return subKlein
 
 
@@ -239,7 +239,7 @@ class APIServer(object):
         }
         tokenInfo = yield treq.post(TOKEN_URL,
                 json.dumps(tokenPayload, sort_keys=True),
-                headers={'Content-Type': ['application/json']}
+                headers={'Content-Type': [b'application/json']}
                 ).addCallback(treq.json_content)
 
         # Ask auth0 to look up the right user in the IdP, by querying with access_token
