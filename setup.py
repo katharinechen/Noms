@@ -16,6 +16,14 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     scripts = 'bin/do-travis-build bin/whisk bin/noms'.split(),
+    extras_require={
+        'dev': [
+            'pytest',
+            'pytest-twisted',
+            'pytest-coverage',
+            'pytest-flakes'
+        ]
+    },
     install_requires=cleandoc('''
         boto3>=1.9.120
         codado>=0.6.1
@@ -28,5 +36,6 @@ setup(
         mnemonicode>=1.4.4
         treq>=18.6.0
         twisted>=17.1.0
+        watchdog
         ''').split()
 )
