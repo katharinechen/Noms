@@ -56,6 +56,8 @@ need to do this.
 
 .. code-block:: bash
 
+    $ pip install awscli
+    ...
     $ aws configure
     AWS Access Key ID: AKIAUSEAREALAUTHKEYY
     AWS Secret Access Key: Use/your/actual/secret/key/here/pleaseee
@@ -79,6 +81,14 @@ When you have them, run ``ngrok`` with the keys. This will create a config file 
         hostname: [get from project maintainer]
 
 To start ``ngrok`` you have to type the following in the terminal: ``ngrok start noms``. 
+
+Pip install in your local shell
+
+.. code-block:: bash
+
+    workon noms
+    pip install -r requirements.txt
+
 
 Build Container Images
 ~~~~~~~~~~~~~~~~~~~~~~
