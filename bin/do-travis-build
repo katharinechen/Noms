@@ -14,7 +14,7 @@ set +a
 # run tests
 eslint . && echo "eslint ok 👌"
 karma start
-pytest --cov-fail-under=100
+tox
 
 # if tests pass, build & push images
 docker login -u $DOCKER_USER -p $DOCKER_PASS
