@@ -9,7 +9,7 @@ from pymongo.errors import ServerSelectionTimeoutError
 from noms import circushook, whisk
 
 
-def test_before_start_importSample(mockConfig):
+def test_before_start(mockConfig):
     """
     Do I attempt to load users when the database is available?
     """
@@ -20,7 +20,7 @@ def test_before_start_importSample(mockConfig):
     assert ret == True
 
 
-def test_before_start_importSampleBadConnection(mockConfig):
+def test_before_start_badConnection(mockConfig):
     """
     Do I return False when I can't find a database?
     """

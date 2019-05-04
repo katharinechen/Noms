@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# shell functions useful for interacting with the docker-compose stack and doing
+# operations in the container shell
+
+IFS=$'\n\t'
+
+
+nd-compose() {
+    docker-compose -f deployment/docker-compose.yml "$@"
+}
+
+nd-up() {
+    nd-compose up
+}
+
+nd-exec() {
+    nd-compose exec noms-main "$@"
+}
