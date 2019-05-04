@@ -39,8 +39,9 @@ Build a virtual environment with ``virtualenvwrapper``.
     mkvirtualenv -a Noms noms
     cat <<'EOF' | tee -a ~/.virtualenvs/noms/bin/postactivate
     export PATH=$PATH:~/Noms/bin
-    export PYTHONPATH=$PYTHONPATH:~/Noms
+    . ~/Noms/bin/nd-functions
     EOF
+    add2virtualenv ~/Noms
 
 When you wish to use this virtual environment, run ``workon noms``.
 
@@ -65,7 +66,7 @@ need to do this.
     Default output format [text]:
 
 Get Ngrok Credentials
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 Download ``ngrok`` and save it in your ``env/noms/bin`` directory. Make this file executable. 
 
@@ -88,6 +89,7 @@ Pip install in your local shell
 
     workon noms
     pip install -r requirements.txt
+    pip install .[dev]
 
 
 Build Container Images
@@ -109,6 +111,7 @@ a Mac for development, you should install** `Docker for Mac`_.
 
     # create a volume of your local source files
     docker volume create -o type=none -o device=$(pwd) -o o=bind noms-src
+
     # set some environment variables inside the container
     whisk describe > env
     cat <<EOF | tee -a env
@@ -135,14 +138,14 @@ First-time run
 
 You can run the Noms docker container with the following command::
 
-   docker-compose -f deployment/docker-compose.yml up
+    nd-compose up
 
 Visit ``http://localhost:8080/`` to see the current state of the application.
 
 The command above runs the containers in the foreground, allowing you to see
 log output as it happens. OR, you can run it in the background, with::
 
-    docker-compose -f deployment/docker-compose.yml up -d
+    nd-compose up -d
 
 After which, you can use ``docker logs -f deployment_noms-main_1`` to inspect
 your container's output.
@@ -198,8 +201,8 @@ test passes on the CI server, you can go to ``github`` and view ``travis``.
 There are a few different ways to use pytest:
 
 - To run a specific test, use: ``pytest noms/test/test_rendering.py``
-- To run all of the test, use: ``pytest``
-- To run only the failing test, use: ``pytest --lf``
+- To run all of the tests, use: ``tox``
+- To run only the failing tests from the last run, use: ``pytest --lf``
 
 To run ``pyflakes`` directly, just run::
 
@@ -237,5 +240,4 @@ Now that you have completed the initial setup, moving forward you will only
 need to do the following to set be ready to work on Noms:
 
 - ``workon noms`` will automatically drop you into your virtual environment.
-- ``docker-compose -f deployment/docker-compose.yml up`` will run the
-  application in the foreground.
+- ``nd-compose up`` will run the application in the foreground.
