@@ -21,7 +21,8 @@ setup(
             'pytest',
             'pytest-twisted',
             'pytest-coverage',
-            'pytest-flakes'
+            'pytest-flakes',
+            'tox',
         ]
     },
     install_requires=cleandoc('''
