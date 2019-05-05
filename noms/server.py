@@ -1,12 +1,8 @@
 """
 Twisted Web Routing
 """
-from __future__ import print_function
-
 from functools import wraps
 import json
-
-from builtins import object
 
 import attr
 
@@ -67,7 +63,7 @@ def roles(allowed, forbidAction=Forbidden):
     return wrapper
 
 
-class Server(object):
+class Server:
     """
     The web server for html and miscell.
     """
@@ -133,7 +129,7 @@ def querySet(fn):
     return deco
 
 
-class APIServer(object):
+class APIServer:
     """
     The web server for JSON API
 

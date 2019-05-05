@@ -1,8 +1,6 @@
 """
 Command-line interface for noms
 """
-from __future__ import print_function
-
 import os
 import shlex
 import subprocess

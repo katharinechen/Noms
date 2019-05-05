@@ -1,3 +1,6 @@
+"""
+Interfaces to use for building adapters
+"""
 from zope.interface import Interface
 
 

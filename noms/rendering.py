@@ -8,7 +8,6 @@ from functools import partial
 import json
 
 from past.builtins import basestring
-from builtins import object
 
 import attr
 
@@ -40,7 +39,7 @@ env = Environment(
 env.filters['json'] = lambda x: json.dumps(x, cls=ResourceEncoder, sort_keys=True)
 
 
-class RenderableQuerySet(object):
+class RenderableQuerySet:
     """
     A mongo queryset representable as a json array.
 
@@ -68,7 +67,7 @@ class ResourceEncoder(json.JSONEncoder):
 
 
 @implementer(resource.IResource)
-class HumanReadable(object):
+class HumanReadable:
     """
     Accepts a template and optional kwargs, returns an object that can be
     rendered to a string
@@ -123,7 +122,7 @@ ResponseStatus = enum(ok='ok', error='error')
 
 @implementer(resource.IResource)
 @attr.s
-class ResponseData(object):
+class ResponseData:
     """
     Generic container for an API response
     """

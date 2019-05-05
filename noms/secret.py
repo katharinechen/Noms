@@ -1,8 +1,6 @@
 """
 Passwords, intended to be stored in the database
 """
-from __future__ import print_function
-
 from binascii import hexlify
 import io
 import os
