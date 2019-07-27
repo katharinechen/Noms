@@ -13,8 +13,8 @@ set +a
 
 # run tests
 eslint . && echo "eslint ok 👌"
-karma start
-tox
+# karma start
+tox -e travis
 
 # if tests pass, build & push images
 docker login -u $DOCKER_USER -p $DOCKER_PASS
