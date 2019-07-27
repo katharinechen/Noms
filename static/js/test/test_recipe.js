@@ -44,7 +44,7 @@ describe("static/js/controllers/recipe.js : Recipe", () => {
         expect(this.scope.recipe).to.deep.equal(expected);
 
         // using a wrong key
-        expected = {}
+        expected = {};
         this.scope.readRecipe("wrong-key");
         this.$httpBackend.expectGET("/api/recipe/wrong-key").respond(403, expected);
         this.$httpBackend.flush();

@@ -37,7 +37,7 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
     // Delete a single recipe
     $scope.deleteRecipe = function(urlKey) {
         recipeFactory.delete(urlKey).then(
-            (response) => {
+            () => {
                 $window.location.href = '/recipes';
             },
             (err) => {
@@ -63,7 +63,7 @@ app.controller('RecipeShow', ['$scope', '$window', '$mdDialog', 'recipeFactory',
 
 
 app.controller('DialogController', ['$scope', '$mdDialog', 'recipeFactory', 'dataToPass', function($scope, $mdDialog, recipeFactory, dataToPass) {
-    var modRecipe = $scope.recipe = dataToPass;
+    $scope.recipe = dataToPass;
     $scope.cancel = function() {
         $mdDialog.cancel();
     };
@@ -71,10 +71,10 @@ app.controller('DialogController', ['$scope', '$mdDialog', 'recipeFactory', 'dat
     // Update an existing recipe
     $scope.saveRecipe = function(modRecipe) {
         recipeFactory.update(modRecipe, modRecipe.urlKey).then(
-            (response) => {
+            () => {
                 $scope.saveAlert();
             },
-            (err) => {
+            () => {
                 $scope.errorAlert();
             }
         );
