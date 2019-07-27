@@ -12,6 +12,10 @@ install:
     - pip install .[dev]
     - npm install
 
+stages:
+- test
+- deploy
+
 job:
   include:
     - stage: test
