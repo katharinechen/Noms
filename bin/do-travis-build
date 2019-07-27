@@ -1,7 +1,17 @@
 #!/bin/bash
 
-set -euo pipefail
+set -uo pipefail
 IFS=$'\n\t'
+
+# insert a marker to make it easier to find errors
+err-marker() {
+    echo "Build step error here ^^^^ EEEE ^^^^" 1>&2
+}
+set -E
+
+if [[ ${TRAVIS:-} == "true" ]]; then
+    trap err-marker ERR
+fi
 
 PATH="$PATH:./bin:./node_modules/.bin"
 export PYTHONPATH=`pwd`
