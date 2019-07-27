@@ -45,8 +45,8 @@ def test_randomPassword():
     """
     sec1 = secret.randomPassword()
     sec2 = secret.randomPassword()
-    assert re.match('[A-Za-z0-9+/]', sec1)
-    assert re.match('[A-Za-z0-9+/]', sec2)
+    assert re.match(r'[A-Za-z0-9+/]', sec1)
+    assert re.match(r'[A-Za-z0-9+/]', sec2)
     assert sec1 != sec2
 
 

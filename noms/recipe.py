@@ -12,7 +12,7 @@ from noms import urlify
 
 
 def clean(string):
-    res = re.sub('\s+', ' ', string)
+    res = re.sub(r'\s+', ' ', string)
     return res.strip()
 
 

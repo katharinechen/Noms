@@ -53,7 +53,7 @@ def urlify(*args):
         url = url + "-" + n
     url = url.encode('idna')
 
-    return re.sub(b'[^-a-z0-9]', b'-', url.lower()).decode('ascii')
+    return re.sub(rb'[^-a-z0-9]', b'-', url.lower()).decode('ascii')
 
 
 class Config:
