@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+IFS=$'\n\t'
+
+set -u
+
+err-marker() {
+    echo "Build step error here ^^^^ EEEE ^^^^" 1>&2
+}
+set -E
+
+if [[ ${TRAVIS:-} == "true" ]]; then
+    trap err-marker ERR
+fi
+
+
+PATH="$PATH:./bin:./node_modules/.bin"
+export PYTHONPATH=`pwd`
+
+
+# set environment variables for the build from whisk describe
+set -a
+eval "$(whisk describe)"
+set +a

@@ -12,6 +12,27 @@ install:
     - pip install .[dev]
     - npm install
 
+job:
+  include:
+    - stage: test
+      script:
+      - . bin/ci-functions
+      - eslint . && echo "eslint ok 👌"
+      - karma start
+      - tox -e travis
 
-script:
-- bin/do-travis-build
+    - stage: deploy
+      # TODO - remove this after we are live!
+      if: branch = master
+      env:
+        public_hostname: nomsbook.com
+      script:
+      - . bin/ci-functions
+      - whisk cloudform --changeset nomsite
+    - stage: deploy
+      if: tag =~ /^(release|devbuild)-/
+      env:
+        public_hostname: nomsbook.com
+      script:
+      - . bin/ci-functions
+      - whisk cloudform --changeset nomsite

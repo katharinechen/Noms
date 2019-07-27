@@ -6,14 +6,23 @@
 IFS=$'\n\t'
 
 
+# run a command with the docker-compose file
 nd-compose() {
     docker-compose -f deployment/docker-compose.yml "$@"
 }
 
+# start the docker environment
 nd-up() {
     nd-compose up
 }
 
+# run a command in the docker environment
 nd-exec() {
     nd-compose exec noms-main "$@"
 }
+
+# copy a file from inside the container to a filename outside the container
+nd-cp() {
+    nd-exec cat "$1" > "$2"
+}
+
