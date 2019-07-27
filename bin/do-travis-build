@@ -13,7 +13,7 @@ set +a
 
 # run tests
 eslint . && echo "eslint ok 👌"
-# karma start
+karma start
 tox -e travis
 
 # if tests pass, build & push images
