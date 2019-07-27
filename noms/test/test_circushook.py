@@ -25,7 +25,8 @@ def test_before_start_importSampleBadConnection(mockConfig):
     Do I return False when I can't find a database?
     """
     err = ServerSelectionTimeoutError
-    pConnect = patch.object(circushook, 'connect', autospec=True, side_effect=err)
+    pConnect = patch.object(circushook, 'connect',
+                            autospec=True, side_effect=err)
     with pConnect:
         ret = circushook.before_start(None, None, None)
-    assert ret == False
+        assert ret == False

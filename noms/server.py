@@ -28,15 +28,17 @@ from noms.webparser import retrieveRecipes
 
 
 TOKEN_URL = "https://{domain}/oauth/token".format(domain='nomsbook.auth0.com')
-USER_URL = "https://{domain}/userinfo?access_token=".format(domain='nomsbook.auth0.com')
+USER_URL = "https://{domain}/userinfo?access_token=".format(
+    domain='nomsbook.auth0.com')
 OAUTH_GRANT_TYPE = 'authorization_code'
 
 
 ResponseMsg = enum(
-        notLoggedIn='User was not logged in.',
-        noRecipe='There are no recipes on this page.',
-        renameRecipe='You already have a recipe with the same name. Rename?'
-        )
+    notLoggedIn='User was not logged in.',
+    noRecipe='There are no recipes on this page.',
+    renameRecipe='You already have a recipe with the same name. Rename?',
+    successfulSave='Your recipe was successfully saved.'
+)
 
 
 def roles(allowed, forbidAction=Forbidden):
@@ -50,10 +52,9 @@ def roles(allowed, forbidAction=Forbidden):
             for role in allowed:
                 if role in u.roles:
                     return fn(self, request, *a, **kw)
-            if forbidAction is Forbidden:
-                raise Forbidden()
-            else:
-                return forbidAction()
+            assert forbidAction is Forbidden
+            raise Forbidden()  # eventually going to replace this with crosscap
+
         # XXX adding an attribute to allow external tools to document what's
         # going on in the API
         roleCheck._roles = allowed
@@ -83,12 +84,12 @@ class Server(object):
     @app.route("/recipes")
     def showRecipes(self, request):
         return rendering.HumanReadable('application.html',
-                partial='recipe-list.html')
+                                       partial='recipe-list.html')
 
     @app.route("/recipes/new")
     def createRecipe(self, request):
         return rendering.HumanReadable('application.html',
-                partial='recipe-create.html')
+                                       partial='recipe-create.html')
 
     @app.route("/recipes/<string:urlKey>")
     def showRecipe(self, request, urlKey):
@@ -97,9 +98,9 @@ class Server(object):
         """
         # urlKey = unique id made up of author's email + recipe name
         return rendering.HumanReadable('application.html',
-                partial='recipe-read.html',
-                preload={'urlKey': urlKey}
-                )
+                                       partial='recipe-read.html',
+                                       preload={'urlKey': urlKey}
+                                       )
 
     @app.route("/api/", branch=True)
     @enter('noms.server.APIServer')
@@ -111,7 +112,8 @@ class Server(object):
         """
         request.setHeader('content-type', 'application/json')
         request.setHeader('expires', "-1")
-        request.setHeader("cache-control", "private, max-age=0, no-cache, no-store, must-revalidate")
+        request.setHeader(
+            "cache-control", "private, max-age=0, no-cache, no-store, must-revalidate")
         request.setHeader("pragma", "no-cache")
         return subKlein
 
@@ -150,7 +152,7 @@ class APIServer(object):
         Save recipes
         """
         data = json.load(request.content)
-        data = {k.encode('utf-8'): v for (k,v) in data.items()}
+        data = {k.encode('utf-8'): v for (k, v) in data.items()}
         recipe = Recipe()
         recipe.name = data['name']
         recipe.recipeYield = str(data.get('recipeYield'))
@@ -226,16 +228,17 @@ class APIServer(object):
         # that we are an authorized auth0 SP by using the client_secret.
         auth0ID, auth0Secret = secret.get('auth0')
         tokenPayload = {
-          'client_id':     auth0ID,
-          'client_secret': auth0Secret,
-          'redirect_uri':  'https://' + CONFIG.public_hostname + '/api/sso',
-          'code':          code,
-          'grant_type':    'authorization_code'
+            'client_id':     auth0ID,
+            'client_secret': auth0Secret,
+            'redirect_uri':  'https://' + CONFIG.public_hostname + '/api/sso',
+            'code':          code,
+            'grant_type':    'authorization_code'
         }
         tokenInfo = yield treq.post(TOKEN_URL,
-                json.dumps(tokenPayload, sort_keys=True),
-                headers={'Content-Type': ['application/json']}
-                ).addCallback(treq.json_content)
+                                    json.dumps(tokenPayload, sort_keys=True),
+                                    headers={
+                                        'Content-Type': ['application/json']}
+                                    ).addCallback(treq.json_content)
 
         # Ask auth0 to look up the right user in the IdP, by querying with access_token
         userURL = '{base}{access_token}'.format(base=USER_URL, **tokenInfo)
@@ -262,21 +265,24 @@ class APIServer(object):
         return ICurrentUser(request)
 
     @app.route("/bookmarklet")
+    @defer.inlineCallbacks
     def bookmarklet(self, request):
         """
         Fetches the recipe for the url, saves the recipe, and returns a response to the chrome extension
         """
         u = ICurrentUser(request)
         url = request.args['uri'][0]
-        recipes = retrieveRecipes(url)
+        recipes = yield retrieveRecipes(url)
 
         if len(recipes) == 0:
-            return ClipResponse(status=RS.error, message=ResponseMsg.noRecipe)
+            defer.returnValue(ClipResponse(
+                status=RS.error, message=ResponseMsg.noRecipe))
 
         for r in recipes:
-            Recipe.createFromWebclipper(r, u.email).save()
-            print "Successfully created a new recipe"
-        return ClipResponse(status=RS.ok)
+            newRecipe = Recipe.createFromWebclipper(r, u.email).save()
+            print "Successfully create a new recipe: {}".format(newRecipe.name)
+        defer.returnValue(ClipResponse(
+            status=RS.ok, message=ResponseMsg.successfulSave))
 
 
 @attr.s

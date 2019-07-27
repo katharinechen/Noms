@@ -5,7 +5,7 @@ import subprocess
 
 from mock import patch
 
-from noms import cli, secret
+from noms import cli, secret, DBAlias
 
 
 def test_main(mockConfig):
@@ -25,6 +25,7 @@ def test_postOptions(mockConfig):
     secret.SecretPair.objects.get(name='localapi').delete()
 
     opts = cli.Run()
+    opts['alias'] = DBAlias.nomsTest
     pPopen = patch.object(subprocess, 'Popen', autospec=True)
 
     with pPopen as mPopen:

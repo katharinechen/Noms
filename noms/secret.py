@@ -15,7 +15,7 @@ from noms import documentutil, CONFIG
 
 
 NO_DEFAULT = object()
-SECRET_EXPIRATION = 600 # 10 minutes
+SECRET_EXPIRATION = 600  # 10 minutes
 
 
 class SecretPair(documentutil.NomsDocument):
@@ -31,8 +31,8 @@ class SecretPair(documentutil.NomsDocument):
     @classmethod
     def get(cls, name, default=NO_DEFAULT):
         ret = cls.objects(name=name
-                ).only('public', 'secret'
-                ).first()
+                          ).only('public', 'secret'
+                                 ).first()
 
         if ret is None:
             if default is NO_DEFAULT:
@@ -86,6 +86,6 @@ def loadFromS3():
 
         # save it to mongo
         print("Piping hot fresh secrets from bucket %r" % bucket.name)
-        SecretPair._get_collection().insert(json_util.loads(output.getvalue()))
+        SecretPair._get_collection().insert_one(json_util.loads(output.getvalue()))
     else:
         print("Secrets are already loaded for %s" % CONFIG.public_hostname)

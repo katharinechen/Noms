@@ -11,7 +11,7 @@ app.controller('RecipeListCtrl', ['$scope', 'recipeFactory', function($scope, re
             (response) => {
                 $scope.recipes = response.data;
             },
-            (err) => {
+            () => {
                 $scope.status = "Unable to load the recipe list";
             }
         );

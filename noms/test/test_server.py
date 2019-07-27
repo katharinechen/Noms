@@ -17,14 +17,15 @@ from klein.interfaces import IKleinRequest
 
 from mock import patch, ANY
 
-from pytest import fixture, inlineCallbacks, raises
+from pytest import fixture, raises
+from pytest_twisted import inlineCallbacks
 
 from crosscap.testing import EZServer
 
 from noms import (
-        server, fromNoms,
-        recipe, urlify, CONFIG,
-        )
+    server, fromNoms,
+    recipe, urlify, CONFIG
+)
 from noms.interface import ICurrentUser
 from noms.user import User
 from noms.rendering import ResponseStatus as RS, OK, ERROR
@@ -49,7 +50,8 @@ def test_querySet(mockConfig):
 
     User(email='hello').save()
     configsFn = server.querySet(_configs)
-    assert configsFn(None) == '[{"email": "hello", "familyName": null, "givenName": null, "roles": []}]'
+    assert configsFn(
+        None) == '[{"email": "hello", "familyName": null, "givenName": null, "roles": []}]'
 
 
 @fixture
@@ -139,7 +141,7 @@ def test_showRecipe(mockConfig, rootServer, req):
     rendered = r.render(req)
     assert re.search(r'partials/recipe-read.html', rendered)
     assert re.search(r'nomsPreload.*urlKey.*foo-gmail-com-honeyed-cream-cheese-pear-pie-',
-        rendered)
+                     rendered)
 
 
 @inlineCallbacks
@@ -158,7 +160,8 @@ def recipes():
     """
     author = u'cory'
     url = urlify(u'weird sandwich', author)
-    r1 = recipe.Recipe(name=u'weird sandwich', author=author, urlKey=url).save()
+    r1 = recipe.Recipe(name=u'weird sandwich',
+                       author=author, urlKey=url).save()
     url = urlify(u'weird soup', author)
     r2 = recipe.Recipe(name=u'weird soup', author=author, urlKey=url).save()
     return (r1, r2)
@@ -179,14 +182,15 @@ def test_saveRecipe(mockConfig, apiServer, weirdo, recipes):
     Does /api/recipe/urlKey/save ... save a specific recipe?
     """
     content = dict(
-            name='Weird soup',
-            author='Weird Soup Man',
-            ingredients=['weirdness', 'soup'],
-            instructions=['mix together ingredients', 'heat through'],
-            )
+        name='Weird soup',
+        author='Weird Soup Man',
+        ingredients=['weirdness', 'soup'],
+        instructions=['mix together ingredients', 'heat through'],
+    )
     reqJS = requestJSON([], content=content)
     resp = yield apiServer.handler('saveRecipe', reqJS, urlKey='weird-sandwich-cory-')
     assert resp == OK()
+
 
 @inlineCallbacks
 def test_deleteRecipe(mockConfig, apiServer, reqJS, recipes):
@@ -228,11 +232,11 @@ def test_sso(mockConfig, apiServer, req, weirdo):
     Does /api/sso create or return a good user?
     """
     pPost = patch.object(treq, 'post',
-            return_value=defer.succeed(None),
-            autospec=True)
+                         return_value=defer.succeed(None),
+                         autospec=True)
     pGet = patch.object(treq, 'get',
-            return_value=defer.succeed(None),
-            autospec=True)
+                        return_value=defer.succeed(None),
+                        autospec=True)
 
     @defer.inlineCallbacks
     def negotiateSSO(req=req, **user):
@@ -243,19 +247,20 @@ def test_sso(mockConfig, apiServer, req, weirdo):
             return defer.succeed(dict(**user))
 
         pContent = patch.object(treq, 'json_content',
-                side_effect=[auth0tokenizer(), auth0userGetter()],
-                autospec=True)
+                                side_effect=[
+                                    auth0tokenizer(), auth0userGetter()],
+                                autospec=True)
 
         with pPost as mPost, pGet as mGet, pContent:
             yield apiServer.handler('sso', req)
             mPost.assert_called_once_with(
                 server.TOKEN_URL,
                 json.dumps({'client_id': 'abc123',
-                 'client_secret': 'ABC!@#',
-                 'redirect_uri': 'https://' + CONFIG.public_hostname + '/api/sso',
-                 'code': 'idk123bbq',
-                 'grant_type': 'authorization_code',
-                 }, sort_keys=True),
+                            'client_secret': 'ABC!@#',
+                            'redirect_uri': 'https://' + CONFIG.public_hostname + '/api/sso',
+                            'code': 'idk123bbq',
+                            'grant_type': 'authorization_code',
+                            }, sort_keys=True),
                 headers=ANY)
             mGet.assert_called_once_with(server.USER_URL + 'IDK!@#BBQ')
 
@@ -269,64 +274,45 @@ def test_sso(mockConfig, apiServer, req, weirdo):
     # test again with a new user
     reqJS = requestJSON([], args={'code': ['idk123bbq']})
     yield negotiateSSO(reqJS,
-            email='weirdo2@gmail.com',
-            family_name='2',
-            given_name='weirdo'
-            )
+                       email='weirdo2@gmail.com',
+                       family_name='2',
+                       given_name='weirdo'
+                       )
     assert reqJS.getSession().user.email == 'weirdo2@gmail.com'
     assert reqJS.responseCode == 302
     assert reqJS.responseHeaders.getRawHeaders('location') == ['/']
 
 
 @inlineCallbacks
-def test_noRecipeToBookmark(mockConfig, weirdo, apiServer):
-    """
-    Does the application still work if there are no recipes?
-    """
-    pageSource = ''
-    pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
-    pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(pageSource), autospec=True)
-
-    with pGet, pTreqContent:
-        reqJS = requestJSON([], session_user=weirdo)
-        reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
-        ret = yield apiServer.handler('bookmarklet', reqJS)
-        expectedResults = server.ClipResponse(
-                status=RS.error, message=server.ResponseMsg.noRecipe,
-                recipes=[],
-                )
-        assert ret == expectedResults
-
-
-@inlineCallbacks
-def test_bookmarklet(mockConfig, apiServer, specialUsers, weirdo, recipePageHTML):
+def test_bookmarklet(weirdo, apiServer, recipeData):
     """
     Does api/bookmarklet fetch, save, and return a response for the recipe?
     """
-    pGet = patch.object(treq, 'get', return_value=defer.succeed(None), autospec=True)
-    pTreqContent = patch.object(treq, 'content', return_value=defer.succeed(recipePageHTML), autospec=True)
+    pRetrieveRecipes = patch.object(
+        server, 'retrieveRecipes', return_value=[], autospec=True)
 
-    with pGet, pTreqContent:
-        # normal bookmarkleting
-        reqJS = requestJSON([], session_user=weirdo)
-        reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
+    # response with no recipes
+    with pRetrieveRecipes:
+        reqJS = requestJSON([], args={'uri': ['blah']},  session_user=weirdo)
         ret = yield apiServer.handler('bookmarklet', reqJS)
+        expectedResults = server.ClipResponse(
+            status=RS.error, message=server.ResponseMsg.noRecipe,
+            recipes=[],
+        )
+        assert ret == expectedResults
+
+    pRetrieveRecipes = patch.object(
+        server, 'retrieveRecipes', return_value=[recipeData], autospec=True)
+
+    # eresponse with one recipe
+    with pRetrieveRecipes:
+        reqJS = requestJSON([], args={'uri': ['blah']}, session_user=weirdo)
+        ret = yield apiServer.handler('bookmarklet', reqJS)
+        expectedResults = server.ClipResponse(
+            status=RS.ok,
+            message=server.ResponseMsg.successfulSave)
+        assert ret == expectedResults
         assert len(recipe.Recipe.objects()) == 1
-        expectedResults = server.ClipResponse(
-                status=RS.ok, message='',
-                recipes=[{"name": "Delicious Meatless Meatballs", "urlKey": "weirdo-gmail-com-delicious-meatless-meatballs-"}]
-                )
-        assert ret == expectedResults
-
-        # not signed in to noms; bookmarkleting should not be allowed
-        reqJS = requestJSON([])
-        reqJS.args['uri'] = ['http://www.foodandwine.com/recipes/poutine-style-twice-baked-potatoes']
-        ret = yield apiServer.handler('bookmarklet', reqJS)
-        expectedResults = server.ClipResponse(
-                status=RS.error, message=server.ResponseMsg.notLoggedIn,
-                recipes=[],
-                )
-        assert ret == expectedResults
 
 
 @fixture
@@ -335,11 +321,11 @@ def weirdSoupPOST():
     Data structure for a recipe posted from the create form
     """
     return dict(
-            name='Weird soup',
-            author='Weird Soup Man',
-            ingredients=['weirdness', 'soup'],
-            instructions=['mix together ingredients', 'heat through'],
-            )
+        name='Weird soup',
+        author='Weird Soup Man',
+        ingredients=['weirdness', 'soup'],
+        instructions=['mix together ingredients', 'heat through'],
+    )
 
 
 @inlineCallbacks

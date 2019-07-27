@@ -2,7 +2,6 @@
 Recipe Collection
 """
 import datetime
-import re
 
 from mongoengine import fields
 
@@ -24,9 +23,10 @@ class Recipe(RenderableDocument):
     - importedFrom
     """
     name = fields.StringField(require=True)
-    author = fields.StringField(require=True) # author of the recipe
+    author = fields.StringField(require=True)  # author of the recipe
+    # combines user+name as the unique id
     user = fields.ReferenceField('User', dbref=False, require=True)
-    urlKey = fields.StringField(require=True, unique=True) # combines user+name as the unique id
+    urlKey = fields.StringField(require=True, unique=True)
     ingredients = fields.ListField(fields.StringField(), require=True)
     instructions = fields.ListField(fields.StringField(), require=True)
     recipeYield = fields.StringField()
@@ -34,8 +34,8 @@ class Recipe(RenderableDocument):
     modified = fields.DateTimeField(default=datetime.datetime.now)
 
     meta = {
-      'indexes': ['name'],
-      'strict': False
+        'indexes': ['name'],
+        'strict': False
     }
 
     def safe(self):
@@ -50,8 +50,8 @@ class Recipe(RenderableDocument):
                 "instructions": self.instructions,
                 "recipeYield": self.recipeYield,
                 "tags": self.tags,
-                #"modified": self.modified (date is currently not going to work)
-            }
+                # "modified": self.modified (date is currently not going to work)
+                }
 
     @classmethod
     def createFromWebclipper(cls, data, userEmail):
@@ -60,7 +60,8 @@ class Recipe(RenderableDocument):
         """
         self = cls()
         self.name = data['name']
-        self.author = data['author'] if  data['author'] else USER().anonymous.givenName
+        self.author = data.get("author") if data.get(
+            "author") else USER().anonymous.givenName
         self.user = User.objects.get(email=userEmail)
         self.urlKey = urlify(self.user.email, self.name)
         self.ingredients = data['ingredients']
@@ -70,7 +71,7 @@ class Recipe(RenderableDocument):
 
     def saveOnlyOnce(self):
         """
-        Save recipe from website
+        Save recipe from websiterecipe
         """
         if Recipe.objects(urlKey=self.urlKey):
             return
