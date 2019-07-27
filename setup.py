@@ -15,7 +15,7 @@ setup(
     classifiers = [
         "Programming Language :: Python :: 3",
     ],
-    scripts = 'bin/do-travis-build bin/whisk bin/noms'.split(),
+    scripts = 'bin/whisk bin/noms'.split(),
     extras_require={
         'dev': [
             'pytest',

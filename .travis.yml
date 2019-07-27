@@ -29,6 +29,7 @@ job:
       script:
       - . bin/ci-functions
       - whisk cloudform --changeset nomsite
+
     - stage: deploy
       if: tag =~ /^(release|devbuild)-/
       env:
