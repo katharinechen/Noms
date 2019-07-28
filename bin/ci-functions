@@ -2,8 +2,6 @@
 
 IFS=$'\n\t'
 
-set -u
-
 err-marker() {
     echo "Build step error here ^^^^ EEEE ^^^^" 1>&2
 }
