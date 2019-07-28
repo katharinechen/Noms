@@ -8,6 +8,8 @@ stages:
 - test
 - deploy
 
+install: echo "no"
+
 job:
   include:
     - stage: test
