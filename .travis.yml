@@ -4,22 +4,16 @@ python:
 dist: bionic
 sudo: required
 
-stages:
-- test
-- deploy
-
 job:
   include:
     - stage: test
-      ## before_install:
-      ## - pip install -U pip setuptools
+      before_install:
+      - pip install -U pip setuptools
 
-      ## install:
-      ## - pip install -r requirements.txt
-      ## - pip install .[dev]
-      ## - npm install
-      install: echo "no"
-
+      install:
+      - pip install -r requirements.txt
+      - pip install .[dev]
+      - npm install
 
       script:
       - . bin/ci-functions
@@ -27,19 +21,19 @@ job:
       ## - karma start
       - tox -e travis
 
-    # TODO - remove this after we are live!
-    - stage: deploy
-      if: branch = master
-      env:
-        public_hostname: nomsbook.com
-      script:
-      - . bin/ci-functions
-      - whisk cloudform --changeset nomsite
+    ## # TODO - remove this after we are live!
+    ## - stage: deploy
+    ##   if: branch = master
+    ##   env:
+    ##     public_hostname: nomsbook.com
+    ##   script:
+    ##   - . bin/ci-functions
+    ##   - whisk cloudform --changeset nomsite
 
-    - stage: deploy
-      if: tag =~ /^(release|devbuild)-/
-      env:
-        public_hostname: nomsbook.com
-      script:
-      - . bin/ci-functions
-      - whisk cloudform --changeset nomsite
+    ## - stage: deploy
+    ##   if: tag =~ /^(release|devbuild)-/
+    ##   env:
+    ##     public_hostname: nomsbook.com
+    ##   script:
+    ##   - . bin/ci-functions
+    ##   - whisk cloudform --changeset nomsite
