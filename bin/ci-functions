@@ -22,3 +22,13 @@ export PYTHONPATH=`pwd`
 set -a
 eval "$(whisk describe)"
 set +a
+
+
+if-master () {
+    [[ "${TRAVIS_BRANCH:-}" == "master" ]]
+}
+
+if-release-tag () {
+    pat="^(release|devbuild)-"
+    [[ "$NOMS_VERSION" =~ $pat ]]
+}

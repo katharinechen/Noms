@@ -1,42 +1,30 @@
 dist: bionic
 sudo: required
+env:
+  public_hostname: nomsbook.com
 
-job:
-  include:
-    - stage: test
-      language: python
-      python:
-        - "3.7"
-      before_install:
-      - echo "------- before_install -----------------------------------------------------------------------------"
-      - pip install -U pip setuptools
+language: python
+python:
+  - "3.7"
 
-      install:
-      - echo "------- install -----------------------------------------------------------------------------"
-      - pip install -r requirements.txt
-      - pip install .[dev]
-      - npm install
+before_install:
+- pip install -U pip setuptools
 
-      script:
-      - echo "------- script -----------------------------------------------------------------------------"
-      - . bin/ci-functions
-      ## - eslint . && echo "eslint ok 👌"
-      ## - karma start
-      - tox -e travis
+install:
+- pip install -r requirements.txt
+- pip install .[dev]
+- npm install
 
-    ## # TODO - remove this after we are live!
-    ## - stage: deploy
-    ##   if: branch = master
-    ##   env:
-    ##     public_hostname: nomsbook.com
-    ##   script:
-    ##   - . bin/ci-functions
-    ##   - whisk cloudform --changeset nomsite
+script:
+- echo "------- script -----------------------------------------------------------------------------"
+- . bin/ci-functions
+- eslint . && echo "eslint ok 👌"
+- karma start
+- tox -e travis
 
-    ## - stage: deploy
-    ##   if: tag =~ /^(release|devbuild)-/
-    ##   env:
-    ##     public_hostname: nomsbook.com
-    ##   script:
-    ##   - . bin/ci-functions
-    ##   - whisk cloudform --changeset nomsite
+deploy:
+- . bin/ci-functions
+
+- ( if-release-tag && ! if-master ) && whisk cloudform --changeset nomsite
+# TODO - remove if-master after we are live!
+- ( if-master ) && whisk cloudform --changeset nomsite
