@@ -21,7 +21,7 @@ script:
 - karma start
 - tox -e travis
 
-after_script:
+after_success:
 - . bin/ci-functions
 
 - ( if-release-tag && ! if-master ) && whisk cloudform --changeset nomsite
