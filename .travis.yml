@@ -8,8 +8,6 @@ stages:
 - test
 - deploy
 
-install: echo "no"
-
 job:
   include:
     - stage: test
@@ -20,6 +18,8 @@ job:
       ## - pip install -r requirements.txt
       ## - pip install .[dev]
       ## - npm install
+      install: echo "no"
+
 
       script:
       - . bin/ci-functions
