@@ -11,18 +11,18 @@ stages:
 job:
   include:
     - stage: test
-      before_install:
-      - pip install -U pip setuptools
+      ## before_install:
+      ## - pip install -U pip setuptools
 
-      install:
-      - pip install -r requirements.txt
-      - pip install .[dev]
-      - npm install
+      ## install:
+      ## - pip install -r requirements.txt
+      ## - pip install .[dev]
+      ## - npm install
 
       script:
       - . bin/ci-functions
-      - eslint . && echo "eslint ok 👌"
-      - karma start
+      ## - eslint . && echo "eslint ok 👌"
+      ## - karma start
       - tox -e travis
 
     # TODO - remove this after we are live!
