@@ -11,7 +11,7 @@ from twisted.web import tap
 from mongoengine import connect
 
 from noms.server import Server
-from noms import CONFIG, DBAlias, DBHost, user, secret
+from noms import CONFIG, DB_CONNECT, DB_NAME, secret, user
 from noms.whisk.digester import digest
 
 
@@ -27,17 +27,11 @@ class Run(tap.Options):
     """
     Run noms
     """
-    optParameters = tap.Options.optParameters + [
-            ['alias', None, 'noms', 'Alias for a database connection (see noms.DBAlias)'],
-            ]
-
     def postOptions(self):
         """
         Connect to the noms database and make sure a config exists
         """
-        alias = self['alias']
-        assert alias in DBAlias
-        connect(**DBHost[alias])
+        connect(DB_NAME, DB_CONNECT)
 
         # schedule these to run:
 

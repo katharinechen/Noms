@@ -18,6 +18,7 @@ setup(
     scripts = 'bin/whisk bin/noms'.split(),
     extras_require={
         'dev': [
+            'mongomock',
             'pytest',
             'pytest-twisted',
             'pytest-coverage',

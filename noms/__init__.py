@@ -4,39 +4,15 @@ Noms Python library - web application
 import os
 import re
 
-from codado import fromdir, enum
-
-from pymongo.uri_parser import parse_uri
+from codado import fromdir
 
 
 fromNoms = fromdir(__file__, '..')
 
 
 NOMS_DB_HOST = os.environ.get('NOMS_DB_HOST', 'localhost')
-
-
-DBHost = enum(
-        noms={'host': 'mongodb://%s/noms' % NOMS_DB_HOST},
-        nomsTest={'host': 'mongomock://localhost/noms-test'},
-        )
-
-# mongomock is broken, we need to maintain our own connection aliases
-# See https://github.com/vmalloc/mongomock/issues/233 - we must parse
-# host ourselves and pass in db=, for the benefit of mongomock.
-DBAlias = enum.fromkeys(list(DBHost.keys()))
-
-
-def _parseHosts():
-    """
-    Build a dict of all of the connections defined by DBHost
-
-    Doesn't register a default connection yet.
-    """
-    for k, v in DBHost.items():
-        parts = parse_uri(v['host'].replace('mongomock', 'mongodb')) # hack for a parse_uri restriction
-        DBHost[k]['db'] = parts['database']
-
-_parseHosts()
+DB_NAME = 'noms'
+DB_CONNECT = f'mongodb://{NOMS_DB_HOST}/{DB_NAME}'
 
 
 def urlify(*args):

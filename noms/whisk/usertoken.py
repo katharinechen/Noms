@@ -7,7 +7,7 @@ from mongoengine import connect
 
 from codado.tx import Main
 
-from noms import user, DBHost, DBAlias
+from noms import user, DB_NAME, DB_CONNECT
 from noms.const import ENCODING
 
 
@@ -21,9 +21,7 @@ class UserToken(Main):
         self['email'] = email
 
     def postOptions(self):
-        alias = self.parent['alias']
-        assert alias in DBAlias
-        connect(**DBHost[alias])
+        connect(DB_NAME, DB_CONNECT)
         print(get(self['email']))
 
 

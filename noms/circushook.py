@@ -31,14 +31,14 @@ def importSample():
     Ensure sample data is available on this instance
     """
     try:
-        from noms import DBHost, recipe
+        from noms import DB_CONNECT, DB_NAME, recipe
         from noms import whisk
-        connect(**DBHost['noms'])
+        connect(DB_NAME, DB_CONNECT)
         if not recipe.Recipe.objects.count():
             print("First-time run. Installing fresh users and recipes.")
             whisk.BaseWhisk.main(['sample'])
-        print("%r connected" % DBHost['noms']['host'])
+        print("%r connected" % DB_CONNECT)
         return True
     except errors.ServerSelectionTimeoutError:
-        print("No mongo server available (tried %r)" % DBHost['noms']['host'])
+        print("No mongo server available (tried %r)" % DB_CONNECT)
         return False

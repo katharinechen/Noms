@@ -17,7 +17,7 @@ import treq
 
 from codado.tx import Main
 
-from noms import DBHost, DBAlias
+from noms import DB_CONNECT, DB_NAME
 from noms.whisk import usertoken
 
 
@@ -49,9 +49,7 @@ class Digester(Main):
         """
         Make an HTTP GET to update-url with the new digest
         """
-        alias = self.parent['alias']
-        assert alias in DBAlias
-        connect(**DBHost[alias])
+        connect(DB_NAME, DB_CONNECT)
 
         url = self['update-url'] + self._digest
         token = usertoken.get(LOCALAPI_EMAIL)

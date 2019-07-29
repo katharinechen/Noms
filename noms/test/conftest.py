@@ -13,12 +13,14 @@ from pytest import fixture
 from mock import patch
 
 from mongoengine import connect, Document
+from mongoengine.connection import disconnect
 
 from codado import fromdir
 
 from crosscap.testing import DEFAULT_HEADERS, request
 
-from noms import DBAlias, DBHost, documentutil, user
+import noms
+from noms import documentutil, user
 from noms.whisk import describe
 
 
@@ -32,8 +34,16 @@ def useTheTestDatabase():
     connection, and pre-empting other code that connects to the database.
     """
     global _client
+    test = f'mongomock://{noms.NOMS_DB_HOST}/noms-test'
     if _client is None:
-        _client = connect(**DBHost[DBAlias.nomsTest])
+        _client = connect('noms-test', host=test)
+
+    pDB_CONNECT = patch.object(noms, 'DB_CONNECT', test)
+    pDB_NAME = patch.object(noms, 'DB_NAME', 'nomes-test')
+    with pDB_NAME, pDB_CONNECT:
+        yield
+
+    disconnect()
 
 
 class _MongoEngineHack(Document):

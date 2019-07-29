@@ -10,7 +10,7 @@ from bson import json_util
 
 from codado.tx import Main
 
-from noms import recipe, user, DBHost, DBAlias
+from noms import recipe, user, DB_CONNECT, DB_NAME
 from noms.const import ENCODING
 
 
@@ -21,9 +21,7 @@ class Sample(Main):
     synopsis = 'sample'
 
     def postOptions(self):
-        alias = self.parent['alias']
-        assert alias in DBAlias
-        connect(**DBHost[alias])
+        connect(DB_NAME, DB_CONNECT)
         for cls in user.User, recipe.Recipe:
             cls.objects.delete()
             col = cls._get_collection()

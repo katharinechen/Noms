@@ -31,9 +31,6 @@ class BaseWhisk(Main):
     """
     A collection of tools for maintaining a noms instance
     """
-    optParameters = [
-            ['alias', None, 'noms', 'Alias for a database connection (see noms.DBAlias)'],
-            ]
     subCommands = [
             ("describe", None, Describe, doc(Describe)),
             ("tag", None, Tag, doc(Tag)),
