@@ -17,7 +17,7 @@ install:
 
 script:
 - . bin/ci-functions
-- eslint . && echo "eslint ok 👌"
+- eslint .
 - karma start
 - tox -e travis
 
