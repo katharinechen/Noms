@@ -18,7 +18,7 @@ install:
 script:
 - . bin/ci-functions
 - eslint .
-- karma start
+- travis_retry karma start
 - tox -e travis
 
 after_success:
