@@ -29,8 +29,9 @@ class Digester(Main):
     synopsis = "digester <directory>"
 
     optParameters = [
-            ['update-url', 'U', None, 'Append the new hash to the URL and make an HTTP GET to update it'],
-            ]
+        ['update-url', 'U', None,
+            'Append the new hash to the URL and make an HTTP GET to update it'],
+    ]
 
     def parseArgs(self, directory):
         self['directory'] = directory

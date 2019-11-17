@@ -44,7 +44,7 @@ describe("static/js/controllers/recipe.js : Recipe", () => {
         expect(this.scope.recipe).to.deep.equal(expected);
 
         // using a wrong key
-        expected = {}
+        expected = {};
         this.scope.readRecipe("wrong-key");
         this.$httpBackend.expectGET("/api/recipe/wrong-key").respond(403, expected);
         this.$httpBackend.flush();
@@ -63,7 +63,7 @@ describe("static/js/controllers/recipe.js : Recipe", () => {
         this.scope.deleteRecipe("yummy-food");
         this.$httpBackend.expectPOST("/api/recipe/yummy-food/delete").respond(403, {});
         this.$httpBackend.flush();
-        expect(this.scope.status).to.equal("Unable to delete customer data: undefined");
+        expect(this.scope.status).to.equal("Unable to delete customer data");
     });
 
     it("should show the showEditModal", () => {

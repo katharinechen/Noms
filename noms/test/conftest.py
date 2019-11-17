@@ -9,6 +9,7 @@ from pytest import fixture
 from mock import patch
 
 from mongoengine import connect, Document
+from mongoengine.connection import disconnect
 
 from codado import fromdir
 
@@ -28,8 +29,11 @@ def useTheTestDatabase():
     connection, and pre-empting other code that connects to the database.
     """
     global _client
-    if _client is None:
-        _client = connect(**DBHost[DBAlias.nomsTest])
+    with patch.dict(DBHost, {'noms': DBHost[DBAlias.nomsTest]}):
+        if _client is None:
+            _client = connect(**DBHost[DBAlias.nomsTest])
+        yield
+        disconnect()
 
 
 class _MongoEngineHack(Document):
@@ -119,7 +123,7 @@ def mockConfig(mockDatabase):
 
     try:
         cols = mockDatabase.collection_names()
-        for c in cols: # pragma: nocover
+        for c in cols:  # pragma: nocover
             assert mockDatabase[c].count() == 0, c + " not empty"
 
         cfg = noms.Config()
@@ -138,7 +142,7 @@ def mockConfig(mockDatabase):
     finally:
         # despite dropping the database we have to do this, because it's
         # still an object in memory
-        for c in cols: # pragma: nocover
+        for c in cols:  # pragma: nocover
             col = mockDatabase[c]
             col.remove()
             assert col.count() == 0, "%r not empty" % c
@@ -164,10 +168,10 @@ def weirdo(mockConfig):
     """
     from noms import user
     return user.User(
-            email='weirdo@gmail.com', 
-            givenName='Weirdo',
-            familyName='User', 
-            roles=[user.Roles.user]).save()
+        email='weirdo@gmail.com',
+        givenName='Weirdo',
+        familyName='User',
+        roles=[user.Roles.user]).save()
 
 
 @fixture
@@ -179,7 +183,7 @@ def localapi(mockConfig):
         email='localapi@example.com',
         roles=[user.Roles.localapi],
         givenName='Local API',
-        )
+    )
     localapi.save()
     return localapi
 
@@ -187,6 +191,21 @@ def localapi(mockConfig):
 @fixture
 def recipePageHTML():
     return open(fromdir(__file__)('recipe_page_source.html')).read()
+
+
+@fixture
+def recipeData():
+    """
+    Provide recipe that can be used successfully in tests
+    """
+    recipeData = {
+        "author": u"Cory Dodt",
+        "name": u"Delicious Meatless Meatballs",
+        "email": u"weirdo-gmail-com",
+        "ingredients": ["one", "two"],
+        "instructions": ["instruction-one", "instruction-two"]
+    }
+    return recipeData
 
 
 def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **kwargs):
@@ -200,7 +219,7 @@ def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **
     content = kwargs.pop('content', None)
     if isinstance(content, dict):
         kwargs['content'] = StringIO(json.dumps(content))
-    elif content: # pragma: nocover
+    elif content:  # pragma: nocover
         kwargs['content'] = StringIO(str(content))
     else:
         kwargs['content'] = None
@@ -211,7 +230,7 @@ def requestJSON(postpath, requestHeaders=DEFAULT_HEADERS, responseHeaders=(), **
         tok = user.asToken()
         requestHeaders = requestHeaders + (('x-token', [tok]),)
 
-    responseHeaders = responseHeaders + (('content-type', ['application/json']),)
+    responseHeaders = responseHeaders + (('content-type', 'application/json'),)
     req = request(postpath, requestHeaders, responseHeaders, **kwargs)
 
     return req

@@ -8,6 +8,7 @@ coverage
 crosscap
 docker>=2.2.0
 docker-compose
+extruct
 gitpython
 humanhash
 itsdangerous
@@ -24,6 +25,7 @@ pytest-twisted
 pytest>=4.3
 pyOpenSSL
 pytz
+requests
 service_identity
 sphinx
 sphinx-autobuild
@@ -31,3 +33,4 @@ sphinx_rtd_theme
 treq
 twisted
 watchdog
+w3lib

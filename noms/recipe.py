@@ -2,18 +2,12 @@
 Recipe Collection
 """
 import datetime
-import re
 
 from mongoengine import fields
 
 from noms.rendering import RenderableDocument
 from noms.user import User, USER
 from noms import urlify
-
-
-def clean(string):
-    res = re.sub('\s+', ' ', string)
-    return res.strip()
 
 
 class Recipe(RenderableDocument):
@@ -29,9 +23,10 @@ class Recipe(RenderableDocument):
     - importedFrom
     """
     name = fields.StringField(require=True)
-    author = fields.StringField(require=True) # author of the recipe
+    author = fields.StringField(require=True)  # author of the recipe
+    # combines user+name as the unique id
     user = fields.ReferenceField('User', dbref=False, require=True)
-    urlKey = fields.StringField(require=True, unique=True) # combines user+name as the unique id
+    urlKey = fields.StringField(require=True, unique=True)
     ingredients = fields.ListField(fields.StringField(), require=True)
     instructions = fields.ListField(fields.StringField(), require=True)
     recipeYield = fields.StringField()
@@ -39,8 +34,8 @@ class Recipe(RenderableDocument):
     modified = fields.DateTimeField(default=datetime.datetime.now)
 
     meta = {
-      'indexes': ['name'],
-      'strict': False
+        'indexes': ['name'],
+        'strict': False
     }
 
     def safe(self):
@@ -55,35 +50,28 @@ class Recipe(RenderableDocument):
                 "instructions": self.instructions,
                 "recipeYield": self.recipeYield,
                 "tags": self.tags,
-                #"modified": self.modified (date is currently not going to work)
-            }
+                # "modified": self.modified (date is currently not going to work)
+                }
 
     @classmethod
-    def fromMicrodata(cls, microdata, userEmail):
+    def createFromWebclipper(cls, data, userEmail):
         """
-        Create a recipe object from microdata
+        Create a recipe object from data from the web clipper
         """
         self = cls()
-        self.name = clean(microdata.name)
-        if microdata.author:
-            self.author = clean(microdata.author.name)
-        else:
-            self.author = USER().anonymous.givenName
+        self.name = data['name']
+        self.author = data.get("author") if data.get(
+            "author") else USER().anonymous.givenName
         self.user = User.objects.get(email=userEmail)
         self.urlKey = urlify(self.user.email, self.name)
-        for i in microdata.props['ingredients']:
-            self.ingredients.append(clean(i))
+        self.ingredients = data['ingredients']
+        self.instructions = data['instructions']
 
-        array = microdata.props['recipeInstructions'][0].split('\n')
-        for i in array:
-            i = clean(i)
-            if i:
-                self.instructions.append(i)
         return self
 
     def saveOnlyOnce(self):
         """
-        Save recipe from website
+        Save recipe from websiterecipe
         """
         if Recipe.objects(urlKey=self.urlKey):
             return

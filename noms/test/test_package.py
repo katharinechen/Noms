@@ -2,7 +2,7 @@
 """
 Test of package-level code contained in noms.__init__
 """
-from pytest import inlineCallbacks
+from pytest_twisted import inlineCallbacks
 
 from twisted.internet import defer
 

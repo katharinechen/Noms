@@ -65,20 +65,20 @@ need to do this.
 Get Ngrok Credentials
 ~~~~~~~~~~~~~~~~~~~
 
-Download ``ngrok`` and save it in your ``env/noms/bin`` directory. Make this file executable. 
+Download ``ngrok`` and save it in your ``env/noms/bin`` directory. Make this file executable.
 
-You will need a project maintainer to provide you with a Ngrok auth key. 
-When you have them, run ``ngrok`` with the keys. This will create a config file that you edit. 
+You will need a project maintainer to provide you with a Ngrok auth key.
+When you have them, run ``ngrok`` with the keys. This will create a config file that you edit.
 
 .. code-block:: bash
 
-    tunnels: 
-      noms: 
-        proto: http 
+    tunnels:
+      noms:
+        proto: http
         addr: 8080
         hostname: [get from project maintainer]
 
-To start ``ngrok`` you have to type the following in the terminal: ``ngrok start noms``. 
+To start ``ngrok`` you have to type the following in the terminal: ``ngrok start noms``.
 
 Build Container Images
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -110,11 +110,11 @@ Localenv
 ~~~~~~~~
 Create the following file in your Noms directory:
 
-    local.env 
+    local.env
 
-Inside this file, input the following. Sub katharine.ngrok.io with an appropriate hostname.  
+Inside this file, input the following. Sub katharine.ngrok.io with an appropriate hostname.
 
-    public_hostname=katharine.ngrok.io 
+    public_hostname=katharine.ngrok.io
 
 
 Run Localhost
@@ -151,13 +151,21 @@ Running PDB
 ************
 To run pdb, you have to ``docker attach`` your ``noms-main:latest`` container. To see what your containers are::
 
-    docker ps 
+    docker ps
 
 Grab the container id for your ``noms-main:latest`` image. In a new tab::
 
     docker attach <noms-main id>
 
-Here you should be able to interact with pdb. 
+Here you should be able to interact with pdb.
+
+Running Mongo
+*************
+To run mongo, you have to use the following command:
+
+    docker-compose -f deployment/docker-compose.yml exec noms-main mongo --host mongo
+
+This should put you into the mongo shell.
 
 Restarting
 **********

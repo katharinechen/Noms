@@ -1,10 +1,6 @@
 """
 Test the Recipe object
 """
-from pytest import fixture
-
-import microdata
-
 from noms import recipe, user
 
 
@@ -49,24 +45,16 @@ def test_saveOnlyOnce(mockDatabase, weirdo):
     assert len(recipe.Recipe.objects()) == 1
 
 
-@fixture
-def recipeMicrodata(recipePageHTML):
-    """
-    An HTML page parsed to its microdata elements
-    """
-    return microdata.get_items(recipePageHTML)[0]
-
-
-def test_fromMicrodata(mockDatabase, recipeMicrodata, weirdo):
+def test_createFromWebclipper(mockDatabase, weirdo, recipeData):
     """
     Does fromMicrodata create a good Recipe?
     """
-    ret = recipe.Recipe.fromMicrodata(recipeMicrodata, u'weirdo@gmail.com')
+    ret = recipe.Recipe.createFromWebclipper(recipeData, u'weirdo@gmail.com')
     assert ret.author == u"Cory Dodt"
     assert ret.name == u'Delicious Meatless Meatballs'
     assert ret.urlKey == u'weirdo-gmail-com-delicious-meatless-meatballs-'
 
     # again, but blank the author
-    del recipeMicrodata.props['author']
-    ret = recipe.Recipe.fromMicrodata(recipeMicrodata, u'weirdo@gmail.com')
+    del recipeData["author"]
+    ret = recipe.Recipe.createFromWebclipper(recipeData, u'weirdo@gmail.com')
     assert ret.author == user.USER().anonymous.givenName

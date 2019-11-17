@@ -10,10 +10,10 @@ def test_fromSSO(mockDatabase):
     Do I create a valid user object from SSO registration?
     """
     ssoData = {
-            'email': 'ssodude@ssoplace.com',
-            'given_name': 'Sso',
-            'family_name': 'Dude',
-            }
+        'email': 'ssodude@ssoplace.com',
+        'given_name': 'Sso',
+        'family_name': 'Dude',
+    }
     u = user.User.fromSSO(ssoData)
     x = user.User.objects(email='ssodude@ssoplace.com').first()
     assert x.id == u.id
@@ -28,11 +28,11 @@ def test_safe():
     u = user.User(email='hello@hello.com', roles=[user.Roles.user])
 
     assert u.safe() == {
-            'email': u'hello@hello.com',
-            'givenName': None,
-            'familyName': None,
-            'roles': [u'user'],
-            }
+        'email': u'hello@hello.com',
+        'givenName': None,
+        'familyName': None,
+        'roles': [u'user'],
+    }
 
 
 def test_anonymousAlreadyExists():

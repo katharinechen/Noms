@@ -5,7 +5,8 @@ from twisted.internet import defer, task
 
 import treq
 
-from pytest import fixture, inlineCallbacks
+from pytest import fixture
+from pytest_twisted import inlineCallbacks
 
 from mock import patch, Mock, ANY
 
@@ -56,10 +57,10 @@ def test_postOptionsWithUpdate(localapi, testdir, capsys, opt):
     pReact = patch.object(task, 'react', lambda fn: fn(None))
     mContent = Mock(code=200)
     pGet = patch.object(treq, 'get',
-            return_value=defer.succeed(mContent),
-            autospec=True)
+                        return_value=defer.succeed(mContent),
+                        autospec=True)
     with pReact, pGet as mGet:
         yield opt.postOptions()
         mGet.assert_called_once_with(
-                'https://nomsbook.com/sethash/' + TESTDIR_HASH,
-                headers={'x-token': ANY})
+            'https://nomsbook.com/sethash/' + TESTDIR_HASH,
+            headers={'x-token': ANY})
