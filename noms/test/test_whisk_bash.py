@@ -94,5 +94,5 @@ def test_postOptionsBad(whiskDir, failScript, capsys):
 
     output, errput = capsys.readouterr()
 
-    assert re.search(r'whisk exit 2: failed', str(e))
     assert re.search(r'grep: abcxyz: No such file or directory', output)
+    assert re.search(r'whisk exit 2: failed', str(e.value))
